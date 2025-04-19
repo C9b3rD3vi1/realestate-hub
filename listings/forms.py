@@ -139,3 +139,30 @@ class ProfileForm(forms.ModelForm):
                 'invalid': 'Enter a valid date of birth.',
             },
         }
+
+
+
+# UserLoginForm is used to handle user login
+class UserLoginForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'password')
+        widgets = {
+            'password': forms.PasswordInput(),
+        }
+        labels = {
+            'username': 'Username',
+            'password': 'Password',
+        }
+        help_texts = {
+            'username': 'Enter your username.',
+            'password': 'Enter your password.',
+        }
+        error_messages = {
+            'username': {
+                'required': 'Username is required.',
+            },
+            'password': {
+                'required': 'Password is required.',
+            },
+        }

@@ -9,4 +9,5 @@ urlpatterns = [
     path('', views.home, name='home'),  # The home page of the listings app
     path('listing/', views.listing, name='listing'),  # The detail page for a specific listing
     path('register/', views.user_register, name='register'),  # User registration page
+    path('login/', views.user_login, name='login'),  # User login page
 ]
