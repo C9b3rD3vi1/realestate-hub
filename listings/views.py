@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from .forms import *
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 
 
@@ -33,18 +33,25 @@ def user_register(request):
     return render(request, 'register.html', {'form': form})
 
 
+
 # User login and authentication functionality
 def user_login(request):
     # This view handles user login
     if request.method == 'POST':
-        form = UserLoginForm(request, data=request.POST)
+        form = AuthenticationForm(request, data=request.POST)
+        # Validate the form data
         if form.is_valid():
+            # Get the cleaned data from the form
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
+            # Authenticate the user
             user = authenticate(username=username, password=password)
             if user is not None:
+                # If the user is authenticated, log them in
                 login(request, user)
+                # Redirect to the home page
                 return redirect('home')
     else:
-        form = UserLoginForm()
+        # If the request method is GET, create an empty form
+        form = AuthenticationForm(request)
     return render(request, 'login.html', {'form': form})
