@@ -7,7 +7,7 @@ def home(request):
     return render(request, 'home.html')
 
 
-def listing(request, listing_id):
+def listing(request):
     # This view renders the detail page for a specific listing
     # The listing_id parameter is used to retrieve the specific listing from the database
-    return render(request, 'listing.html', {'listing_id': listing_id})
+    return render(request, 'listings.html')

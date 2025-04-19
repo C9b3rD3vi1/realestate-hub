@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Home{% endblock %}
 
@@ -9,5 +10,5 @@
 <p>Explore our listings to find the perfect property for you.</p>
 <p>Whether you're looking for a house, land, or a car, we have something for everyone.</p>
 <p>Find your dream land, home, or car today.</p>
-<a href="/listing/" class="btn btn-primary">View Listings</a>
+<a href="{% url 'listing' %}" class="btn btn-primary">View Listings</a>
 {% endblock %}
