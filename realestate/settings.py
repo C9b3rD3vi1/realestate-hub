@@ -127,7 +127,7 @@ TEMPLATES = [
 
 # Static files
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'listings/static']
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # media files storage
 MEDIA_URL = '/media/'
