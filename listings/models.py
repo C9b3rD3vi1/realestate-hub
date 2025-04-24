@@ -143,8 +143,63 @@ class CarProperties(models.Model):
     title = models.CharField(max_length=255)
     image = models.ImageField(upload_to='car_images/')
     description = models.TextField()
-    model = models.CharField(max_length=255)
-    year = models.PositiveIntegerField()
+    make = models.CharField(max_length=255, choices=[
+        ('toyota', 'Toyota'),
+        ('honda', 'Honda'),
+        ('ford', 'Ford'),
+        ('chevrolet', 'Chevrolet'),
+        ('nissan', 'Nissan'),
+        ('bmw', 'BMW'),
+        ('audi', 'Audi'),
+        ('mercedes', 'Mercedes-Benz'),
+        ('volkswagen', 'Volkswagen'),
+        ('hyundai', 'Hyundai'),
+        ('kia', 'Kia'),
+        ('subaru', 'Subaru'),
+        ('mazda', 'Mazda'),
+        ('volvo', 'Volvo'),
+        ('land_rover', 'Land Rover'),
+        ('jaguar', 'Jaguar'),
+        ('porsche', 'Porsche'),
+        ('tesla', 'Tesla'),
+        ('other', 'Other'),
+    ], default='toyota')
+    # The make field represents the manufacturer of the car
+    model = models.CharField(max_length=255, choices=[
+        ('corolla', 'Corolla'),
+        ('civic', 'Civic'),
+        ('mustang', 'Mustang'),
+        ('camaro', 'Camaro'),
+        ('altima', 'Altima'),
+        ('3_series', '3 Series'),
+        ('a4', 'A4'),
+        ('c_class', 'C-Class'),
+        ('golf', 'Golf'),
+        ('elantra', 'Elantra'),
+        ('soul', 'Soul'),
+        ('forester', 'Forester'),
+        ('cx_5', 'CX-5'),
+        ('xc60', 'XC60'),
+        ('discovery', 'Discovery'),
+        ('f_type', 'F-Type'),
+        ('911', '911'),
+        ('model_s', 'Model S'),
+        ('model_3', 'Model 3'),
+        ('202', '202'),
+        ('v8', 'V8'),
+        ('suv', 'SUV'),
+        ('pickup', 'Pickup'),
+        ('sedan', 'Sedan'),
+        ('hatchback', 'Hatchback'),
+        ('convertible', 'Convertible'),
+        ('coupe', 'Coupe'),
+        ('wagon', 'Wagon'),
+        ('van', 'Van'),
+        ('other', 'Other'),
+
+    ], default='corolla')
+
+    year_of_manufacture = models.PositiveIntegerField()
     mileage = models.DecimalField(max_digits=10, decimal_places=2)  # Mileage in kilometers
     fuel_type = models.CharField(max_length=50, choices=[
         ('petrol', 'Petrol'),
@@ -152,6 +207,7 @@ class CarProperties(models.Model):
         ('electric', 'Electric'),
         ('hybrid', 'Hybrid'),
     ], default='petrol')
+
     engine_size = models.DecimalField(max_digits=10, decimal_places=2)  # Engine size in liters
     number_of_doors = models.PositiveIntegerField()
     number_of_seats = models.PositiveIntegerField()
@@ -160,7 +216,7 @@ class CarProperties(models.Model):
         ('manual', 'Manual'),
         ('automatic', 'Automatic'),
     ], default='manual')
-    
+
     color = models.CharField(max_length=50)
     features = models.TextField(blank=True, null=True)
 
