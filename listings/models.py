@@ -143,6 +143,27 @@ class CarProperties(models.Model):
     title = models.CharField(max_length=255)
     image = models.ImageField(upload_to='car_images/')
     description = models.TextField()
+    model = models.CharField(max_length=255)
+    year = models.PositiveIntegerField()
+    mileage = models.DecimalField(max_digits=10, decimal_places=2)  # Mileage in kilometers
+    fuel_type = models.CharField(max_length=50, choices=[
+        ('petrol', 'Petrol'),
+        ('diesel', 'Diesel'),
+        ('electric', 'Electric'),
+        ('hybrid', 'Hybrid'),
+    ], default='petrol')
+    engine_size = models.DecimalField(max_digits=10, decimal_places=2)  # Engine size in liters
+    number_of_doors = models.PositiveIntegerField()
+    number_of_seats = models.PositiveIntegerField()
+
+    transmission = models.CharField(max_length=50, choices=[
+        ('manual', 'Manual'),
+        ('automatic', 'Automatic'),
+    ], default='manual')
+    
+    color = models.CharField(max_length=50)
+    features = models.TextField(blank=True, null=True)
+
     price = models.DecimalField(max_digits=10, decimal_places=2)
     location = models.CharField(max_length=255)
     size = models.DecimalField(max_digits=10, decimal_places=2)  # Size in square feet
@@ -162,18 +183,21 @@ class CarProperties(models.Model):
         # It uses the slug field to create a unique URL for each property
     def get_absolute_url(self):
         return reverse('car_detail', kwargs={'slug': self.slug})
+    
     # This method generates a slug for the car property based on its title
     def generate_slug(self):
         # Use the slugify function to create a slug from the title
         base_slug = slugify(self.title)
         slug = base_slug
         counter = 1
+
         # Keep checking until we find a unique slug
         while CarProperties.objects.filter(slug=slug).exclude(id=self.id).exists():
             slug = f"{base_slug}-{counter}"
             counter += 1
         self.slug = slug
         return self.slug
+    
     # This method is called before saving the model instance to the database
     def save(self, *args, **kwargs):
         # Generate the slug before saving
