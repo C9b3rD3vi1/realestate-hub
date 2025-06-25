@@ -1,4 +1,6 @@
 {% load static %}
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,39 +8,213 @@
     <title>Real Estate Hub</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">Real Estate Hub</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarNav" aria-controls="navbarNav"
-                aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+<head>
+    <meta charset="UTF-8">
+    <title>Real Estate Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">
-                        <img src="{% static 'images/logo.png' %}" alt="Logo" width="30" height="30">
-                    </a>
-                </li>
-                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="/listing">Listings</a></li>
-                <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
-                <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+    body {
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 50px; /* Space for footer */
+    }
+    .navbar {
+        flex: 0 0 auto;
+    }
+
+    .footer-custom {
+        flex: 0 0 auto;
+        background-color: #454749;
+        color: #0abced;
+        text-align: center;
+        font-size: 18px;
+        border-top: 1px solid #0abced;
+        padding-bottom: 0%;
+    }
+
+    .container.mt-4 {
+        flex: 1 0 auto;
+    }
+
+    /* Navbar Styles */
+    .navbar-custom {
+        background-color: #23272b !important;
+        color: #0abced !important;
+        font-weight: 600 !important;
+        font-size: 18px !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        z-index: 1030;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        padding: 0.5rem 0 !important;
+    }
+
+    .navbar-custom .navbar-brand,
+    .navbar-custom .nav-link {
+        color: #0abced !important;
+        font-weight: 600 !important;
+        font-size: 18px !important;
+        transition: color 0.2s;
+    }
+
+    .navbar-custom .nav-link {
+        margin-right: 1.2rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-custom .nav-link:last-child {
+        margin-right: 0;
+    }
+
+    .navbar-custom .nav-link:hover,
+    .navbar-custom .nav-link:focus {
+        color: #ffffff !important;
+        background-color: #0abced22;
+        text-decoration: none !important;
+    }
+
+    .navbar-custom .navbar-brand img {
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+    }
+
+    /* Footer Styles */
+    .footer-custom {
+        background-color: #23272b;
+        color: #0abced;
+        text-align: center;
+        font-size: 18px;
+        border-top: 1px solid #0abced;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        width: 100vw;
+        left: 0;
+        position: relative;
+        margin-left: calc(-50vw + 50%);
+        right: 0;
+    }
+
+    .footer-custom .social-icons a {
+        color: #0abced;
+        margin: 0 10px;
+        font-size: 22px;
+        transition: color 0.2s;
+    }
+
+    .footer-custom .social-icons a:hover {
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    .footer-custom p {
+        margin: 0;
+        padding: 5px 0;
+        color: #b0b8c1;
+        font-size: 15px;
+    }
+
+    .footer-custom .text-md-end {
+        text-align: center;
+    }
+
+    .footer-custom .text-md-end p {
+        margin: 0;
+        padding: 5px 0;
+    }
+
+    @media (max-width: 991.98px) {
+        .navbar-custom {
+            position: static;
+            width: 100%;
+        }
+        .footer-custom .container {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+        }
+        .footer-custom {
+            margin-left: 0;
+            width: 100vw;
+        }
+    }
+</style>
+
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom">
+       
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-right" href="/">
+            <img src="{% static 'images/logo.jpeg' %}" alt="Logo" width="60" height="40" class="d-fill-block align-text-top me-2 rounded-pill">
+        </a>
+        <ul class="navbar-nav">
+            <li class="nav-link" href="/listing">Listings</li>
+
+            <li class="nav-link" href="/register">Register</li>
+            <li class="nav-link" href="/login">Login</li>
+            <li class="nav-link" href="#"> our blog</li>
+            <li class="nav-link"href="/logout">logout</li>
             </ul>
         </div>
     </div>
 </nav>
 
-<!-- ✅ Add this block to inject page-specific content -->
+
 <div class="container mt-4">
     {% block content %}
+
+
     <!-- Page-specific content will be injected here -->
     {% endblock %}
 </div>
 
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<footer class="footer-custom">
+    <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between py-2">
+        <div class="d-flex align-items-center mb-2 mb-md-0">
+            <span class="me-3 fw-bold" style="font-size: 20px;">Real Estate Hub</span>
+            <div class="social-icons">
+                <a href="https://www.facebook.com" target="_blank" class="text-decoration-none me-2" style="color: #3d65ea;">
+                    <i class="fab fa-facebook fa-lg"></i>
+                </a>
+                <a href="https://www.twitter.com" target="_blank" class="text-decoration-none me-2" style="color: #0abced;">
+                    <i class="fab fa-twitter fa-lg"></i>
+                </a>
+                <a href="https://www.instagram.com" target="_blank" class="text-decoration-none me-2" style="color: rgb(227, 68, 203);">
+                    <i class="fab fa-instagram fa-lg"></i>
+                </a>
+                <a href="https://www.linkedin.com" target="_blank" class="text-decoration-none" style="color: #529eef;">
+                    <i class="fab fa-linkedin fa-lg"></i>
+                </a>
+                <a href="https://www.youtube.com" target="_blank" class="text-decoration-none ms-2" style="color: #ff0000;">
+                    <i class="fab fa-youtube fa-lg"></i>
+            </div>
+        </div>
+        <div class="text-md-end text-center">
+            <p class="mb-1" style="font-size: 16px;">
+                Contact Us: <a href="mailto:info@realestatehub.com" style="color: #0abced; text-decoration: underline;">info@realestatehub.com</a>
+            </p>
+            <p class="mb-1" style="font-size: 15px;">Your trusted partner in real estate and Busines Partner</p>
+            <p class="mb-0" style="font-size: 14px;">&copy; 2025 Digital Catalyst. All rights reserved.</p>
+        </div>
+    </div>
+    <!-- Font Awesome CDN for social icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</footer>
+
+
 </body>
 </html>

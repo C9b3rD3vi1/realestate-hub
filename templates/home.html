@@ -3,12 +3,31 @@
 
 {% block title %}Home{% endblock %}
 
-
 {% block content %}
-<h1>Welcome to Real Estate Hub</h1>
-<p>Your one-stop solution for buying and selling properties.</p>
-<p>Explore our listings to find the perfect property for you.</p>
-<p>Whether you're looking for a house, land, or a car, we have something for everyone.<p>
-<p>Find your dream land, home, or car today.</p>
-<a href="{% url 'listing' %}" class="btn btn-primary">View Listings</a>
+<style>
+    .custom-home-text {
+        color: #2d2d6b;
+    }
+</style>
+<header class="shadow-md"></header>
+<div class="flex justify-between items-center px-10 py-4 bg-white custom-home-text">
+    <div class="flex items-center space-x-3">
+        <img src="{% static 'images/logo.jpeg' %}" alt="Logo" class="h-16 w-13 rounded-full">
+        <h1 class="text-2xl font-bold">Digital Analyst</h1>
+    </div>
+    
+
+
+    <div style="color: #55ae89;"></div>
+
+    <h1>Welcome to Digital catalyst</h1>
+    <p>Motto 'Visions to Reality'</p>
+    <img src="{% static 'images/photo2.jpeg' %}" alt="class" class="img-fluid my-3">
+    <p>All your business solutions</p>
+    <p>Our services</p>
+
+    <a href="{% url 'listing' %}" class="btn btn-primary">View Listings</a>
+    <img src="{% static 'images/scope.avif' %}" alt="solutions" width="400" height="300" class="d-inline-block align-text-bottom-right me-2">
+</div>
 {% endblock %}
+
