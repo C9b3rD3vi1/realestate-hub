@@ -20,7 +20,7 @@ urlpatterns = [
     path('about/', views.about, name='about'),  # About page
     
     
-    path('housing/<slug:slug>/', views.housing_detail, name='housing_detail'),
+    path('house/<slug:slug>/', views.housing_detail, name='housing_detail'),
     path('car/<slug:slug>/', views.car_detail, name='car_detail'),
     path('land/<slug:slug>/', views.land_detail, name='land_detail'),
 

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}{{ car.title }} - Car Details{% endblock %}
+
+{% block content %}
+<section class="min-h-screen bg-base-200 py-6">
+  <div class="w-full bg-base-100 p-4 md:p-6 rounded-none shadow-lg">
+    <div class="grid md:grid-cols-2 gap-4 md:gap-8">
+      
+      <!-- Car Image -->
+      <div>
+        <img src="{{ car.image.url }}" alt="{{ car.title }}" class="w-full h-72 md:h-96 object-cover rounded-lg" />
+      </div>
+
+      <!-- Car Details -->
+      <div>
+        <h1 class="text-3xl font-bold text-primary mb-2">{{ car.title }}</h1>
+        <p class="text-sm text-gray-600 mb-4">{{ car.description }}</p>
+
+        <div class="grid grid-cols-2 gap-2 text-xs md:text-sm">
+          <div class="badge badge-outline">Make: {{ car.make }}</div>
+          <div class="badge badge-outline">Model: {{ car.model }}</div>
+          <div class="badge badge-outline">Year: {{ car.year }}</div>
+          <div class="badge badge-outline">Transmission: {{ car.transmission }}</div>
+          <div class="badge badge-outline">Fuel: {{ car.fuel_type }}</div>
+          <div class="badge badge-outline">Mileage: {{ car.mileage }} km</div>
+        </div>
+
+        <div class="mt-6">
+          <p class="text-xl font-bold text-success mb-2">KSh {{ car.price|floatformat:2 }}</p>
+          <p class="text-xs text-gray-500 mb-3">Location: {{ car.location }}</p>
+          <a href="/contact/" class="btn btn-primary w-full sm:w-auto">Contact Seller</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
