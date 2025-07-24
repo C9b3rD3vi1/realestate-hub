@@ -3,15 +3,43 @@
 {% load static %}
 
 {% block content %}
+    <style>
+        body {
+            background-color: #307bb0;
+            color: #c7a3a3;
+        }
+        .register-container {
+            background: #1a1c10;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 32px;
+            color: #b3c911; /* Change text color inside the form */
+        }
+        .register-container a {
+            color: #ffe082; /* Change link color for better contrast */
+        }
+        .register-container .btn-primary {
+            color: #307bb0;
+            background-color: #fff;
+            border: none;
+            font-style: italic !important;
+            font-size: 22px !important;
+            font-weight: bold !important;
+        }
+        .register-container .btn-primary:hover {
+            background-color: #806f3c;
+            color: #307bb0;
+        }
+    </style>
     <div class="container mt-5">
         <div class="row justify-content-center">
-            <div class="col-md-6">
+            <div class="col-md-6 register-container">
                 <h1 class="mb-4">User Registration</h1>
                 <form method="POST" action="{% url 'register' %}">
                     {% csrf_token %}
                     {% if form.errors %}
                         <div class="alert alert-danger">
-                            Please correct the errors below.
+                            Please correct the errors
                         </div>
                     {% endif %}
                     {{ form.as_p }}

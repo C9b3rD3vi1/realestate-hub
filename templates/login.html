@@ -1,12 +1,51 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+body {
+    background-color: #92d29b; /* fallback color */
+    color: #3300d9 !important;
+    background-size: cover;
+    font-weight: italic;
+    font-size: 22px;
+}
+.login-btn {
+    background-color: #3300d9;
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+.forgot-btn {
+    background-color: #ff9800;
+    color: #dbd3ce;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.login-btn:hover {
+    background-color: #220099;
+}
+.forgot-btn:hover {
+    background-color: #e65100;
+}
+</style>
 <div class="container">
     <h2>Login</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}  <!-- This is key: it renders the form -->
-        <button type="submit">Login</button>
+        <button type="submit" class="login-btn">Login</button>
+        <button type="submit" class="forgot-btn">Forgot password</button>
+        Digital catalyst
     </form>
 </div>
+
 {% endblock %}
