@@ -75,7 +75,7 @@ def listing(request):
         "housing_listings": housing_listings,
         "car_listings": car_listings,
     })
-    
+
 def listing_detail(request, slug):
     listing = None
     listing_type = None
@@ -96,6 +96,14 @@ def listing_detail(request, slug):
         'listing_type': listing_type,
     })
 
+
+def housing_detail(request, slug):
+    house = get_object_or_404(HousingProperties, slug=slug)
+    return render(request, "housing_detail.html", {"house": house})
+
+def car_detail(request, slug):
+    car = get_object_or_404(CarProperties, slug=slug)
+    return render(request, "car_detail.html", {"car": car})
 
 
 # User registration and creation, authentication form

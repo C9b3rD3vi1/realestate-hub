@@ -1,0 +1,14 @@
+<div class="card bg-white shadow-md hover:shadow-xl transition duration-300">
+  <figure>
+    <img src="{{ item.image.url }}" alt="{{ item.title }}" class="h-48 w-full object-cover">
+  </figure>
+  <div class="card-body">
+    <h2 class="card-title">{{ item.title }}</h2>
+    <p class="text-gray-500">{{ item.location }}</p>
+    <p class="font-bold text-primary">Ksh {{ item.price }}</p>
+    {% if item.size %}<p class="text-sm">Size: {{ item.size }}</p>{% endif %}
+    <div class="card-actions justify-end">
+      <a href="{{ item.get_absolute_url }}" class="btn btn-outline btn-sm">View</a>
+    </div>
+  </div>
+</div>
