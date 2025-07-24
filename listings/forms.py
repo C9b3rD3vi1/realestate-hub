@@ -1,5 +1,5 @@
 from django import forms
-from .models import CustomUser, Profile
+from .models import CustomUser, Profile, Contact
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 # CustomUserCreationForm is used to create a new user
@@ -140,3 +140,49 @@ class ProfileForm(forms.ModelForm):
             },
         }
 
+class ContactForm(forms.ModelForm):
+    name = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    message = forms.CharField(widget=forms.Textarea)
+
+    class Meta:
+        model = Contact
+        fields = ('name', 'email', 'message')
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Your Name'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'Your Email'}),
+            'message': forms.Textarea(attrs={'placeholder': 'Your Message'}),
+        }
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if not name.strip():
+            raise forms.ValidationError('Name cannot be empty.')
+        return name
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if not email.strip():
+            raise forms.ValidationError('Email cannot be empty.')
+        return email
+
+    def clean_message(self):
+        message = self.cleaned_data['message']
+        if not message.strip():
+            raise forms.ValidationError('Message cannot be empty.')
+        return message
+
+    def clean(self):
+        cleaned_data = super().clean()
+        name = cleaned_data.get('name')
+        email = cleaned_data.get('email')
+        message = cleaned_data.get('message')
+
+        if not name.strip():
+            self.add_error('name', 'Name cannot be empty.')
+        if not email.strip():
+            self.add_error('email', 'Email cannot be empty.')
+        if not message.strip():
+            self.add_error('message', 'Message cannot be empty.')
+
+        return cleaned_data

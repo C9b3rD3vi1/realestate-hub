@@ -13,7 +13,7 @@ class CustomUser(AbstractUser):
         ('seller', 'Seller'),
         ('admin', 'Admin'),
     )
-    
+
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='buyer')
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
@@ -67,8 +67,8 @@ class LandProperties(models.Model):
     class Meta:
         verbose_name_plural = 'Land Properties'
         ordering = ['-created_at']
-        
-        # This method returns the URL to access a particular land property 
+
+        # This method returns the URL to access a particular land property
         # It uses the slug field to create a unique URL for each property
     def get_absolute_url(self):
         return reverse('land_detail', kwargs={'slug': self.slug})
@@ -112,8 +112,8 @@ class HousingProperties(models.Model):
     class Meta:
         verbose_name_plural = 'Housing Properties'
         ordering = ['-created_at']
-        
-        # This method returns the URL to access a particular housing property 
+
+        # This method returns the URL to access a particular housing property
         # It uses the slug field to create a unique URL for each property
     def get_absolute_url(self):
         return reverse('housing_detail', kwargs={'slug': self.slug})
@@ -234,12 +234,12 @@ class CarProperties(models.Model):
     class Meta:
         verbose_name_plural = 'Car Properties'
         ordering = ['-created_at']
-        
-        # This method returns the URL to access a particular car property 
+
+        # This method returns the URL to access a particular car property
         # It uses the slug field to create a unique URL for each property
     def get_absolute_url(self):
         return reverse('car_detail', kwargs={'slug': self.slug})
-    
+
     # This method generates a slug for the car property based on its title
     def generate_slug(self):
         # Use the slugify function to create a slug from the title
@@ -253,10 +253,19 @@ class CarProperties(models.Model):
             counter += 1
         self.slug = slug
         return self.slug
-    
+
     # This method is called before saving the model instance to the database
     def save(self, *args, **kwargs):
         # Generate the slug before saving
         self.generate_slug()
         # Call the parent class's save method to save the instance
         super().save(*args, **kwargs)
+
+class Contact(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name

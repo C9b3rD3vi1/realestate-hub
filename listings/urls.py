@@ -10,4 +10,6 @@ urlpatterns = [
     path('listing/', views.listing, name='listing'),  # The detail page for a specific listing
     path('register/', views.user_register, name='register'),  # User registration page
     path('login/', views.user_login, name='login'),  # User login page
+    path('contact/', views.contact, name='contact'),  # Contact page
+    path('about/', views.about, name='about'),  # About page
 ]

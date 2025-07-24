@@ -1,14 +1,158 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends "base.html" %} {% load static %} {% block title %}Home - Real Estate
+Hub{% endblock %} {% block content %}
+<!-- HERO SECTION -->
+<section
+    class="min-h-[70vh] flex flex-col items-center justify-center text-center bg-base-100 px-4"
+>
+    <div class="max-w-2xl">
+        <h1 class="text-5xl font-bold text-primary mb-4">
+            Welcome to Real Estate Hub
+        </h1>
+        <p class="text-lg text-base-content mb-4">
+            Your one-stop solution for buying, selling, and renting properties.
+        </p>
+        <p class="text-base text-base-content mb-6">
+            Houses. Land. Cars. All in one place.
+        </p>
+        <a href="{% url 'listing' %}" class="btn btn-primary btn-wide"
+            >Browse Listings</a
+        >
+    </div>
+</section>
 
-{% block title %}Home{% endblock %}
+<!-- PROPERTY CATEGORIES -->
+<section class="py-16 bg-base-100">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-10">
+            What Are You Looking For?
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div class="card bg-base-200 shadow-lg p-6">
+                <figure>
+                    <img
+                        src="{% static 'images/estate.jpeg' %}"
+                        alt="House"
+                        class="w-50 h-50 object-contain"
+                    />
+                </figure>
+                <div class="card-body">
+                    <h2 class="card-title justify-center">Buy a Home</h2>
+                    <p>Find your dream home from trusted sellers and agents.</p>
+                </div>
+            </div>
 
+            <div class="card bg-base-200 shadow-lg p-6">
+                <figure>
+                    <img
+                        src="{% static 'images/land.png' %}"
+                        alt="Land"
+                        class="w-50 h-50 object-contain"
+                    />
+                </figure>
+                <div class="card-body">
+                    <h2 class="card-title justify-center">Find Land</h2>
+                    <p>
+                        Perfect plots available for farming, building, and
+                        investment.
+                    </p>
+                </div>
+            </div>
 
-{% block content %}
-<h1>Welcome to Real Estate Hub</h1>
-<p>Your one-stop solution for buying and selling properties.</p>
-<p>Explore our listings to find the perfect property for you.</p>
-<p>Whether you're looking for a house, land, or a car, we have something for everyone.<p>
-<p>Find your dream land, home, or car today.</p>
-<a href="{% url 'listing' %}" class="btn btn-primary">View Listings</a>
+            <div class="card bg-base-200 shadow-lg p-6">
+                <figure>
+                    <img
+                        src="{% static 'images/cars1.webp' %}"
+                        alt="Car"
+                        class="w-50 h-50 object-contain"
+                    />
+                </figure>
+                <div class="card-body">
+                    <h2 class="card-title justify-center">Buy a Car</h2>
+                    <p>New and used cars available across Kenya.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURED LISTINGS -->
+<section class="py-16 bg-base-200">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-10">Featured Listings</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {% for listing in featured_listings %}
+            <div class="card bg-base-100 shadow-xl">
+                <figure>
+                    <img
+                        src="{{ listing.image.url }}"
+                        alt="{{ listing.title }}"
+                        class="h-48 w-full object-cover"
+                    />
+                </figure>
+                <div class="card-body">
+                    <h3 class="card-title">{{ listing.title }}</h3>
+                    <p class="text-sm text-gray-500">{{ listing.location }}</p>
+                    <p class="font-semibold text-primary">
+                        Ksh {{ listing.price }}
+                    </p>
+                    <a
+                        href="{% url 'listing_detail' listing.id %}"
+                        class="btn btn-outline btn-sm mt-3"
+                        >View Details</a
+                    >
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center col-span-3 text-gray-500">
+                No featured listings at the moment.
+            </p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="py-16 bg-base-100">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-10">
+            What Our Clients Say
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="card bg-base-200 shadow-lg p-6">
+                <p>
+                    "Real Estate Hub helped me find the perfect plot in just two
+                    days. Highly recommended!"
+                </p>
+                <div class="mt-4 text-right font-semibold">– Mary W.</div>
+            </div>
+            <div class="card bg-base-200 shadow-lg p-6">
+                <p>
+                    "Seamless process and very professional support. I sold my
+                    car fast!"
+                </p>
+                <div class="mt-4 text-right font-semibold">– James O.</div>
+            </div>
+            <div class="card bg-base-200 shadow-lg p-6">
+                <p>
+                    "Best platform for first-time homebuyers. Very easy to use
+                    and reliable."
+                </p>
+                <div class="mt-4 text-right font-semibold">– Faith K.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT CALL TO ACTION -->
+<section class="py-16 bg-primary text-primary-content text-center">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold mb-4">Have Questions or Need Help?</h2>
+        <p class="mb-6">
+            Contact our support team or list your property with us today.
+        </p>
+        <a href="{% url 'contact' %}" class="btn btn-outline btn-accent"
+            >Contact Us</a
+        >
+    </div>
+</section>
 {% endblock %}
