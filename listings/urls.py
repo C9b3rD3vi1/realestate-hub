@@ -8,10 +8,12 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),  # The home page of the listings app
     path('listing/', views.listing, name='listing'),  # The detail page for a specific listing
+    path("listings/<slug:slug>/", views.listing_detail, name="listing_detail"),
     path('register/', views.user_register, name='register'),  # User registration page
     path('login/', views.user_login, name='login'),  # User login page
+    path('logout/', views.logout, name='logout'),  # User logout page
     path('contact/', views.contact, name='contact'),  # Contact page
-    path('password_reset/', views.password_reset, name='password_reset'),  # Password reset page
+    #path('password_reset/', views.password_reset, name='password_reset'),  # Password reset page
    # path('password_reset/done/', views.password_reset_done, name='password_reset_done'),  # Password reset done page
     #path('reset/<uidb64>/<token>/', views.password_reset_confirm, name='password_reset_confirm'),  # Password reset confirm page
     #path('reset/done/', views.password_reset_complete, name='password_reset_complete'),  # Password reset complete page

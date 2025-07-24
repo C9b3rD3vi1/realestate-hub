@@ -11,6 +11,8 @@
     <!-- Tailwind CSS & DaisyUI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
 
     <script>
       tailwind.config = {
@@ -105,7 +107,7 @@
     </header>
 
     <!-- MAIN CONTENT -->
-    <main class="container mx-auto px-4 py-12">
+    <main class="w-full">
       {% block content %}{% endblock %}
     </main>
 

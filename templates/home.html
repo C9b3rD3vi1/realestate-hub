@@ -3,52 +3,100 @@
 {% block title %}Home - Real Estate Hub{% endblock %}
 
 {% block content %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real Estate Hub</title>
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+
+
 <!-- HERO SECTION -->
-<section class="min-h-[70vh] flex flex-col items-center justify-center text-center bg-base-100 px-4">
-  <div class="max-w-2xl">
-    <h1 class="text-5xl font-bold text-primary mb-4">Welcome to Real Estate Hub</h1>
-    <p class="text-lg text-base-content mb-2">Your one-stop solution for buying, selling, and renting properties.</p>
-    <p class="text-base text-base-content mb-6">Houses. Land. Cars. All in one place.</p>
-    <a href="{% url 'listing' %}" class="btn btn-primary btn-wide">Browse Listings</a>
+<section 
+  x-data="{
+    images: [
+      '{% static "images/heroimage.jpg" %}',
+      '{% static "images/heroimage2.jpg" %}',
+      '{% static "images/heroimage3.webp" %}',
+      '{% static "images/heroimage4.webp" %}',
+      '{% static "images/heroimage5.webp" %}',
+      '{% static "images/heroimage6.webp" %}',
+      '{% static "images/heroimage7.webp" %}'
+    ],
+    activeIndex: 0,
+    zoomIn: true,
+    startCarousel() {
+      setInterval(() => {
+        this.zoomIn = false;
+        setTimeout(() => {
+          this.activeIndex = (this.activeIndex + 1) % this.images.length;
+          this.zoomIn = true;
+        }, 300); // wait for zoom out before switching image
+      }, 5000);
+    }
+  }"
+  x-init="startCarousel()"
+  class="relative h-[85vh] overflow-hidden"
+>
+  <!-- Background Image with zoom effect -->
+  <div 
+    class="absolute inset-0 transition-all duration-[2000ms] ease-in-out bg-cover bg-center transform"
+    :class="{ 'scale-110': zoomIn, 'scale-100': !zoomIn }"
+    :style="`background-image: url('${images[activeIndex]}')`"
+  ></div>
+
+  <!-- Overlay content -->
+  <div class="absolute inset-0 bg-black/50 flex items-center justify-center w-full">
+    <div class="text-center text-white w-full max-w-screen-xl px-2 md:px-4">
+      <h1 class="text-5xl md:text-6xl font-bold mb-4 motion-safe:animate-fadeInUp">Find Your Dream Property</h1>
+      <p class="text-lg md:text-xl mb-6 motion-safe:animate-fadeIn delay-200">Explore the best listings across the country</p>
+      <a href="{% url 'listing' %}"
+         class="btn btn-primary text-white bg-blue-500 text-lg md:text-xl px-8 py-4 rounded-full shadow-xl transition-transform duration-300 ease-in-out transform hover:scale-105 motion-safe:animate-fadeIn delay-500">
+        Browse Listings
+      </a>
+
+    </div>
   </div>
 </section>
 
+
 <!-- PROPERTY CATEGORIES -->
-<section class="py-20 bg-base-100">
-  <div class="container mx-auto px-4">
-    <h2 class="text-4xl font-bold text-center mb-14">What Are You Looking For?</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+<section class="py-20 bg-base-100 w-full">
+  <div class="w-full max-w-screen-xl mx-auto">
+    <h2 class="text-4xl font-bold text-center text-primary mb-14">What Are You Looking For?</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center px-2 md:px-0">
       
-      <!-- Home Category -->
-      <div class="card bg-base-200 shadow-xl transition hover:scale-105">
+      <!-- Home -->
+      <div class="card bg-base-200 shadow-xl border border-base-300 hover:scale-105 transition-transform duration-200">
         <figure class="px-6 pt-6">
           <img src="{% static 'images/estate.jpeg' %}" alt="House" class="rounded-xl object-cover h-40 w-full" />
         </figure>
-        <div class="card-body items-center text-center">
-          <h2 class="card-title">Buy a Home</h2>
-          <p>Find your dream home from trusted sellers and agents.</p>
+        <div class="card-body items-center">
+          <h2 class="card-title text-primary">Buy a Home</h2>
+          <p class="text-base-content/70">Find your dream home from trusted sellers and agents.</p>
         </div>
       </div>
 
-      <!-- Land Category -->
-      <div class="card bg-base-200 shadow-xl transition hover:scale-105">
+      <!-- Land -->
+      <div class="card bg-base-200 shadow-xl border border-base-300 hover:scale-105 transition-transform duration-200">
         <figure class="px-6 pt-6">
           <img src="{% static 'images/land.png' %}" alt="Land" class="h-24 w-24 object-contain" />
         </figure>
-        <div class="card-body items-center text-center">
-          <h2 class="card-title">Find Land</h2>
-          <p>Perfect plots available for farming, building, and investment.</p>
+        <div class="card-body items-center">
+          <h2 class="card-title text-primary">Find Land</h2>
+          <p class="text-base-content/70">Perfect plots available for farming, building, and investment.</p>
         </div>
       </div>
 
-      <!-- Car Category -->
-      <div class="card bg-base-200 shadow-xl transition hover:scale-105">
+      <!-- Car -->
+      <div class="card bg-base-200 shadow-xl border border-base-300 hover:scale-105 transition-transform duration-200">
         <figure class="px-6 pt-6">
           <img src="{% static 'images/cars1.webp' %}" alt="Car" class="h-40 w-full object-contain" />
         </figure>
-        <div class="card-body items-center text-center">
-          <h2 class="card-title">Buy a Car</h2>
-          <p>New and used cars available across Kenya.</p>
+        <div class="card-body items-center">
+          <h2 class="card-title text-primary">Buy a Car</h2>
+          <p class="text-base-content/70">New and used cars available across Kenya.</p>
         </div>
       </div>
 
@@ -57,56 +105,69 @@
 </section>
 
 <!-- FEATURED LISTINGS -->
-<section class="py-20 bg-base-200">
-  <div class="container mx-auto px-4">
-    <h2 class="text-4xl font-bold text-center mb-14">Featured Listings</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+<section class="py-20 bg-base-200 w-full">
+  <div class="w-full max-w-screen-xl mx-auto">
+    <h2 class="text-4xl font-bold text-center text-primary mb-14">Featured Listings</h2>
+
+    <div class="carousel carousel-center rounded-box space-x-4 px-2 md:px-0">
       {% for listing in featured_listings %}
-      <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition">
-        <figure>
-          <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="h-48 w-full object-cover" />
-        </figure>
-        <div class="card-body">
-          <h3 class="card-title">{{ listing.title }}</h3>
-          <p class="text-sm text-base-content">{{ listing.location }}</p>
-          <p class="text-lg font-bold text-primary">Ksh {{ listing.price }}</p>
-          <a href="{% url 'listing_detail' listing.id %}" class="btn btn-outline btn-sm mt-4">View Details</a>
+      <div class="carousel-item w-80">
+        <div class="card bg-base-100 shadow-xl border border-base-300 hover:scale-105 transition duration-300">
+          <figure>
+            <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="h-48 w-full object-cover rounded-t-xl" />
+          </figure>
+          <div class="card-body">
+            <h3 class="card-title text-primary">{{ listing.title }}</h3>
+            <p class="text-sm text-base-content/70">{{ listing.location }}</p>
+            <p class="text-lg font-bold text-primary">Ksh {{ listing.price }}</p>
+            <a href="{% url 'listing_detail' listing.id %}" class="btn btn-outline btn-sm mt-4">View Details</a>
+          </div>
         </div>
       </div>
-      {% empty %}
-      <p class="col-span-3 text-center text-gray-500">No featured listings at the moment.</p>
       {% endfor %}
     </div>
   </div>
 </section>
 
 <!-- TESTIMONIALS -->
-<section class="py-20 bg-base-100">
-  <div class="container mx-auto px-4">
-    <h2 class="text-4xl font-bold text-center mb-14">What Our Clients Say</h2>
+<section class="py-20 bg-base-100 w-full">
+  <div class="w-full max-w-screen-xl mx-auto px-2 md:px-0">
+    <h2 class="text-4xl font-bold text-center text-primary mb-14">What Our Clients Say</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-      <div class="card bg-base-200 shadow-lg p-6">
-        <p>"Real Estate Hub helped me find the perfect plot in just two days. Highly recommended!"</p>
-        <div class="mt-4 text-right font-semibold">– Mary W.</div>
+      <div class="card bg-base-200 border border-base-300 shadow-md p-6">
+        <blockquote class="italic text-base-content/80">“Real Estate Hub helped me find the perfect plot in just two days. Highly recommended!”</blockquote>
+        <div class="mt-4 text-right font-semibold text-primary">– Mary W.</div>
       </div>
-      <div class="card bg-base-200 shadow-lg p-6">
-        <p>"Seamless process and very professional support. I sold my car fast!"</p>
-        <div class="mt-4 text-right font-semibold">– James O.</div>
+      <div class="card bg-base-200 border border-base-300 shadow-md p-6">
+        <blockquote class="italic text-base-content/80">“Seamless process and very professional support. I sold my car fast!”</blockquote>
+        <div class="mt-4 text-right font-semibold text-primary">– James O.</div>
       </div>
-      <div class="card bg-base-200 shadow-lg p-6">
-        <p>"Best platform for first-time homebuyers. Very easy to use and reliable."</p>
-        <div class="mt-4 text-right font-semibold">– Faith K.</div>
+      <div class="card bg-base-200 border border-base-300 shadow-md p-6">
+        <blockquote class="italic text-base-content/80">“Best platform for first-time homebuyers. Very easy to use and reliable.”</blockquote>
+        <div class="mt-4 text-right font-semibold text-primary">– Faith K.</div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- CONTACT CTA -->
-<section class="py-20 bg-primary text-primary-content text-center">
-  <div class="container mx-auto px-4">
+<section class="py-20 bg-primary text-primary-content text-center w-full">
+  <div class="w-full max-w-screen-xl mx-auto px-2 md:px-0">
     <h2 class="text-4xl font-bold mb-4">Have Questions or Need Help?</h2>
     <p class="mb-6">Contact our support team or list your property with us today.</p>
-    <a href="{% url 'contact' %}" class="btn btn-accent btn-wide">Contact Us</a>
+    <a href="{% url 'contact' %}" class="btn btn-accent btn-wide hover:scale-105 transition-transform duration-200">
+      Contact Us
+    </a>
   </div>
 </section>
+
+<!-- CTA Banner -->
+<section class="bg-secondary text-white py-20 px-2 md:px-6 w-full">
+  <div class="w-full max-w-screen-xl mx-auto text-center">
+    <h2 class="text-4xl font-bold mb-4">Ready to List Your Property?</h2>
+    <p class="text-lg mb-6">Join thousands of property owners and reach potential buyers easily.</p>
+    <a href="{% url 'register' %}" class="btn btn-accent btn-lg">Get Started</a>
+  </div>
+</section>
+
 {% endblock %}

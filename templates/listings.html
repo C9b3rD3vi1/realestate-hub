@@ -1,15 +1,94 @@
 {% extends "base.html" %}
-{% load static %}
-
-
-{% block title %}Listings{% endblock %}
-
-{% block styles %}
-<link rel="stylesheet" href="{% static 'css/listings.css' %}">
-{% endblock %}
-
-<h1>Real Estate Listings</h1>
+{% block title %}Browse Listings{% endblock %}
 {% block content %}
-<h2>Available Listings</h2>
-<p>This is where the listings will appear.</p>
+
+<section class="max-w-7xl mx-auto px-4 py-10 space-y-16">
+
+  <h1 class="text-4xl font-bold text-center mb-10">Browse Listings</h1>
+
+  <!-- Filter Form -->
+  <form method="get" class="grid md:grid-cols-5 gap-4 mb-10">
+    <select name="type" class="select select-bordered w-full">
+      <option value="land">Land</option>
+      <option value="housing">Housing</option>
+      <option value="car">Car</option>
+    </select>
+
+    <input name="q" placeholder="Search title or location" value="{{ request.GET.q }}" class="input input-bordered w-full" />
+    <input name="min_price" type="number" placeholder="Min Price" value="{{ request.GET.min_price }}" class="input input-bordered w-full" />
+    <input name="max_price" type="number" placeholder="Max Price" value="{{ request.GET.max_price }}" class="input input-bordered w-full" />
+
+    <select name="sort" class="select select-bordered w-full">
+      <option value="-created_at">Newest</option>
+      <option value="price">Price: Low to High</option>
+      <option value="-price">Price: High to Low</option>
+    </select>
+
+    <button type="submit" class="btn btn-primary w-full md:col-span-5">Filter</button>
+  </form>
+
+  {% if filtered %}
+    <!-- Filtered Results -->
+    <div>
+      <h2 class="text-2xl font-semibold mb-4 capitalize">{{ type }} Listings</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% for listing in listings %}
+          {% include "partials/listing_card.html" with item=listing %}
+        {% empty %}
+          <p>No listings found.</p>
+        {% endfor %}
+      </div>
+
+      {% if listings.has_other_pages %}
+        <div class="mt-6 flex justify-center">
+          <div class="join">
+            {% if listings.has_previous %}
+              <a href="?{% query_transform page=listings.previous_page_number %}" class="join-item btn">«</a>
+            {% endif %}
+            {% for i in listings.paginator.page_range %}
+              <a href="?{% query_transform page=i %}" class="join-item btn {% if listings.number == i %}btn-active{% endif %}">{{ i }}</a>
+            {% endfor %}
+            {% if listings.has_next %}
+              <a href="?{% query_transform page=listings.next_page_number %}" class="join-item btn">»</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+  {% else %}
+    <!-- Unfiltered Section View -->
+    <div class="space-y-12">
+
+      <div>
+        <h2 class="text-2xl font-bold mb-4">Land Listings</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {% for item in land_listings %}
+            {% include "partials/listing_card.html" %}
+          {% empty %}<p>No land listings available.</p>{% endfor %}
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-2xl font-bold mb-4">Housing Listings</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {% for item in housing_listings %}
+            {% include "partials/listing_card.html" %}
+          {% empty %}<p>No housing listings available.</p>{% endfor %}
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-2xl font-bold mb-4">Car Listings</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {% for item in car_listings %}
+            {% include "partials/listing_card.html" %}
+          {% empty %}<p>No car listings available.</p>{% endfor %}
+        </div>
+      </div>
+
+    </div>
+  {% endif %}
+</section>
+
 {% endblock %}

@@ -1,89 +1,84 @@
 {% extends 'base.html' %}
-
 {% load static %}
-
 {% block title %}About Us - Real Estate Hub{% endblock %}
 
 {% block content %}
-<section class="bg-base-100 text-base-content px-6 py-16">
-  <div class="max-w-6xl mx-auto text-center">
-    <h1 class="text-4xl md:text-5xl font-bold mb-6">Who We Are</h1>
-    <p class="text-lg text-neutral/70 max-w-3xl mx-auto">
-      At <span class="text-primary font-semibold">Real Estate Hub</span>, we connect buyers, sellers, and investors to dream properties across Kenya. With years of experience and a passion for real estate, we strive to provide a seamless experience that prioritizes trust and transparency.
+<section class="bg-base-100 text-base-content px-6 py-16 motion-safe:animate-fadeInUp">
+  <div class="max-w-6xl mx-auto text-center space-y-6">
+    <h1 class="text-4xl md:text-5xl font-bold text-primary">Who We Are</h1>
+    <p class="text-lg text-neutral max-w-3xl mx-auto">
+      At <span class="text-primary font-semibold">Real Estate Hub</span>, we connect buyers, sellers, and investors to dream properties across Kenya.
+      With years of experience and a passion for real estate, we provide a seamless experience that prioritizes trust and transparency.
     </p>
   </div>
 </section>
 
-<section class="bg-base-200 py-16">
+<section class="bg-base-200 py-16 motion-safe:animate-fadeInUp">
   <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
-    <div class="space-y-5">
-      <h2 class="text-3xl font-semibold text-primary">Our Mission</h2>
-      <p class="text-neutral">
-        To empower individuals and families by making property ownership accessible, secure, and simplified through digital innovation and expert support.
-      </p>
-      <h2 class="text-3xl font-semibold text-primary mt-10">Our Vision</h2>
-      <p class="text-neutral">
-        To be Kenya’s most trusted and innovative property platform—connecting people to places they love.
-      </p>
+    <div class="space-y-6">
+      <div>
+        <h2 class="text-3xl font-semibold text-primary">Our Mission</h2>
+        <p class="text-base-content">To empower individuals and families by making property ownership accessible, secure, and simplified through digital innovation and expert support.</p>
+      </div>
+      <div class="pt-4">
+        <h2 class="text-3xl font-semibold text-primary">Our Vision</h2>
+        <p class="text-base-content">To be Kenya’s most trusted and innovative property platform—connecting people to places they love.</p>
+      </div>
     </div>
-    <img src="{% static 'images/about-hero.jpg' %}" alt="About Us" class="rounded-xl shadow-lg">
+    <img src="{% static 'images/about-hero.jpg' %}" alt="About Us" class="rounded-xl shadow-xl w-full object-cover max-h-[500px]">
   </div>
 </section>
 
-<section class="bg-base-100 py-16">
+<section class="bg-base-100 py-16 motion-safe:animate-fadeInUp">
   <div class="max-w-6xl mx-auto px-6 text-center">
-    <h2 class="text-3xl font-semibold mb-8">What Sets Us Apart</h2>
+    <h2 class="text-3xl font-semibold text-primary mb-10">What Sets Us Apart</h2>
     <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
-      <div class="p-6 rounded-lg shadow bg-base-200">
+      <div class="p-6 rounded-xl bg-base-200 shadow hover:shadow-xl transition">
         <h3 class="text-xl font-bold text-primary mb-2">Verified Listings</h3>
-        <p>Every property is thoroughly vetted by our experts to ensure legitimacy.</p>
+        <p class="text-neutral">Every property is thoroughly vetted by our experts to ensure legitimacy.</p>
       </div>
-      <div class="p-6 rounded-lg shadow bg-base-200">
+      <div class="p-6 rounded-xl bg-base-200 shadow hover:shadow-xl transition">
         <h3 class="text-xl font-bold text-primary mb-2">Digital Simplicity</h3>
-        <p>List, browse, and connect easily through our intuitive platform.</p>
+        <p class="text-neutral">List, browse, and connect easily through our intuitive platform.</p>
       </div>
-      <div class="p-6 rounded-lg shadow bg-base-200">
+      <div class="p-6 rounded-xl bg-base-200 shadow hover:shadow-xl transition">
         <h3 class="text-xl font-bold text-primary mb-2">Expert Support</h3>
-        <p>Our team is available to guide you every step of the way—online and offline.</p>
+        <p class="text-neutral">Our team is available to guide you every step of the way—online and offline.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="bg-base-200 py-16">
-  <div class="max-w-6xl mx-auto px-6">
-    <h2 class="text-3xl font-semibold text-center mb-10">Meet the Team</h2>
+<section class="bg-base-200 py-16 motion-safe:animate-fadeInUp">
+  <div class="max-w-6xl mx-auto px-6 text-center">
+    <h2 class="text-3xl font-semibold text-primary mb-10">Meet the Team</h2>
     <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-10">
-      {% comment "You can replace these with your real team data" %}
-      <div class="text-center">
-        <img src="{% static 'images/team1.jpg' %}" class="w-32 h-32 rounded-full mx-auto mb-4" alt="Team Member">
+      <div>
+        <img src="{% static 'images/team1.jpg' %}" class="w-32 h-32 rounded-full mx-auto mb-4 shadow" alt="Jane Wanjiru">
         <h4 class="font-bold text-lg">Jane Wanjiru</h4>
         <p class="text-neutral">CEO & Co-Founder</p>
       </div>
-      <div class="text-center">
-        <img src="{% static 'images/team2.jpg' %}" class="w-32 h-32 rounded-full mx-auto mb-4" alt="Team Member">
+      <div>
+        <img src="{% static 'images/team2.jpg' %}" class="w-32 h-32 rounded-full mx-auto mb-4 shadow" alt="Michael Otieno">
         <h4 class="font-bold text-lg">Michael Otieno</h4>
         <p class="text-neutral">CTO & Co-Founder</p>
       </div>
-      <div class="text-center">
-        <img src="{% static 'images/team3.jpg' %}" class="w-32 h-32 rounded-full mx-auto mb-4" alt="Team Member">
+      <div>
+        <img src="{% static 'images/team3.jpg' %}" class="w-32 h-32 rounded-full mx-auto mb-4 shadow" alt="Susan Mwende">
         <h4 class="font-bold text-lg">Susan Mwende</h4>
         <p class="text-neutral">Head of Sales</p>
       </div>
-      {% endcomment %}
     </div>
   </div>
 </section>
 
-<section class="bg-base-100 py-16">
+<section class="bg-base-100 py-16 motion-safe:animate-fadeInUp">
   <div class="max-w-6xl mx-auto px-6 text-center">
-    <h2 class="text-3xl font-semibold mb-8">Our Journey</h2>
+    <h2 class="text-3xl font-semibold text-primary mb-10">Our Journey</h2>
     <div class="timeline timeline-vertical">
       <div class="timeline-item">
         <div class="timeline-start text-primary font-bold">2019</div>
-        <div class="timeline-middle">
-          <div class="badge badge-primary badge-outline"></div>
-        </div>
+        <div class="timeline-middle"><div class="badge badge-primary badge-outline"></div></div>
         <div class="timeline-end mb-10">
           <h3 class="text-lg font-bold">Founded</h3>
           <p class="text-neutral">Started with a mission to digitize Kenya's property market.</p>
@@ -91,9 +86,7 @@
       </div>
       <div class="timeline-item">
         <div class="timeline-start text-primary font-bold">2021</div>
-        <div class="timeline-middle">
-          <div class="badge badge-primary badge-outline"></div>
-        </div>
+        <div class="timeline-middle"><div class="badge badge-primary badge-outline"></div></div>
         <div class="timeline-end mb-10">
           <h3 class="text-lg font-bold">1000+ Properties Listed</h3>
           <p class="text-neutral">Surpassed 1,000 verified listings from across the country.</p>
@@ -101,9 +94,7 @@
       </div>
       <div class="timeline-item">
         <div class="timeline-start text-primary font-bold">2023</div>
-        <div class="timeline-middle">
-          <div class="badge badge-primary badge-outline"></div>
-        </div>
+        <div class="timeline-middle"><div class="badge badge-primary badge-outline"></div></div>
         <div class="timeline-end mb-10">
           <h3 class="text-lg font-bold">Launched Partner Portal</h3>
           <p class="text-neutral">Launched agent & seller dashboard for better management.</p>
@@ -113,11 +104,11 @@
   </div>
 </section>
 
-<section class="bg-base-200 py-12">
+<section class="bg-base-200 py-12 motion-safe:animate-fadeInUp">
   <div class="max-w-3xl mx-auto text-center px-6">
-    <h2 class="text-2xl font-semibold mb-4">Ready to Find Your Dream Property?</h2>
+    <h2 class="text-2xl font-semibold text-primary mb-4">Ready to Find Your Dream Property?</h2>
     <p class="mb-6 text-neutral">Explore our verified listings or get in touch with our team to start your real estate journey today.</p>
-    <a href="/listing" class="btn btn-primary">Browse Listings</a>
+    <a href="/listing" class="btn btn-primary btn-lg px-6">Browse Listings</a>
   </div>
 </section>
 {% endblock %}

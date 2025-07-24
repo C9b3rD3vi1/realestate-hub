@@ -3,9 +3,15 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from .forms import *
+from django.http import Http404
+from django.db.models import Q
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator
+
+from .models import LandProperties, CarProperties, HousingProperties
 
 
 # Create your views here.
@@ -14,10 +20,82 @@ def home(request):
     return render(request, 'home.html')
 
 
+
+from urllib.parse import urlencode
+
 def listing(request):
-    # This view renders the detail page for a specific listing
-    # The listing_id parameter is used to retrieve the specific listing from the database
-    return render(request, 'listings.html')
+    query = request.GET.get('q')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    sort = request.GET.get('sort', '-created_at')
+
+    is_filtered = any([
+        query, min_price, max_price, sort not in ['', '-created_at']
+    ])
+
+    if is_filtered:
+        # Handle filtered results: default to Land
+        model_map = {
+            'land': LandProperties,
+            'housing': HousingProperties,
+            'car': CarProperties,
+        }
+        type = request.GET.get('type', 'land')
+        model = model_map.get(type, LandProperties)
+
+        queryset = model.objects.filter(is_available=True)
+
+        if query:
+            queryset = queryset.filter(Q(title__icontains=query) | Q(location__icontains=query))
+        if min_price:
+            queryset = queryset.filter(price__gte=min_price)
+        if max_price:
+            queryset = queryset.filter(price__lte=max_price)
+        if sort:
+            queryset = queryset.order_by(sort)
+
+        paginator = Paginator(queryset, 12)
+        page_number = request.GET.get("page")
+        listings = paginator.get_page(page_number)
+
+        return render(request, "listings.html", {
+            "filtered": True,
+            "listings": listings,
+            "type": type
+        })
+
+    # If no filters — show all 3 types in sections
+    land_listings = LandProperties.objects.filter(is_available=True)[:8]
+    housing_listings = HousingProperties.objects.filter(is_available=True)[:8]
+    car_listings = CarProperties.objects.filter(is_available=True)[:8]
+
+    return render(request, "listings.html", {
+        "filtered": False,
+        "land_listings": land_listings,
+        "housing_listings": housing_listings,
+        "car_listings": car_listings,
+    })
+    
+def listing_detail(request, slug):
+    listing = None
+    listing_type = None
+
+    for model, name in [(CarProperties, 'Car'), ( HousingProperties, 'House'), (LandProperties, 'Land')]:
+        try:
+            listing = model.objects.get(slug=slug)
+            listing_type = name
+            break
+        except model.DoesNotExist:
+            continue
+
+    if not listing:
+        raise Http404("Property not found.")
+
+    return render(request, 'listing_detail.html', {
+        'listing': listing,
+        'listing_type': listing_type,
+    })
+
 
 
 # User registration and creation, authentication form
@@ -32,7 +110,10 @@ def user_register(request):
         form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
 
-
+def logout(request):
+    # This view handles user logout
+    logout(request)
+    return redirect('home')
 
 
 # User login and authentication functionality
@@ -69,19 +150,24 @@ def contact(request):
             email = form.cleaned_data.get('email')
             message = form.cleaned_data.get('message')
             # Send the email
+            '''
             send_mail(
                 'Contact Form Submission',
                 f'Name: {name}\nEmail: {email}\nMessage: {message}',
                 'noreply@example.com',
                 ['admin@example.com'],
                 fail_silently=False,
-            )
+            )'''
             # Redirect to the contact page with a success message
             return redirect('contact')
     else:
         # If the request method is GET, create an empty form
         form = ContactForm()
     return render(request, 'contact.html', {'form': form})
+
+
+'''
+
 
 # password reset
 def password_reset(request):
@@ -105,7 +191,7 @@ def password_reset(request):
         # If the request method is GET, create an empty form
         form = PasswordResetForm()
     return render(request, 'password_reset.html', {'form': form})
-
+'''
 
 
 def about(request):

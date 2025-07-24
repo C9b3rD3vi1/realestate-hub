@@ -63,7 +63,7 @@ class LandProperties(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.title
+        return str(self.title)
     class Meta:
         verbose_name_plural = 'Land Properties'
         ordering = ['-created_at']
@@ -108,7 +108,8 @@ class HousingProperties(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.title
+        return str(self.title)
+        
     class Meta:
         verbose_name_plural = 'Housing Properties'
         ordering = ['-created_at']
@@ -215,7 +216,7 @@ class CarProperties(models.Model):
     transmission = models.CharField(max_length=50, choices=[
         ('manual', 'Manual'),
         ('automatic', 'Automatic'),
-    ], default='manual')
+    ], default='automatic')
 
     color = models.CharField(max_length=50)
     features = models.TextField(blank=True, null=True)
@@ -230,7 +231,8 @@ class CarProperties(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.title
+        return str(self.title)
+        
     class Meta:
         verbose_name_plural = 'Car Properties'
         ordering = ['-created_at']
@@ -261,6 +263,7 @@ class CarProperties(models.Model):
         # Call the parent class's save method to save the instance
         super().save(*args, **kwargs)
 
+
 class Contact(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -268,4 +271,4 @@ class Contact(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return str(self.name)

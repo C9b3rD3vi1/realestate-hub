@@ -1,4 +1,4 @@
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,6 +22,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'listings',
     'widget_tweaks',
+    'django_filters',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -129,6 +130,9 @@ TEMPLATES = [
 # Static files
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# Static files
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # This is the key fix
 
 # media files storage
 MEDIA_URL = '/media/'
