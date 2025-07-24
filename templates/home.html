@@ -32,7 +32,7 @@ Hub{% endblock %} {% block content %}
                     <img
                         src="{% static 'images/estate.jpeg' %}"
                         alt="House"
-                        class="w-50 h-50 object-contain"
+                        class="w-auto h-auto object-contain"
                     />
                 </figure>
                 <div class="card-body">
@@ -41,13 +41,12 @@ Hub{% endblock %} {% block content %}
                 </div>
             </div>
 
-<<<<<<< HEAD
             <div class="card bg-base-200 shadow-lg p-6">
                 <figure>
                     <img
                         src="{% static 'images/land.png' %}"
                         alt="Land"
-                        class="w-50 h-50 object-contain"
+                        class="w-20 h-20 object-contain"
                     />
                 </figure>
                 <div class="card-body">
@@ -64,7 +63,7 @@ Hub{% endblock %} {% block content %}
                     <img
                         src="{% static 'images/cars1.webp' %}"
                         alt="Car"
-                        class="w-50 h-50 object-contain"
+                        class="w-60 h-60 object-contain"
                     />
                 </figure>
                 <div class="card-body">
@@ -156,33 +155,4 @@ Hub{% endblock %} {% block content %}
         >
     </div>
 </section>
-=======
-{% block content %}
-<style>
-    .custom-home-text {
-        color: #2d2d6b;
-    }
-</style>
-<header class="shadow-md"></header>
-<div class="flex justify-between items-center px-10 py-4 bg-white custom-home-text">
-    <div class="flex items-center space-x-3">
-        <img src="{% static 'images/logo.jpeg' %}" alt="Logo" class="h-16 w-13 rounded-full">
-        <h1 class="text-2xl font-bold">Digital Analyst</h1>
-    </div>
-    
-
-
-    <div style="color: #55ae89;"></div>
-
-    <h1>Welcome to Digital catalyst</h1>
-    <p>Motto 'Visions to Reality'</p>
-    <img src="{% static 'images/photo2.jpeg' %}" alt="class" class="img-fluid my-3">
-    <p>All your business solutions</p>
-    <p>Our services</p>
-
-    <a href="{% url 'listing' %}" class="btn btn-primary">View Listings</a>
-    <img src="{% static 'images/scope.avif' %}" alt="solutions" width="400" height="300" class="d-inline-block align-text-bottom-right me-2">
-</div>
->>>>>>> 0cef780ddbcf918590fc7798861817e8988e7c94
 {% endblock %}
-

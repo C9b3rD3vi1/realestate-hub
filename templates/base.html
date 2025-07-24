@@ -1,23 +1,19 @@
 {% load static %}
-<<<<<<< HEAD
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" data-theme="realestate">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Real Estate Hub - Discover listings, connect with agents, and find your dream property." />
+    <meta name="author" content="Digital Catalyst" />
     <title>{% block title %}Real Estate Hub{% endblock %}</title>
 
     <!-- Tailwind CSS & DaisyUI -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/daisyui@4.10.3"></script>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <!-- Add icon library -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script>
       tailwind.config = {
         theme: { extend: {} },
-        plugins: [daisyui],
+        plugins: [window.daisyui],
         daisyui: {
           themes: [
             {
@@ -34,7 +30,7 @@
                 error: "#F87272",
               },
               darkrealestate: {
-                ...daisyui.themes["dark"],
+                ...daisyui.themes.dark,
                 primary: "#60A5FA",
                 accent: "#FBBF24",
                 neutral: "#F3F4F6",
@@ -44,385 +40,95 @@
         },
       };
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/daisyui@4.10.3"></script>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
   </head>
 
-  <body class="bg-base-100 text-base-content">
+  <body class="bg-base-100 text-base-content font-sans">
     <!-- NAVBAR -->
-    <header class="navbar bg-base-100 shadow-md px-4">
-      <div class="container mx-auto flex justify-between items-center">
+    <header class="navbar bg-base-100 shadow-sm px-4 sticky top-0 z-50">
+      <div class="container mx-auto flex justify-between items-center py-2">
         <!-- Logo -->
         <a href="/" class="flex items-center gap-2 text-xl font-bold text-primary">
           <img src="{% static 'images/logo1.png' %}" alt="Logo" class="w-8 h-8" />
           Real Estate Hub
         </a>
 
-        <!-- Search bar (desktop) -->
-        <form action="/listing" method="GET" class="hidden md:block">
-          <div class="form-control">
-            <input
-              type="text"
-              name="q"
-              placeholder="Search listings..."
-              class="input input-bordered w-64"
-            />
-          </div>
-        </form>
-
-        <!-- Desktop Nav -->
-        <!-- Desktop Nav -->
-        <nav class="hidden md:flex items-center gap-6 text-sm">
-          <a href="/" class="hover:text-primary transition duration-200">Home</a>
-          <a href="/about" class="hover:text-primary transition duration-200">About</a>
-          <a href="/contact" class="hover:text-primary transition duration-200">Contact</a>
-          <a href="/listing" class="hover:text-primary transition duration-200">Listings</a>
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+          <a href="/" class="hover:text-primary transition">Home</a>
+          <a href="{% url 'about' %}" class="hover:text-primary transition">About</a>
+          <a href="{% url 'contact' %}" class="hover:text-primary transition">Contact</a>
+          <a href="{% url 'listing' %}" class="hover:text-primary transition">Listings</a>
           {% if user.is_authenticated %}
-            <span class="text-neutral/60">Hi, {{ user.username }}</span>
-            <a href="/logout" class="hover:text-error transition duration-200">Logout</a>
+            <span class="text-neutral/70">Hi, {{ user.username }}</span>
+            <a href="{% url 'logout' %}" class="hover:text-error transition">Logout</a>
           {% else %}
-            <a href="/register" class="hover:text-primary transition duration-200">Register</a>
-            <a href="/login" class="hover:text-primary transition duration-200">Login</a>
+            <a href="{% url 'register' %}" class="hover:text-primary transition">Register</a>
+            <a href="{% url 'login' %}" class="hover:text-primary transition">Login</a>
           {% endif %}
         </nav>
 
 
-        <!-- Right: Theme toggle + Mobile menu -->
-        <div class="flex items-center gap-2">
-          <!-- Theme Toggle -->
-          <label class="swap swap-rotate cursor-pointer" aria-label="Toggle Theme">
-            <input
-              type="checkbox"
-              onchange="document.documentElement.dataset.theme =
-                document.documentElement.dataset.theme === 'realestate'
-                  ? 'darkrealestate'
-                  : 'realestate'"
-            />
-            <!-- Moon -->
-            <svg class="swap-off w-6 h-6 text-accent" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M21.64 13A9 9 0 1111 2.36 7 7 0 0021.64 13z" />
-            </svg>
-            <!-- Sun -->
-            <svg class="swap-on w-6 h-6 text-accent" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M5.64 17.64a9 9 0 1011.32-11.32A9 9 0 015.64 17.64z" />
-            </svg>
-          </label>
-
-          <!-- Mobile Menu -->
+          <!-- Mobile Nav -->
           <div class="dropdown dropdown-end md:hidden">
-            <label tabindex="0" class="btn btn-ghost">
-              <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+            <label tabindex="0" class="btn btn-ghost btn-sm">
+              <i class="fas fa-bars text-lg"></i>
             </label>
-            <ul
-              tabindex="0"
-              class="menu dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-            >
+            <ul tabindex="0" class="menu dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
               <li><a href="/">Home</a></li>
-              <li><a href="/about">About</a></li>
-              <li><a href="/contact">Contact</a></li>
-              <li><a href="/listing">Listings</a></li>
-              <li>
-                <!-- Mobile search -->
-                <form action="/listing" method="GET" class="form-control">
-                  <input
-                    type="text"
-                    name="q"
-                    placeholder="Search..."
-                    class="input input-sm input-bordered"
-                  />
-                </form>
-              </li>
+              <li><a href="{% url 'about' %}">About</a></li>
+              <li><a href="{% url 'contact' %}">Contact</a></li>
+              <li><a href="{% url 'listing' %}">Listings</a></li>
               {% if user.is_authenticated %}
-              <li class="text-sm text-neutral/60 px-3 py-1">Hi, {{ user.username }}</li>
-              <li><a href="/logout">Logout</a></li>
+                <li class="text-neutral">Hi, {{ user.username }}</li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
               {% else %}
-              <li><a href="/register">Register</a></li>
-              <li><a href="/login">Login</a></li>
+                <li><a href="{% url 'register' %}">Register</a></li>
+                <li><a href="{% url 'login' %}">Login</a></li>
               {% endif %}
-=======
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Real Estate Hub</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<head>
-    <meta charset="UTF-8">
-    <title>Real Estate Hub</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <style>
-    html, body {
-        height: 100%;
-        margin: 0;
-    }
-
-    body {
-        display: flex;
-        flex-direction: column;
-        padding-bottom: 50px; /* Space for footer */
-    }
-    .navbar {
-        flex: 0 0 auto;
-    }
-
-    .footer-custom {
-        flex: 0 0 auto;
-        background-color: #454749;
-        color: #0abced;
-        text-align: center;
-        font-size: 18px;
-        border-top: 1px solid #0abced;
-        padding-bottom: 0%;
-    }
-
-    .container.mt-4 {
-        flex: 1 0 auto;
-    }
-
-    /* Navbar Styles */
-    .navbar-custom {
-        background-color: #23272b !important;
-        color: #0abced !important;
-        font-weight: 600 !important;
-        font-size: 18px !important;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        z-index: 1030;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        padding: 0.5rem 0 !important;
-    }
-
-    .navbar-custom .navbar-brand,
-    .navbar-custom .nav-link {
-        color: #0abced !important;
-        font-weight: 600 !important;
-        font-size: 18px !important;
-        transition: color 0.2s;
-    }
-
-    .navbar-custom .nav-link {
-        margin-right: 1.2rem;
-        padding: 0.5rem 1rem;
-        border-radius: 0.25rem;
-    }
-
-    .navbar-custom .nav-link:last-child {
-        margin-right: 0;
-    }
-
-    .navbar-custom .nav-link:hover,
-    .navbar-custom .nav-link:focus {
-        color: #ffffff !important;
-        background-color: #0abced22;
-        text-decoration: none !important;
-    }
-
-    .navbar-custom .navbar-brand img {
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.10);
-    }
-
-    /* Footer Styles */
-    .footer-custom {
-        background-color: #23272b;
-        color: #0abced;
-        text-align: center;
-        font-size: 18px;
-        border-top: 1px solid #0abced;
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-        width: 100vw;
-        left: 0;
-        position: relative;
-        margin-left: calc(-50vw + 50%);
-        right: 0;
-    }
-
-    .footer-custom .social-icons a {
-        color: #0abced;
-        margin: 0 10px;
-        font-size: 22px;
-        transition: color 0.2s;
-    }
-
-    .footer-custom .social-icons a:hover {
-        color: #ffffff;
-        text-decoration: none;
-    }
-
-    .footer-custom p {
-        margin: 0;
-        padding: 5px 0;
-        color: #b0b8c1;
-        font-size: 15px;
-    }
-
-    .footer-custom .text-md-end {
-        text-align: center;
-    }
-
-    .footer-custom .text-md-end p {
-        margin: 0;
-        padding: 5px 0;
-    }
-
-    @media (max-width: 991.98px) {
-        .navbar-custom {
-            position: static;
-            width: 100%;
-        }
-        .footer-custom .container {
-            flex-direction: column !important;
-            align-items: flex-start !important;
-        }
-        .footer-custom {
-            margin-left: 0;
-            width: 100vw;
-        }
-    }
-</style>
-
-
-</head>
-<body>
-
-<nav class="navbar navbar-expand-lg navbar-custom">
-       
-    <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-right" href="/">
-            <img src="{% static 'images/logo.jpeg' %}" alt="Logo" width="60" height="40" class="d-fill-block align-text-top me-2 rounded-pill">
-        </a>
-        <ul class="navbar-nav">
-            <li class="nav-link" href="/listing">Listings</li>
-
-            <li class="nav-link" href="/register">Register</li>
-            <li class="nav-link" href="/login">Login</li>
-            <li class="nav-link" href="#"> our blog</li>
-            <li class="nav-link"href="/logout">logout</li>
->>>>>>> 0cef780ddbcf918590fc7798861817e8988e7c94
             </ul>
           </div>
         </div>
       </div>
     </header>
 
-<<<<<<< HEAD
-    <!-- MAIN -->
-    <main class="container mx-auto px-4 py-10">
-      {% if messages %}
-      <div class="space-y-2">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} shadow-md">{{ message }}</div>
-        {% endfor %}
-      </div>
-      {% endif %}
-
-      <!-- Optional sidebar layout -->
-      <div class="flex flex-col lg:flex-row gap-6">
-        {% block sidebar %}{% endblock %}
-        <div class="flex-1">{% block content %}{% endblock %}</div>
-      </div>
+    <!-- MAIN CONTENT -->
+    <main class="container mx-auto px-4 py-12">
+      {% block content %}{% endblock %}
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-base-200 text-base-content py-10 mt-20 border-t border-base-300">
-      <div class="container mx-auto px-4">
+    <footer class="bg-base-200 border-t py-8 mt-12">
+      <div class="container mx-auto text-center text-sm text-neutral-content space-y-4">
+        <div class="flex justify-center items-center gap-2">
+          <img src="{% static 'images/logo1.png' %}" alt="Logo" class="w-6 h-6" />
+          <span class="text-lg font-semibold text-primary">Real Estate Hub</span>
+        </div>
 
-        <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-          <div class="flex items-center gap-2 mb-4 md:mb-0">
-            <img src="{% static 'images/logo1.png' %}" alt="Logo" class="w-8 h-8" />
-            <span class="font-bold text-lg">Real Estate Hub</span>
-          </div>
+        <div class="flex justify-center gap-4 text-lg">
+          <a href="#" class="hover:text-blue-500"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="hover:text-sky-400"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="hover:text-pink-500"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="hover:text-red-500"><i class="fab fa-youtube"></i></a>
+          <a href="#" class="hover:text-indigo-500"><i class="fab fa-linkedin"></i></a>
+        </div>
 
-          <!-- Social Icons (Heroicons) -->
-          <div class="flex gap-4">
-                  <a href="#" class="text-gray-500 hover:text-blue-600 text-2xl transition">
-                      <i class="fa fa-facebook"></i>
-                  </a>
-                  <a href="#" class="text-gray-500 hover:text-sky-500 text-2xl transition">
-                      <i class="fa fa-twitter"></i>
-                  </a>
-                  <a href="#" class="text-gray-500 hover:text-pink-500 text-2xl transition">
-                      <i class="fa fa-instagram"></i>
-                  </a>
-              </div>
-
-        <!-- Nav links -->
-        <div class="flex flex-wrap justify-center gap-4 mb-4 text-sm">
+        <div class="space-x-4 text-sm">
           <a href="{% url 'about' %}" class="link link-hover">About</a>
           <a href="{% url 'contact' %}" class="link link-hover">Contact</a>
           <a href="{% url 'listing' %}" class="link link-hover">Listings</a>
-          {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}" class="link link-hover">Logout</a>
-          {% else %}
-            <a href="{% url 'register' %}" class="link link-hover">Register</a>
-            <a href="{% url 'login' %}" class="link link-hover">Login</a>
-          {% endif %}
         </div>
 
-        <!-- Copyright -->
-        <p class="text-center text-neutral-content text-xs">
-          &copy; {{ now|date:"Y" }} Real Estate Hub. All rights reserved.
+        <p class="text-xs opacity-70">
+          &copy; {{ now|date:"Y" }} Digital Catalyst. All rights reserved.
         </p>
       </div>
     </footer>
-
   </body>
 </html>
-=======
-
-<div class="container mt-4">
-    {% block content %}
-
-
-    <!-- Page-specific content will be injected here -->
-    {% endblock %}
-</div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<footer class="footer-custom">
-    <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between py-2">
-        <div class="d-flex align-items-center mb-2 mb-md-0">
-            <span class="me-3 fw-bold" style="font-size: 20px;">Real Estate Hub</span>
-            <div class="social-icons">
-                <a href="https://www.facebook.com" target="_blank" class="text-decoration-none me-2" style="color: #3d65ea;">
-                    <i class="fab fa-facebook fa-lg"></i>
-                </a>
-                <a href="https://www.twitter.com" target="_blank" class="text-decoration-none me-2" style="color: #0abced;">
-                    <i class="fab fa-twitter fa-lg"></i>
-                </a>
-                <a href="https://www.instagram.com" target="_blank" class="text-decoration-none me-2" style="color: rgb(227, 68, 203);">
-                    <i class="fab fa-instagram fa-lg"></i>
-                </a>
-                <a href="https://www.linkedin.com" target="_blank" class="text-decoration-none" style="color: #529eef;">
-                    <i class="fab fa-linkedin fa-lg"></i>
-                </a>
-                <a href="https://www.youtube.com" target="_blank" class="text-decoration-none ms-2" style="color: #ff0000;">
-                    <i class="fab fa-youtube fa-lg"></i>
-            </div>
-        </div>
-        <div class="text-md-end text-center">
-            <p class="mb-1" style="font-size: 16px;">
-                Contact Us: <a href="mailto:info@realestatehub.com" style="color: #0abced; text-decoration: underline;">info@realestatehub.com</a>
-            </p>
-            <p class="mb-1" style="font-size: 15px;">Your trusted partner in real estate and Busines Partner</p>
-            <p class="mb-0" style="font-size: 14px;">&copy; 2025 Digital Catalyst. All rights reserved.</p>
-        </div>
-    </div>
-    <!-- Font Awesome CDN for social icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-</footer>
-
-
-</body>
-</html>
->>>>>>> 0cef780ddbcf918590fc7798861817e8988e7c94

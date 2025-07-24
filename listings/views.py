@@ -83,6 +83,29 @@ def contact(request):
         form = ContactForm()
     return render(request, 'contact.html', {'form': form})
 
+# password reset
+def password_reset(request):
+    # This view handles password reset requests
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            # Get the cleaned data from the form
+            email = form.cleaned_data.get('email')
+            # Send the password reset email
+            send_mail(
+                'Password Reset Request',
+                f'Click the link below to reset your password:\n\nhttp://example.com/reset-password/{email}',
+                'noreply@example.com',
+                [email],
+                fail_silently=False,
+            )
+            # Redirect to the password reset page with a success message
+            return redirect('password_reset')
+    else:
+        # If the request method is GET, create an empty form
+        form = PasswordResetForm()
+    return render(request, 'password_reset.html', {'form': form})
+
 
 
 def about(request):
@@ -100,6 +123,3 @@ def privacy(request):
 def faq(request):
     # This view displays frequently asked questions
     return render(request, 'faq.html')
-
-
-
