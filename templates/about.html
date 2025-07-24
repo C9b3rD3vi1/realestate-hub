@@ -108,7 +108,10 @@
   <div class="max-w-3xl mx-auto text-center px-6">
     <h2 class="text-2xl font-semibold text-primary mb-4">Ready to Find Your Dream Property?</h2>
     <p class="mb-6 text-neutral">Explore our verified listings or get in touch with our team to start your real estate journey today.</p>
-    <a href="/listing" class="btn btn-primary btn-lg px-6">Browse Listings</a>
+    <a href="{% url 'listing' %}"
+       class="btn btn-primary text-white bg-blue-500 text-lg md:text-xl px-8 py-4 rounded-full shadow-xl transition-transform duration-300 ease-in-out transform hover:scale-105 motion-safe:animate-fadeIn delay-500">
+      Browse Listings
+    </a>
   </div>
 </section>
 {% endblock %}

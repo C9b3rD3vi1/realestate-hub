@@ -11,7 +11,7 @@ urlpatterns = [
     path("listings/<slug:slug>/", views.listing_detail, name="listing_detail"),
     path('register/', views.user_register, name='register'),  # User registration page
     path('login/', views.user_login, name='login'),  # User login page
-    path('logout/', views.logout, name='logout'),  # User logout page
+    path('logout/', views.user_logout, name='logout'),  # User logout page
     path('contact/', views.contact, name='contact'),  # Contact page
     #path('password_reset/', views.password_reset, name='password_reset'),  # Password reset page
    # path('password_reset/done/', views.password_reset_done, name='password_reset_done'),  # Password reset done page
@@ -22,5 +22,6 @@ urlpatterns = [
     
     path('housing/<slug:slug>/', views.housing_detail, name='housing_detail'),
     path('car/<slug:slug>/', views.car_detail, name='car_detail'),
+    path('land/<slug:slug>/', views.land_detail, name='land_detail'),
 
 ]

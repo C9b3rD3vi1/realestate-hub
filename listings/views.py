@@ -5,11 +5,12 @@ from django.views import generic
 from .forms import *
 from django.http import Http404
 from django.db.models import Q
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
+from urllib.parse import urlencode
 
 from .models import LandProperties, CarProperties, HousingProperties
 
@@ -19,9 +20,6 @@ def home(request):
     # This view renders the home page of the listings app
     return render(request, 'home.html')
 
-
-
-from urllib.parse import urlencode
 
 def listing(request):
     query = request.GET.get('q')
@@ -101,6 +99,10 @@ def housing_detail(request, slug):
     house = get_object_or_404(HousingProperties, slug=slug)
     return render(request, "housing_detail.html", {"house": house})
 
+def land_detail(request, slug):
+    land = get_object_or_404(LandProperties, slug=slug)
+    return render(request, "land_detail.html", {"land": land})
+
 def car_detail(request, slug):
     car = get_object_or_404(CarProperties, slug=slug)
     return render(request, "car_detail.html", {"car": car})
@@ -118,10 +120,11 @@ def user_register(request):
         form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
 
-def logout(request):
-    # This view handles user logout
-    logout(request)
-    return redirect('home')
+def user_logout(request):
+    # handle user logout request
+    if request.method == 'POST':
+        logout(request)
+        return redirect('home')
 
 
 # User login and authentication functionality
