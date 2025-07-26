@@ -6,6 +6,7 @@ from .forms import *
 from django.http import Http404
 from django.db.models import Q
 from django.contrib.auth import login, authenticate, logout
+from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
@@ -112,43 +113,39 @@ def car_detail(request, slug):
 def user_register(request):
     # This view handles user registration
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('login')
+            form = CustomUserCreationForm(request.POST, request.FILES)
+            if form.is_valid():
+                user = form.save()
+                login(request, user)  # Optional: log in the user after registration
+                messages.success(request, 'Account created successfully!')
+                return redirect('home')
+            else:
+                messages.error(request, 'Please correct the errors below.')
     else:
         form = CustomUserCreationForm()
+
     return render(request, 'register.html', {'form': form})
 
+# User logout functionality requested
 def user_logout(request):
-    # handle user logout request
-    if request.method == 'POST':
-        logout(request)
-        return redirect('home')
-
+    logout(request)
+    return redirect('home')
 
 # User login and authentication functionality
 def user_login(request):
-    # This view handles user login
+    if request.user.is_authenticated:
+        return redirect('home')  # prevent logged-in users from seeing login page again
+
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
-        # Validate the form data
         if form.is_valid():
-            # Get the cleaned data from the form
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            # Authenticate the user
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                # If the user is authenticated, log them in
-                login(request, user)
-                # Redirect to the home page
-                return redirect('home')
+            # Log the user in directly with form.get_user()
+            login(request, form.get_user())
+            return redirect('home')
     else:
-        # If the request method is GET, create an empty form
-        form = AuthenticationForm(request)
-    return render(request, 'login.html', {'form': form})
+        form = AuthenticationForm()
 
+    return render(request, 'login.html', {'form': form})
 
 
 def contact(request):

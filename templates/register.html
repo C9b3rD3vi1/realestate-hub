@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}Sign Up - Real Estate Hub{% endblock %}
 {% block content %}
+{% load widget_tweaks %}
 
 <section class="min-h-screen flex items-center justify-center bg-base-200 px-6 py-24">
   <div class="w-full max-w-2xl bg-base-100 p-10 rounded-2xl shadow-xl border border-gray-300 motion-safe:animate-fadeInUp duration-700">
@@ -16,48 +17,25 @@
       {% endfor %}
     {% endif %}
 
-    <form method="post" class="space-y-6 motion-safe:animate-fadeInUp">
+    <form method="post" enctype="multipart/form-data" class="space-y-6 motion-safe:animate-fadeInUp">
       {% csrf_token %}
 
-      <div class="form-control">
-        <label class="label font-medium text-base-content">Username</label>
-        <input
-          type="text"
-          name="username"
-          class="w-full px-4 py-3 rounded-md border border-gray-400 bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          placeholder="e.g. johndoe"
-          required />
-      </div>
+      {% for field in form %}
+        <div class="form-control">
+          <label class="label font-medium text-base-content">
+            {{ field.label_tag }}
+          </label>
+          {{ field|add_class:"w-full px-4 py-3 rounded-md border border-gray-400 bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" }}
 
-      <div class="form-control">
-        <label class="label font-medium text-base-content">Email</label>
-        <input
-          type="email"
-          name="email"
-          class="w-full px-4 py-3 rounded-md border border-gray-400 bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          placeholder="example@domain.com"
-          required />
-      </div>
+          {% if field.help_text %}
+            <p class="text-sm text-gray-500 mt-1">{{ field.help_text }}</p>
+          {% endif %}
 
-      <div class="form-control">
-        <label class="label font-medium text-base-content">Password</label>
-        <input
-          type="password"
-          name="password1"
-          class="w-full px-4 py-3 rounded-md border border-gray-400 bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          placeholder="••••••••"
-          required />
-      </div>
-
-      <div class="form-control">
-        <label class="label font-medium text-base-content">Confirm Password</label>
-        <input
-          type="password"
-          name="password2"
-          class="w-full px-4 py-3 rounded-md border border-gray-400 bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          placeholder="••••••••"
-          required />
-      </div>
+          {% for error in field.errors %}
+            <p class="text-sm text-red-500 mt-1">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endfor %}
 
       <button
         type="submit"
@@ -72,10 +50,6 @@
         </svg>
         <span id="signupText">Sign Up</span>
       </button>
-
-
-
-
     </form>
 
     <!-- Social login divider -->
@@ -88,18 +62,16 @@
     <div class="flex flex-col md:flex-row md:justify-center md:space-x-6 space-y-4 md:space-y-0 motion-safe:animate-fadeInUp">
       <!-- Google Button -->
       <a href="#" class="btn w-full md:w-64 bg-white border border-gray-300 hover:shadow-md transition duration-200 flex items-center justify-start gap-4">
-        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" class="w-7 h-7 transition-transform duration-300 group-hover:scale-110" />
+        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" class="w-7 h-7" />
         <span class="text-sm text-gray-800 font-medium">Google</span>
       </a>
-    
+
       <!-- GitHub Button -->
       <a href="#" class="btn w-full md:w-64 bg-gray-900 hover:bg-black text-white transition duration-200 flex items-center justify-start gap-4">
-        <img src="https://www.svgrepo.com/show/475647/github-color.svg" alt="GitHub Logo" class="w-7 h-7 transition-transform duration-300 group-hover:scale-110" />
+        <img src="https://www.svgrepo.com/show/475647/github-color.svg" alt="GitHub Logo" class="w-7 h-7" />
         <span class="text-sm font-medium">GitHub</span>
       </a>
     </div>
-
-
 
     <p class="text-center text-sm mt-10">
       Already have an account?

@@ -210,7 +210,7 @@ JAZZMIN_SETTINGS = {
         {"model": "auth.User"},
 
         # App with dropdown menu to all its models pages (Permissions checked against models)
-        {"app": "books"},
+        {"app": "listings"},
     ],
 
     #############
@@ -297,5 +297,10 @@ JAZZMIN_SETTINGS = {
 }
 
 JAZZMIN_UI_TWEAKS = {
-    "theme": "slate",
+    #"theme": "flatly",
+    #"theme": "sketchy",
+   "theme": "superhero",
+    #"theme": "cyborg",
+    #"theme": "slate",
+    "dark_mode_theme": "darkly",
 }
