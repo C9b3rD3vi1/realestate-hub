@@ -22,11 +22,11 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'jazzmin',
     'listings',
+    'taggit',
     'widget_tweaks',
     'django_filters',
     'django.contrib.admin',
     #'querystring_tags',
-   # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

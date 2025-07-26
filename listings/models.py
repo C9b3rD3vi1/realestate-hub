@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 from django.urls import reverse
+from django.utils.regex_helper import Choice
 from django.utils.text import slugify
+from taggit.managers import TaggableManager
 
 
 #Custom User model
@@ -47,60 +49,114 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
-# land model for real estate listings
+# land model for real estate listings  # optional, for tagging
+
 class LandProperties(models.Model):
-    # This model represents a piece of land for sale or rent
+    LAND_TYPE_CHOICES = [
+        ('residential', 'Residential'),
+        ('commercial', 'Commercial'),
+        ('agricultural', 'Agricultural'),
+        ('industrial', 'Industrial'),
+        ('mixed_use', 'Mixed Use'),
+        ('recreational', 'Recreational'),
+        ('institutional', 'Institutional'),
+    ]
+
+    UNIT_CHOICES = [
+        ('acres', 'Acres'),
+        ('sq_ft', 'Square Feet'),
+        ('hectares', 'Hectares'),
+    ]
+
     title = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
     image = models.ImageField(upload_to='land_images/')
     description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=12, decimal_places=2)
     location = models.CharField(max_length=255)
-    size = models.DecimalField(max_digits=10, decimal_places=2)  # Size in acres
-    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    
+    size = models.DecimalField(max_digits=10, decimal_places=2)
+    size_unit = models.CharField(max_length=10, choices=UNIT_CHOICES, default='acres')
+
+    land_type = models.CharField(max_length=20, choices=LAND_TYPE_CHOICES, default='residential')
+    
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+
     is_available = models.BooleanField(default=True)
-    slug = models.SlugField(max_length=255, unique=True)
+    is_approved = models.BooleanField(default=False)
+    is_featured = models.BooleanField(default=False)
+
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='land_properties')
+
+    tags = TaggableManager(blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return str(self.title)
     class Meta:
         verbose_name_plural = 'Land Properties'
         ordering = ['-created_at']
 
-        # This method returns the URL to access a particular land property
-        # It uses the slug field to create a unique URL for each property
+    def __str__(self):
+        return self.title
+
     def get_absolute_url(self):
         return reverse('land_detail', kwargs={'slug': self.slug})
-    # This method generates a slug for the land property based on its title
+
     def generate_slug(self):
-        # Use the slugify function to create a slug from the title
         base_slug = slugify(self.title)
         slug = base_slug
         counter = 1
-        # Keep checking until we find a unique slug
         while LandProperties.objects.filter(slug=slug).exclude(id=self.id).exists():
             slug = f"{base_slug}-{counter}"
             counter += 1
         self.slug = slug
         return self.slug
-    # This method is called before saving the model instance to the database
+
     def save(self, *args, **kwargs):
-        # Generate the slug before saving
-        self.generate_slug()
-        # Call the parent class's save method to save the instance
+        if not self.slug:
+            self.generate_slug()
         super().save(*args, **kwargs)
 
 
 # This model creates the listing for housing properties
 class HousingProperties(models.Model):
-    # This model represents a housing property for sale or rent
+    HOUSE_TYPE_CHOICES = [
+        ('apartment', 'Apartment'),
+        ('bungalow', 'Bungalow'),
+        ('maisonette', 'Maisonette'),
+        ('duplex', 'Duplex'),
+        ('studio', 'Studio'),
+        ('bedsitter', 'Bedsitter'),
+        ('villa', 'Villa'),
+        ('townhouse', 'Townhouse'),
+        ('penthouse', 'Penthouse'),
+        ('cottage', 'Cottage'),
+        ('mansion', 'Mansion'),
+        ('detached', 'Detached House'),
+        ('semi_detached', 'Semi-Detached House'),
+    ]
+
+    HOUSE_SIZE_CHOICES = [
+        ('studio', 'Studio'),
+        ('bedsitter', 'Bedsitter'),
+        ('1_bedroom', '1 Bedroom'),
+        ('2_bedroom', '2 Bedroom'),
+        ('3_bedroom', '3 Bedroom'),
+        ('4_bedroom', '4 Bedroom'),
+        ('5_bedroom', '5 Bedroom'),
+        ('6_bedroom', '6 Bedroom'),
+        ('7_plus_bedroom', '7+ Bedroom'),
+    ]
+
     title = models.CharField(max_length=255)
     image = models.ImageField(upload_to='housing_images/')
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     location = models.CharField(max_length=255)
-    size = models.DecimalField(max_digits=10, decimal_places=2)  # Size in square feet
+    house_type = models.CharField(max_length=255, choices=HOUSE_TYPE_CHOICES, default='apartment')
+    size = models.CharField(max_length=20, choices=HOUSE_SIZE_CHOICES, default='studio')
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     is_available = models.BooleanField(default=True)
     slug = models.SlugField(max_length=255, unique=True)
@@ -108,43 +164,33 @@ class HousingProperties(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.title)
-        
-    class Meta:
-        verbose_name_plural = 'Housing Properties'
-        ordering = ['-created_at']
+        return self.title
 
-        # This method returns the URL to access a particular housing property
-        # It uses the slug field to create a unique URL for each property
     def get_absolute_url(self):
         return reverse('housing_detail', kwargs={'slug': self.slug})
-    # This method generates a slug for the housing property based on its title
+
     def generate_slug(self):
-        # Use the slugify function to create a slug from the title
         base_slug = slugify(self.title)
         slug = base_slug
         counter = 1
-        # Keep checking until we find a unique slug
         while HousingProperties.objects.filter(slug=slug).exclude(id=self.id).exists():
             slug = f"{base_slug}-{counter}"
             counter += 1
         self.slug = slug
         return self.slug
-    # This method is called before saving the model instance to the database
+
     def save(self, *args, **kwargs):
-        # Generate the slug before saving
         self.generate_slug()
-        # Call the parent class's save method to save the instance
         super().save(*args, **kwargs)
 
+    class Meta:
+        verbose_name = 'Housing Property'
+        verbose_name_plural = 'Housing Properties'
+        ordering = ['-created_at']
 
-# This model creates the listing for commercial properties # cars
+
 class CarProperties(models.Model):
-    # This model represents a car for sale or rent
-    title = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='car_images/')
-    description = models.TextField()
-    make = models.CharField(max_length=255, choices=[
+    MAKE_CHOICES = [
         ('toyota', 'Toyota'),
         ('honda', 'Honda'),
         ('ford', 'Ford'),
@@ -164,9 +210,9 @@ class CarProperties(models.Model):
         ('porsche', 'Porsche'),
         ('tesla', 'Tesla'),
         ('other', 'Other'),
-    ], default='toyota')
-    # The make field represents the manufacturer of the car
-    model = models.CharField(max_length=255, choices=[
+    ]
+
+    MODEL_CHOICES = [
         ('corolla', 'Corolla'),
         ('civic', 'Civic'),
         ('mustang', 'Mustang'),
@@ -197,71 +243,72 @@ class CarProperties(models.Model):
         ('wagon', 'Wagon'),
         ('van', 'Van'),
         ('other', 'Other'),
+    ]
 
-    ], default='corolla')
-
-    year_of_manufacture = models.PositiveIntegerField()
-    mileage = models.DecimalField(max_digits=10, decimal_places=2)  # Mileage in kilometers
-    fuel_type = models.CharField(max_length=50, choices=[
+    FUEL_CHOICES = [
         ('petrol', 'Petrol'),
         ('diesel', 'Diesel'),
         ('electric', 'Electric'),
         ('hybrid', 'Hybrid'),
-    ], default='petrol')
+    ]
 
-    engine_size = models.DecimalField(max_digits=10, decimal_places=2)  # Engine size in liters
-    number_of_doors = models.PositiveIntegerField()
-    number_of_seats = models.PositiveIntegerField()
-
-    transmission = models.CharField(max_length=50, choices=[
+    TRANSMISSION_CHOICES = [
         ('manual', 'Manual'),
         ('automatic', 'Automatic'),
-    ], default='automatic')
+    ]
 
+    title = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='car_images/')
+    description = models.TextField()
+
+    make = models.CharField(max_length=50, choices=MAKE_CHOICES, default='toyota')
+    model = models.CharField(max_length=50, choices=MODEL_CHOICES, default='corolla')
+    year_of_manufacture = models.PositiveIntegerField()
+    mileage = models.DecimalField(max_digits=10, decimal_places=2)  # in km
+    fuel_type = models.CharField(max_length=20, choices=FUEL_CHOICES, default='petrol')
+    engine_size = models.DecimalField(max_digits=10, decimal_places=2)  # in liters
+    transmission = models.CharField(max_length=20, choices=TRANSMISSION_CHOICES, default='automatic')
+
+    number_of_doors = models.PositiveIntegerField()
+    number_of_seats = models.PositiveIntegerField()
     color = models.CharField(max_length=50)
     features = models.TextField(blank=True, null=True)
 
     price = models.DecimalField(max_digits=10, decimal_places=2)
     location = models.CharField(max_length=255)
-    size = models.DecimalField(max_digits=10, decimal_places=2)  # Size in square feet
-    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     is_available = models.BooleanField(default=True)
+
     slug = models.SlugField(max_length=255, unique=True)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.title)
-        
-    class Meta:
-        verbose_name_plural = 'Car Properties'
-        ordering = ['-created_at']
+        return self.title
 
-        # This method returns the URL to access a particular car property
-        # It uses the slug field to create a unique URL for each property
     def get_absolute_url(self):
         return reverse('car_detail', kwargs={'slug': self.slug})
 
-    # This method generates a slug for the car property based on its title
     def generate_slug(self):
-        # Use the slugify function to create a slug from the title
         base_slug = slugify(self.title)
         slug = base_slug
         counter = 1
-
-        # Keep checking until we find a unique slug
         while CarProperties.objects.filter(slug=slug).exclude(id=self.id).exists():
             slug = f"{base_slug}-{counter}"
             counter += 1
         self.slug = slug
         return self.slug
 
-    # This method is called before saving the model instance to the database
     def save(self, *args, **kwargs):
-        # Generate the slug before saving
         self.generate_slug()
-        # Call the parent class's save method to save the instance
         super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "Car Property"
+        verbose_name_plural = "Car Properties"
+        ordering = ['-created_at']
+
 
 
 class Contact(models.Model):

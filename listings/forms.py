@@ -103,17 +103,28 @@ class CustomUserChangeForm(UserChangeForm):
         }
 
 
-# ProfileForm is used to update the user's profile information
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('bio', 'profile_picture', 'phone_number', 'address', 'date_of_birth')
         widgets = {
-            'bio': forms.Textarea(attrs={'rows': 4}),
-            'profile_picture': forms.ClearableFileInput(),
-            'phone_number': forms.TextInput(),
-            'address': forms.TextInput(),
-            'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
+            'bio': forms.Textarea(attrs={
+                'rows': 4,
+                'class': 'w-full border border-gray-400 rounded-lg px-4 py-3'
+            }),
+            'profile_picture': forms.ClearableFileInput(attrs={
+                'class': 'w-full border border-gray-400 rounded-lg px-4 py-3'
+            }),
+            'phone_number': forms.TextInput(attrs={
+                'class': 'w-full border border-gray-400 rounded-lg px-4 py-3'
+            }),
+            'address': forms.TextInput(attrs={
+                'class': 'w-full border border-gray-400 rounded-lg px-4 py-3'
+            }),
+            'date_of_birth': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'w-full border border-gray-400 rounded-lg px-4 py-3'
+            }),
         }
         labels = {
             'bio': 'Bio',

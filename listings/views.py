@@ -147,6 +147,21 @@ def user_login(request):
 
     return render(request, 'login.html', {'form': form})
 
+# Render user profile page
+@login_required
+def user_profile(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')  # stays on same page
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, 'profile.html', {'profile': profile, 'form': form})
+
 
 def contact(request):
     # This view handles contact form submissions
