@@ -1,0 +1,17 @@
+<!-- components/search_bar.html -->
+<section class="bg-base-100 py-10 border-b">
+  <div class="max-w-5xl mx-auto px-4 text-center">
+    <h2 class="text-3xl font-bold mb-6">Find Your Perfect Property</h2>
+    <form method="GET" action="{% url 'listing' %}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <input type="text" name="location" placeholder="Location (e.g. Nairobi)"
+             class="input input-bordered w-full" value="{{ request.GET.location|default:'' }}" />
+      <select name="type" class="select select-bordered w-full">
+        <option value="">All Types</option>
+        <option value="house" {% if request.GET.type == 'house' %}selected{% endif %}>House</option>
+        <option value="land" {% if request.GET.type == 'land' %}selected{% endif %}>Land</option>
+        <option value="car" {% if request.GET.type == 'car' %}selected{% endif %}>Car</option>
+      </select>
+      <button type="submit" class="btn btn-primary w-full">Search</button>
+    </form>
+  </div>
+</section>

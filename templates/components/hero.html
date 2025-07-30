@@ -1,0 +1,41 @@
+
+
+{% load static %}
+
+<!-- components/hero.html -->
+<section 
+  x-data="{
+    images: [
+      '{% static "images/heroimage.jpg" %}',
+      '{% static "images/heroimage2.jpg" %}',
+      '{% static "images/heroimage3.webp" %}'
+    ],
+    index: 0, zoom: true,
+    init() {
+      setInterval(() => {
+        this.zoom = false;
+        setTimeout(() => {
+          this.index = (this.index + 1) % this.images.length;
+          this.zoom = true;
+        }, 300);
+      }, 5000);
+    }
+  }"
+  x-init="init()"
+  class="relative h-[85vh] overflow-hidden isolate"
+>
+  <div 
+    class="absolute inset-0 bg-cover bg-center transition-all duration-[2000ms]"
+    :class="{ 'scale-110': zoom, 'scale-100': !zoom }"
+    :style="`background-image: url('${images[index]}')`"
+  ></div>
+  <div class="absolute inset-0 bg-black/50 flex items-center justify-center w-full">
+    <div class="text-center text-white w-full max-w-screen-xl px-4">
+      <h1 class="text-5xl md:text-6xl font-bold mb-4 animate-fadeInUp">Find Your Dream Property</h1>
+      <p class="text-lg md:text-xl mb-6 animate-fadeIn delay-200">Explore the best listings across the country</p>
+      <a href="{% url 'listing' %}" class="btn btn-primary text-lg md:text-xl px-8 py-4 rounded-full shadow-xl hover:scale-105 animate-fadeIn delay-500">
+        Browse Listings
+      </a>
+    </div>
+  </div>
+</section>

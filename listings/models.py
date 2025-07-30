@@ -146,6 +146,7 @@ class HousingProperties(models.Model):
     size = models.CharField(max_length=20, choices=HOUSE_SIZE_CHOICES, default='Studio')
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     is_available = models.BooleanField(default=True)
+    is_featured = models.BooleanField(default=False)
     #is_sold = models.BooleanField(default=False)
     slug = models.SlugField(max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -265,6 +266,7 @@ class CarProperties(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     location = models.CharField(max_length=255)
     is_available = models.BooleanField(default=True)
+    is_featured = models.BooleanField(default=False)
 
     slug = models.SlugField(max_length=255, unique=True)
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -304,10 +306,26 @@ class CarPropertiesImage(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Image for {self.car.title}"
+        return (self.car.title)
+        
+        
+class HousePropertiesImage(models.Model):
+    house = models.ForeignKey(HousingProperties, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='house_images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return (self.house.title)
 
+class LandPropertiesImage(models.Model):
+    land = models.ForeignKey(LandProperties, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='land_images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return (self.land.title)
+        
+        
 # Profile model connected to CustomUser
 class Profile(models.Model):
     # This model represents a user's profile, which is linked to the CustomUser model
@@ -349,3 +367,13 @@ class NewsletterSubscriber(models.Model):
 
     def __str__(self):
         return self.email
+
+
+# Frequently Asked Questions
+class FAQ(models.Model):
+    question = models.CharField(max_length=255)
+    answer = models.TextField()
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.question

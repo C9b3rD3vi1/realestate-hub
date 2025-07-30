@@ -1,0 +1,29 @@
+{% load static %}
+
+<section class="bg-base-100 py-16 border-t overflow-hidden">
+  <div class="max-w-screen-xl mx-auto px-4 text-center">
+    <h3 class="text-lg font-semibold text-base-content/70 mb-8">
+      Trusted by leading real estate brands
+    </h3>
+
+    <div x-data="{ scrollX: 0 }" x-init="
+      setInterval(() => {
+        scrollX += 1;
+        $refs.scroller.scrollLeft = scrollX;
+        if ($refs.scroller.scrollLeft + $refs.scroller.clientWidth >= $refs.scroller.scrollWidth) scrollX = 0;
+      }, 30);
+    ">
+      <div
+        x-ref="scroller"
+        class="flex gap-16 items-center overflow-x-auto no-scrollbar whitespace-nowrap transition-all duration-300"
+        style="scroll-behavior: smooth;"
+      >
+        {% for logo in client_logos %}
+          <img src="{% static 'images/clients/' %}{{ logo }}" alt="Client Logo" class="h-10 opacity-70 hover:opacity-100 transition" />
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+

@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}About Us - Real Estate Hub{% endblock %}
+
+{% block content %}
+
+<!-- 💼 Hero -->
+<section class="bg-gradient-to-br from-base-100 via-base-200 to-base-100 py-20 px-6 text-center">
+  <div class="max-w-4xl mx-auto space-y-6">
+    <h1 class="text-5xl font-bold text-primary animate-fadeInUp">Who We Are</h1>
+    <p class="text-lg text-base-content leading-relaxed">
+      At <span class="font-semibold text-primary">Real Estate Hub</span>, we connect buyers, sellers, and investors with dream properties across Kenya—prioritizing trust, simplicity, and expert support.
+    </p>
+  </div>
+</section>
+
+<!-- 🚀 Mission + Vision -->
+<section class="bg-base-200 py-20">
+  <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
+    <div class="space-y-8">
+      <div class="flex gap-4 items-start">
+        <div class="text-primary text-3xl">🎯</div>
+        <div>
+          <h2 class="text-2xl font-semibold text-primary">Our Mission</h2>
+          <p class="text-base-content">To empower individuals and families by making property ownership secure, accessible, and simplified.</p>
+        </div>
+      </div>
+      <div class="flex gap-4 items-start">
+        <div class="text-primary text-3xl">👁️</div>
+        <div>
+          <h2 class="text-2xl font-semibold text-primary">Our Vision</h2>
+          <p class="text-base-content">To be Kenya’s most trusted and innovative platform—connecting people to places they love.</p>
+        </div>
+      </div>
+    </div>
+    <img src="{% static 'images/about-hero.jpg' %}" alt="About Us" class="rounded-xl shadow-xl w-full max-h-[500px] object-cover">
+  </div>
+</section>
+
+<!-- ⭐️ What Sets Us Apart -->
+<section class="bg-base-100 py-20">
+  <div class="max-w-6xl mx-auto px-6 text-center">
+    <h2 class="text-3xl font-semibold text-primary mb-12">What Sets Us Apart</h2>
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
+      <div class="card bg-base-200 p-6 shadow-md hover:shadow-xl hover:scale-[1.02] transition">
+        <h3 class="text-xl font-bold text-primary mb-2">✅ Verified Listings</h3>
+        <p class="text-base-content/80">Every property is thoroughly vetted by our experts.</p>
+      </div>
+      <div class="card bg-base-200 p-6 shadow-md hover:shadow-xl hover:scale-[1.02] transition">
+        <h3 class="text-xl font-bold text-primary mb-2">⚙️ Digital Simplicity</h3>
+        <p class="text-base-content/80">Browse and connect easily through our intuitive platform.</p>
+      </div>
+      <div class="card bg-base-200 p-6 shadow-md hover:shadow-xl hover:scale-[1.02] transition">
+        <h3 class="text-xl font-bold text-primary mb-2">💬 Expert Support</h3>
+        <p class="text-base-content/80">We guide you every step—online and offline.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 👥 Meet the Team -->
+<section class="bg-base-200 py-20">
+  <div class="max-w-6xl mx-auto px-6 text-center">
+    <h2 class="text-3xl font-semibold text-primary mb-12">Meet the Team</h2>
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-12">
+      <div class="space-y-3">
+        <img src="{% static 'images/team1.jpg' %}" alt="Jane Wanjiru" class="w-32 h-32 mx-auto rounded-full object-cover shadow-lg">
+        <h4 class="font-bold text-lg">Jane Wanjiru</h4>
+        <p class="text-neutral">CEO & Co-Founder</p>
+      </div>
+      <div class="space-y-3">
+        <img src="{% static 'images/team2.jpg' %}" alt="Michael Otieno" class="w-32 h-32 mx-auto rounded-full object-cover shadow-lg">
+        <h4 class="font-bold text-lg">Michael Otieno</h4>
+        <p class="text-neutral">CTO & Co-Founder</p>
+      </div>
+      <div class="space-y-3">
+        <img src="{% static 'images/team3.jpg' %}" alt="Susan Mwende" class="w-32 h-32 mx-auto rounded-full object-cover shadow-lg">
+        <h4 class="font-bold text-lg">Susan Mwende</h4>
+        <p class="text-neutral">Head of Sales</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 📈 Timeline -->
+<section class="bg-base-100 py-20">
+  <div class="max-w-6xl mx-auto px-6 text-center">
+    <h2 class="text-3xl font-semibold text-primary mb-12">Our Journey</h2>
+    <div class="timeline timeline-vertical">
+      <div class="timeline-item">
+        <div class="timeline-start text-primary font-bold">2019</div>
+        <div class="timeline-middle"><div class="badge badge-primary badge-outline"></div></div>
+        <div class="timeline-end mb-10">
+          <h3 class="text-lg font-bold">Founded</h3>
+          <p class="text-base-content/70">Started with a mission to digitize Kenya's property market.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-start text-primary font-bold">2021</div>
+        <div class="timeline-middle"><div class="badge badge-primary badge-outline"></div></div>
+        <div class="timeline-end mb-10">
+          <h3 class="text-lg font-bold">1,000+ Listings</h3>
+          <p class="text-base-content/70">Surpassed 1,000 verified properties across the country.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-start text-primary font-bold">2023</div>
+        <div class="timeline-middle"><div class="badge badge-primary badge-outline"></div></div>
+        <div class="timeline-end mb-10">
+          <h3 class="text-lg font-bold">Partner Dashboard</h3>
+          <p class="text-base-content/70">Launched a seller and agency portal with insights and control.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 📬 CTA -->
+<section class="bg-primary py-16 text-primary-content">
+  <div class="max-w-3xl mx-auto text-center px-6">
+    <h2 class="text-2xl font-bold mb-4">Ready to Find Your Dream Property?</h2>
+    <p class="mb-6">Explore verified listings or contact our team to start your journey today.</p>
+    <a href="{% url 'listing' %}" class="btn btn-secondary px-8 py-3 rounded-full text-lg hover:scale-105 transition">
+      Browse Listings
+    </a>
+  </div>
+</section>
+
+{% endblock %}

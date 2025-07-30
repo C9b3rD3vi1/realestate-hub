@@ -22,7 +22,7 @@
     <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">🏞️ Land Listings</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
       {% for item in land_listings %}
-        {% include "listing_card.html" with item=item %}
+        {% include "components/listing_card.html" with item=item %}
       {% empty %}
         <p class="text-gray-500">No land listings available.</p>
       {% endfor %}
@@ -34,7 +34,7 @@
     <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">🏡 Housing Listings</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
       {% for item in housing_listings %}
-        {% include "listing_card.html" with item=item %}
+        {% include "components/listing_card.html" with item=item %}
       {% empty %}
         <p class="text-gray-500">No housing listings available.</p>
       {% endfor %}
@@ -46,7 +46,7 @@
     <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">🚗 Car Listings</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
       {% for item in car_listings %}
-        {% include "listing_card.html" with item=item %}
+        {% include "components/listing_card.html" with item=item %}
       {% empty %}
         <p class="text-gray-500">No car listings available.</p>
       {% endfor %}

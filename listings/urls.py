@@ -28,7 +28,7 @@ urlpatterns = [
     path('car/<slug:slug>/', views.car_detail, name='car_detail'),
     path('land/<slug:slug>/', views.land_detail, name='land_detail'),
     
-    path('listCategory/<str:category>/', views.category_listing, name='listing'),
+    path('listCategory/<str:category>/', views.category_listings, name='category_listings'),
     
      path('subscribe/', views.subscribe_newsletter, name='subscribe_newsletter'),
      

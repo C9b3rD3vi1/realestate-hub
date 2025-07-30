@@ -1,0 +1,23 @@
+<section class="bg-gradient-to-br from-base-200 via-base-100 to-base-300 py-24">
+  <div class="max-w-5xl mx-auto px-6">
+    <h2 class="text-4xl font-bold text-center text-primary mb-14">Frequently Asked Questions</h2>
+
+    <div class="space-y-6">
+      {% for faq in faqs %}
+      <div x-data="{ open: false }" class="bg-base-100 border border-base-300 shadow-lg rounded-xl transition-all duration-300">
+        <button @click="open = !open" class="w-full flex justify-between items-center text-left px-6 py-4 text-lg font-semibold cursor-pointer rounded-t-xl peer-checked:bg-primary peer-checked:text-primary-content hover:bg-base-200 transition">
+          {{ faq.question }}
+          <svg :class="{ 'rotate-180': open }" class="w-5 h-5 text-primary transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <div x-show="open" x-transition class="px-6 pb-6 text-sm text-base-content/80 leading-relaxed border-t border-base-300">
+          {{ faq.answer }}
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-center text-base-content/60 italic">No FAQs available at this time.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>

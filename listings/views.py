@@ -15,7 +15,8 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import LandProperties, CarProperties, HousingProperties, Profile, Testimonials, NewsletterSubscriber
+from .models import LandProperties, CarProperties, HousingProperties, Profile, Testimonials
+from .models import NewsletterSubscriber, FAQ
 
 
 
@@ -25,12 +26,25 @@ def home(request):
     lands = LandProperties.objects.filter(is_available=True)[:8]
     cars = CarProperties.objects.filter(is_available=True)[:8]
     testimonials = Testimonials.objects.all()[:8]
+    faqs = FAQ.objects.filter(is_active=True)
     
+    
+     # Fetch featured items from each model
+    featured_houses = HousingProperties.objects.filter(is_featured=True)
+    featured_lands = LandProperties.objects.filter(is_featured=True)
+    featured_cars = CarProperties.objects.filter(is_featured=True)
+    
+        # Merge all featured items into one queryset-like list
+    featured_listings = sorted(chain(featured_houses, featured_lands, featured_cars),
+        key=lambda x: getattr(x, 'created_at', None),reverse=True)
+      
     context = {
             'houses': houses,
             'lands': lands,
             'cars': cars,
             'testimonials': testimonials,
+            'faqs': faqs,
+            'featured_listings': featured_listings[:10],  # limit to top 10
         }  
     
     return render(request, 'home.html', context)
@@ -71,7 +85,7 @@ def listing(request):
         page_number = request.GET.get("page")
         listings = paginator.get_page(page_number)
 
-        return render(request, "listings.html", {
+        return render(request, "components/listings.html", {
             "filtered": True,
             "listings": listings,
             "type": type
@@ -82,7 +96,7 @@ def listing(request):
     housing_listings = HousingProperties.objects.filter(is_available=True)[:8]
     car_listings = CarProperties.objects.filter(is_available=True)[:8]
 
-    return render(request, "listings.html", {
+    return render(request, "components/listings.html", {
         "filtered": False,
         "land_listings": land_listings,
         "housing_listings": housing_listings,
@@ -117,7 +131,7 @@ def category_listings(request, category=None):
 
     return render(request, 'home.html', context)
 
-    
+ 
     
 def listing_detail(request, slug):
     listing = None
@@ -134,10 +148,12 @@ def listing_detail(request, slug):
     if not listing:
         raise Http404("Property not found.")
 
-    return render(request, 'listing_detail.html', {
+    return render(request, 'components/listing_detail.html', {
         'listing': listing,
         'listing_type': listing_type,
     })
+    
+    
 # Fetch listing property by categories
 def category_listing(request, category):
     category = category.lower()
@@ -159,27 +175,27 @@ def category_listing(request, category):
 # fetch details
 def housing_detail(request, slug):
     house = get_object_or_404(HousingProperties, slug=slug)
-    return render(request, "housing_detail.html", {"house": house})
+    return render(request, "components/housing_detail.html", {"house": house})
 
 def land_detail(request, slug):
     land = get_object_or_404(LandProperties, slug=slug)
-    return render(request, "land_detail.html", {"land": land})
+    return render(request, "components/land_detail.html", {"land": land})
 
 def car_detail(request, slug):
     car = get_object_or_404(CarProperties, slug=slug)
     similar_cars = CarProperties.objects.filter(make=car.make).exclude(id=car.id)[:3]
-    return render(request, "car_detail.html", {"car": car, 'similar_cars': similar_cars,})
+    return render(request, "components/car_detail.html", {"car": car, 'similar_cars': similar_cars,})
 
 
 @login_required
 def favorite_car(request, car_id):
-    car = get_object_or_404(Car, id=car_id)
+    car = get_object_or_404(CarProperties, id=car_id)
     profile = request.user.profile
     if car in profile.favorites.all():
         profile.favorites.remove(car)
     else:
         profile.favorites.add(car)
-    return redirect('car_detail', car_id)
+    return redirect('/car_detail', car_id)
 
 
 # User registration and creation, authentication form
@@ -197,7 +213,7 @@ def user_register(request):
     else:
         form = CustomUserCreationForm()
 
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'components/register.html', {'form': form})
 
 
 # User logout functionality requested
@@ -220,7 +236,7 @@ def user_login(request):
     else:
         form = AuthenticationForm()
 
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'components/login.html', {'form': form})
 
 # Render user profile page
 @login_required
@@ -235,7 +251,8 @@ def user_profile(request):
     else:
         form = ProfileForm(instance=profile)
 
-    return render(request, 'profile.html', {'profile': profile, 'form': form})
+    return render(request, 'components/profile.html', {'profile': profile, 'form': form})
+
 
 @login_required
 def contact(request):
@@ -261,7 +278,7 @@ def contact(request):
     else:
         # If the request method is GET, create an empty form
         form = ContactForm()
-    return render(request, 'contact.html', {'form': form})
+    return render(request, 'components/contact.html', {'form': form})
 
 @require_POST
 def subscribe_newsletter(request):
@@ -299,7 +316,7 @@ def password_reset(request):
 
 def about(request):
     # This view displays information about the website
-    return render(request, 'about.html')
+    return render(request, 'components/about.html')
 
 def terms(request):
     # This view displays the terms and conditions of the website

@@ -1,0 +1,28 @@
+<!-- components/testimonials.html -->
+<section class="py-20 bg-base-100">
+  <div class="max-w-screen-xl mx-auto px-4">
+    <h2 class="text-4xl font-bold text-center text-primary mb-14">What Our Clients Say</h2>
+    <div
+      x-data="{ scrollX: 0 }"
+      x-init="setInterval(() => {
+        scrollX += 1;
+        $refs.scroll.scrollLeft = scrollX;
+        if ($refs.scroll.scrollLeft + $refs.scroll.clientWidth >= $refs.scroll.scrollWidth) scrollX = 0;
+      }, 30);"
+      class="relative overflow-hidden"
+    >
+      <div
+        x-ref="scroll"
+        class="flex gap-6 overflow-x-auto no-scrollbar"
+        style="scroll-behavior: smooth;"
+      >
+        {% for testimonial in testimonials %}
+        <div class="min-w-[300px] max-w-sm w-full bg-base-200 border border-base-300 shadow-md p-6 rounded-lg shrink-0">
+          <blockquote class="italic text-base-content/80 line-clamp-6">“{{ testimonial.body }}”</blockquote>
+          <div class="mt-4 text-right font-semibold text-primary">– {{ testimonial.name }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>

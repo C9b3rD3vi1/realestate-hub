@@ -1,0 +1,45 @@
+{% load static %}
+
+<section class="bg-gradient-to-br from-base-100 via-base-200 to-base-100 py-20">
+  <div class="max-w-screen-xl mx-auto px-6 text-center">
+    <h2 class="text-4xl font-bold text-primary mb-14">What Are You Looking For?</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+      <!-- Houses -->
+      <div class="card bg-base-100 border border-base-300 shadow-xl hover:shadow-2xl transition-transform duration-300 group hover:scale-[1.03]">
+        <figure class="px-6 pt-6">
+          <img src="{% static 'images/estate.jpeg' %}" alt="Buy a Home" class="rounded-xl h-44 w-full object-cover group-hover:opacity-90 transition duration-300" />
+        </figure>
+        <div class="card-body items-center text-center">
+          <h3 class="card-title text-primary text-lg font-bold">🏡 Buy a Home</h3>
+          <p class="text-sm text-base-content/70">Find your dream home from trusted sellers and agents.</p>
+          <a href="{% url 'listing'%}" class="btn btn-primary btn-sm mt-4">Browse Homes</a>
+        </div>
+      </div>
+
+      <!-- Land -->
+      <div class="card bg-base-100 border border-base-300 shadow-xl hover:shadow-2xl transition-transform duration-300 group hover:scale-[1.03]">
+        <figure class="px-6 pt-6">
+          <img src="{% static 'images/land.png' %}" alt="Find Land" class="rounded-xl h-44 w-full object-cover group-hover:opacity-90 transition duration-300" />
+        </figure>
+        <div class="card-body items-center text-center">
+          <h3 class="card-title text-primary text-lg font-bold">🌍 Find Land</h3>
+          <p class="text-sm text-base-content/70">Perfect plots for farming, building, or investment.</p>
+          <a href="{% url 'listing' %}" class="btn btn-secondary btn-sm mt-4">Explore Plots</a>
+        </div>
+      </div>
+
+      <!-- Cars -->
+      <div class="card bg-base-100 border border-base-300 shadow-xl hover:shadow-2xl transition-transform duration-300 group hover:scale-[1.03]">
+        <figure class="px-6 pt-6">
+          <img src="{% static 'images/cars1.webp' %}" alt="Buy a Car" class="rounded-xl h-44 w-full object-cover group-hover:opacity-90 transition duration-300" />
+        </figure>
+        <div class="card-body items-center text-center">
+          <h3 class="card-title text-primary text-lg font-bold">🚗 Buy a Car</h3>
+          <p class="text-sm text-base-content/70">New and used cars available across Kenya.</p>
+          <a href="{% url 'listing'%}" class="btn btn-accent btn-sm mt-4">See Cars</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
