@@ -1,4 +1,5 @@
 asgiref==3.8.1
+dj-database-url==3.0.1
 Django==5.2
 Django-Accounts==0.1
 django-crispy-forms==2.4
@@ -12,4 +13,5 @@ git-filter-repo==2.47.0
 gunicorn==23.0.0
 packaging==25.0
 pillow==11.2.1
+psycopg2-binary==2.9.10
 sqlparse==0.5.3
