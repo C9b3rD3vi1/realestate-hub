@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Browse Listings{% endblock %}
+{% block content %}
+
+<section class="w-full py-12 space-y-20">
+
+  <!-- Page Heading -->
+  <div class="text-center">
+    <h1 class="text-5xl font-extrabold mb-4">Browse Listings</h1>
+    <p class="text-gray-500 text-lg">Find land, houses, or cars to buy or rent near you</p>
+  </div>
+
+  <!-- Quick Navigation -->
+  <nav class="flex justify-center gap-6 text-primary font-medium underline underline-offset-4 mb-8">
+    <a href="#land">🏞️ Land</a>
+    <a href="#housing">🏡 Housing</a>
+    <a href="#cars">🚗 Cars</a>
+  </nav>
+
+  <!-- Land Listings -->
+  <div id="land" class="bg-base-100 p-10 rounded-2xl shadow-lg mx-4">
+    <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">🏞️ Land Listings</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+      {% for item in land_listings %}
+        {% include "listing_card.html" with item=item %}
+      {% empty %}
+        <p class="text-gray-500">No land listings available.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Housing Listings -->
+  <div id="housing" class="bg-base-100 p-10 rounded-2xl shadow-lg mx-4">
+    <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">🏡 Housing Listings</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+      {% for item in housing_listings %}
+        {% include "listing_card.html" with item=item %}
+      {% empty %}
+        <p class="text-gray-500">No housing listings available.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Car Listings -->
+  <div id="cars" class="bg-base-100 p-10 rounded-2xl shadow-lg mx-4">
+    <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">🚗 Car Listings</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+      {% for item in car_listings %}
+        {% include "listing_card.html" with item=item %}
+      {% empty %}
+        <p class="text-gray-500">No car listings available.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+</section>
+
+{% endblock %}

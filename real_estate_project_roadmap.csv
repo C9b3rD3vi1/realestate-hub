@@ -1,0 +1,52 @@
+Title,Status,Body
+🔐 Custom User Model,To do,"Set up custom `User` model with role field (Buyer, Seller, Admin)."
+
+🔐 Signup/Login Views,To do,Create signup and login views with styled templates.
+
+🔐 Email Verification,To do,Enable email verification on registration (custom or via Django Allauth).
+
+🔐 Password Reset,To do,Enable password reset via email link.
+
+🏠 Listing Model,To do,"Create a `Listing` model with title, price, location, category, description, etc."
+
+
+🏠 CRUD Listings,To do,"Allow sellers to Create, Read, Update, and Delete listings."
+
+🏠 Listing Filters,To do,"Add filtering by category, price, and location."
+
+🏠 Search & Sort,To do,Implement keyword search and sort by price or date.
+
+📸 Image Upload,To do,Allow multiple images per listing with file validations.
+
+📸 Video/360 Upload (Optional),To do,Enable video upload or 360° embedding for premium listings.
+
+📸 Media Handling,To do,Configure media storage in development.
+
+🗺️ Add Geolocation Fields,To do,Add latitude and longitude fields to listings.
+
+🗺️ Map Integration,To do,Integrate Google Maps or OpenStreetMap to show listing location.
+
+🗺️ Location Filters,To do,Allow filtering listings by location.
+
+✉️ Contact Form,To do,Add a contact/inquiry form on each listing page.
+
+✉️ Send Inquiry Email,To do,Send emails to sellers when buyers inquire.
+
+✉️ In-App Messaging (Optional),To do,Create in-app messaging/chat system.
+
+🛠️ Admin Moderation,To do,Use Django Admin to manage users and listings.
+
+🛠️ Featured Listings,To do,Enable marking listings as featured/promoted.
+
+🛠️ Reports & Flags,To do,Allow users to report inappropriate listings.
+
+💰 Stripe Integration (Optional),To do,Integrate Stripe or PayPal for premium listing payments.
+💰 Promote Listings,To do,Allow sellers to boost listings via payment.
+
+💰 Track Transactions,To do,Track and show payment history for sellers.
+
+🎨 Responsive UI,To do,Ensure the entire UI is mobile-first and responsive.
+
+🎨 Homepage Design,To do,"Add a landing page with hero section, CTAs, and recent listings."
+
+🎨 Dark Mode (Optional),To do,Add dark/light mode toggle for users.

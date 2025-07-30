@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block title %}Contact Us - Real Estate Hub{% endblock %}
+
+{% block content %}
+<section class="py-20 bg-base-200 min-h-[70vh]">
+  <div class="container mx-auto px-4 max-w-2xl">
+    <!-- Heading -->
+    <div class="text-center mb-10">
+      <h2 class="text-4xl font-bold text-primary mb-3">Get in Touch</h2>
+      <p class="text-base-content text-lg">
+        Have questions? Need help? Fill out the form below and we’ll get back to you shortly.
+      </p>
+    </div>
+
+    <!-- Success Messages -->
+    {% if messages %}
+      <div class="mb-6 space-y-2">
+        {% for message in messages %}
+          <div class="alert alert-success shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m1 10H5a2 2 0 01-2-2V5a2 2 0 012-2h7" />
+            </svg>
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Contact Form -->
+    <!-- Load Lucide Icons (optional) -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <form method="post" id="contact-form" class="bg-base-100 p-8 rounded-2xl shadow-lg space-y-6 border border-neutral">
+      {% csrf_token %}
+    
+      <!-- Name -->
+      <div class="relative">
+        <label for="name" class="absolute left-12 top-2 text-sm text-neutral-500 pointer-events-none transition-all scale-90 origin-top-left">Full Name</label>
+        <div class="flex items-center border border-base-content/20 rounded-xl px-3 py-4 bg-base-100 focus-within:border-primary">
+          <i data-lucide="user" class="w-5 h-5 text-primary mr-3"></i>
+          <input type="text" name="name" id="name"
+            placeholder="Your full name"
+            class="w-full bg-transparent placeholder-neutral-400 text-base focus:outline-none"
+            required>
+        </div>
+      </div>
+    
+      <!-- Email -->
+      <div class="relative">
+        <label for="email" class="absolute left-12 top-2 text-sm text-neutral-500 pointer-events-none transition-all scale-90 origin-top-left">Email</label>
+        <div class="flex items-center border border-base-content/20 rounded-xl px-3 py-4 bg-base-100 focus-within:border-primary">
+          <i data-lucide="mail" class="w-5 h-5 text-primary mr-3"></i>
+          <input type="email" name="email" id="email"
+            placeholder="you@example.com"
+            class="w-full bg-transparent placeholder-neutral-400 text-base focus:outline-none"
+            required>
+        </div>
+      </div>
+    
+      <!-- Subject -->
+      <div class="relative">
+        <label for="subject" class="absolute left-12 top-2 text-sm text-neutral-500 pointer-events-none transition-all scale-90 origin-top-left">Subject</label>
+        <div class="flex items-center border border-base-content/20 rounded-xl px-3 py-4 bg-base-100 focus-within:border-primary">
+          <i data-lucide="tag" class="w-5 h-5 text-primary mr-3"></i>
+          <input type="text" name="subject" id="subject"
+            placeholder="Subject of your message"
+            class="w-full bg-transparent placeholder-neutral-400 text-base focus:outline-none"
+            required>
+        </div>
+      </div>
+    
+      <!-- Message -->
+      <div class="relative">
+        <label for="message" class="absolute left-12 top-2 text-sm text-neutral-500 pointer-events-none transition-all scale-90 origin-top-left">Message</label>
+        <div class="flex items-start border border-base-content/20 rounded-xl px-3 py-4 bg-base-100 focus-within:border-primary">
+          <i data-lucide="message-square" class="w-5 h-5 text-primary mr-3 mt-1"></i>
+          <textarea name="message" id="message" rows="5"
+            placeholder="Write your message here..."
+            class="w-full bg-transparent placeholder-neutral-400 text-base focus:outline-none resize-none"
+            required></textarea>
+        </div>
+      </div>
+    
+      <!-- Submit Button -->
+      <div class="form-control mt-4">
+        <button type="submit" id="submit-btn"
+          class="btn btn-primary btn-lg text-black bg-blue-500 text-lg font-semibold w-full transition-all flex items-center justify-center gap-2 rounded-xl">
+          <svg id="spinner" class="hidden animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg"
+            fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10"
+              stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
+          <span id="btn-text">Send Message</span>
+        </button>
+      </div>
+    </form>
+    
+    <!-- Activate icons -->
+    <script>
+      lucide.createIcons();
+    </script>
+
+
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById("contact-form");
+  const btn = document.getElementById("submit-btn");
+  const btnText = document.getElementById("btn-text");
+  const spinner = document.getElementById("spinner");
+
+  form.addEventListener("submit", function () {
+    btn.disabled = true;
+    btn.classList.add("opacity-70");
+    btnText.textContent = "Sending...";
+    spinner.classList.remove("hidden");
+  });
+</script>
+
+{% endblock %}

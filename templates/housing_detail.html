@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}{{ house.title }} - Property Details{% endblock %}
+
+{% block content %}
+<section class="min-h-screen bg-base-200 py-6">
+  <div class="w-full bg-base-100 p-4 md:p-6 rounded-none shadow-lg">
+    <div class="grid md:grid-cols-2 gap-4 md:gap-8">
+      <div>
+        <img src="{{ house.image.url }}" alt="{{ house.title }}" class="w-full h-72 md:h-96 object-cover rounded-lg" />
+      </div>
+
+      <!-- House Details -->
+      <div>
+        <h1 class="text-3xl font-bold text-primary mb-2">{{ house.title }}</h1>
+        <p class="text-sm text-gray-600 mb-2">Location: <span class="font-medium">{{ house.location }}</span></p>
+        <div class="text-xl font-semibold text-success mb-2">Price :KSh {{ house.price|floatformat:2 }}</div>
+        <div class="text-xl font-semibold text-success mb-2">House Type: {{ house.house_type }}</div>
+        
+        <div class="text-sm text-gray-600 mb-2">Size: {{ house.size }}</div>
+
+        <!-- Availability -->
+        <div class="mb-4">
+          <div class="badge text-green-500 {{ house.is_available|yesno:'badge-success,badge-error' }}">
+            {{ house.is_available|yesno:'Available,Not Available' }}
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="prose max-w-none mb-4">
+          <p>{{ house.description }}</p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex flex-wrap gap-3">
+          <a href="mailto:{{ house.owner.email }}" class="btn btn-primary btn-sm">Contact Owner</a>
+          <button onclick="navigator.share({title: '{{ house.title }}', url: window.location.href})" class="btn btn-accent btn-sm">Share</button>
+          <a href="{% url 'listing' %}?location={{ house.location }}" class="btn btn-outline btn-sm">Similar Listings</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

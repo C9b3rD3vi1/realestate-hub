@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Your Profile{% endblock %}
+
+{% block content %}
+<section class="min-h-screen flex items-center justify-center bg-base-200 px-6 py-16">
+  <div class="w-full max-w-3xl bg-base-100 p-10 rounded-2xl shadow-2xl motion-safe:animate-fadeInUp duration-700">
+    <h2 class="text-4xl font-bold mb-8 text-center">Profile</h2>
+    
+    <div class="grid md:grid-cols-2 gap-8">
+      
+      <!-- Profile Picture -->
+      <div class="flex justify-center items-center">
+        {% if profile.profile_picture %}
+          <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="w-48 h-48 rounded-full shadow-lg object-cover">
+        {% else %}
+          <div class="w-48 h-48 rounded-full bg-base-300 flex items-center justify-center text-xl">
+            No Image
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Profile Info -->
+      <div class="space-y-4">
+        <p><span class="font-semibold">Username:</span> {{ profile.user.username }}</p>
+        <p><span class="font-semibold">Email:</span> {{ profile.user.email }}</p>
+        <p><span class="font-semibold">Phone:</span> {{ profile.phone_number }}</p>
+        <p><span class="font-semibold">Address:</span> {{ profile.address }}</p>
+        <p><span class="font-semibold">Date of Birth:</span> {{ profile.date_of_birth }}</p>
+        <p><span class="font-semibold">Bio:</span><br>{{ profile.bio }}</p>
+      </div>
+
+    </div>
+
+    <div class="text-center mt-10">
+      <a href="{% url 'profile' %}" class="btn btn-primary">Edit Profile</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

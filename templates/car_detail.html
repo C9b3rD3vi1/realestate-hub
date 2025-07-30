@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}{{ car.title }} - Car Details{% endblock %}
+
+{% block content %}
+<section class="min-h-screen bg-base-200 py-10">
+  <div class="container mx-auto px-4 motion-safe:animate-fadeIn">
+    
+    <!-- Back to Listings Floating Button -->
+    <a href="{% url 'listing' %}" class="fixed bottom-6 right-6 z-50 btn btn-accent shadow-xl">
+      ← Back to Listings
+    </a>
+
+    <div class="bg-base-100 shadow-xl rounded-xl p-6 md:p-10 grid md:grid-cols-2 gap-8 overflow-hidden">
+      
+      <!-- Swipeable Carousel -->
+      <div class="relative">
+        <div class="carousel rounded-box max-w-full overflow-hidden">
+          {% for image in car.images.all %}
+          <div class="carousel-item w-full">
+            <img src="{{ image.url }}" class="w-full h-72 md:h-[400px] object-cover" alt="Car Image" />
+          </div>
+          {% empty %}
+          <div class="carousel-item w-full">
+            <img src="{{ car.image.url }}" class="w-full h-72 md:h-[400px] object-cover" alt="{{ car.title }}" />
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Car Details -->
+      <div class="space-y-4">
+        <h1 class="text-3xl font-bold text-primary">{{ car.title }}</h1>
+        <p class="text-base text-gray-500 leading-relaxed">{{ car.description }}</p>
+
+        <!-- Badges with Icons -->
+        <div class="flex flex-wrap gap-3 mt-4">
+          <div class="badge badge-outline flex items-center gap-1">
+            <i class="fa-solid fa-car text-primary"></i> {{ car.make }}
+          </div>
+          <div class="badge badge-outline flex items-center gap-1">
+            <i class="fa-solid fa-road text-primary"></i> {{ car.model }}
+          </div>
+          <div class="badge badge-outline flex items-center gap-1">
+            <i class="fa-solid fa-calendar text-primary"></i> {{ car.year_of_manufacture }}
+          </div>
+          <div class="badge badge-outline flex items-center gap-1">
+            <i class="fa-solid fa-cogs text-primary"></i> {{ car.transmission }}
+          </div>
+          <div class="badge badge-outline flex items-center gap-1">
+            <i class="fa-solid fa-gas-pump text-primary"></i> {{ car.fuel_type }}
+          </div>
+          <div class="badge badge-outline flex items-center gap-1">
+            <i class="fa-solid fa-tachometer-alt text-primary"></i> {{ car.mileage }} km
+          </div>
+        </div>
+
+        <!-- Features -->
+        {% if car.features %}
+        <div class="mt-4">
+          <h2 class="text-md font-semibold text-neutral">Features:</h2>
+          <p class="text-sm text-gray-600">{{ car.features }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Price and Location -->
+        <div class="mt-6 space-y-2">
+          <p class="text-xl font-bold text-success">KSh {{ car.price|floatformat:2 }}</p>
+          <p class="flex items-center text-sm text-gray-700">
+            <i class="fa-solid fa-location-dot text-primary mr-2"></i> {{ car.location }}
+          </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <a href="/contact/" class="btn btn-primary w-full">Contact Seller</a>
+          <a href="#" class="btn btn-outline w-full">Book Test Drive</a>
+          <button class="btn btn-secondary w-full sm:col-span-2">
+            <i class="fa-solid fa-heart mr-2"></i> Favorite This Car
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

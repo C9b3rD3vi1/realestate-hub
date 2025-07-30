@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Sign Up - Real Estate Hub{% endblock %}
+{% block content %}
+{% load widget_tweaks %}
+
+<section class="min-h-screen flex items-center justify-center bg-base-200 px-6 py-24">
+  <div class="w-full max-w-2xl bg-base-100 p-10 rounded-2xl shadow-xl border border-gray-300 motion-safe:animate-fadeInUp duration-700">
+    <h2 class="text-4xl font-bold text-center text-primary mb-10 motion-safe:animate-fadeInDown">
+      Create Your Account
+    </h2>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-4">
+          <span>{{ message }}</span>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="space-y-6 motion-safe:animate-fadeInUp">
+      {% csrf_token %}
+
+      {% for field in form %}
+        <div class="form-control">
+          <label class="label font-medium text-base-content">
+            {{ field.label_tag }}
+          </label>
+          {{ field|add_class:"w-full px-4 py-3 rounded-md border border-gray-400 bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" }}
+
+          {% if field.help_text %}
+            <p class="text-sm text-gray-500 mt-1">{{ field.help_text }}</p>
+          {% endif %}
+
+          {% for error in field.errors %}
+            <p class="text-sm text-red-500 mt-1">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endfor %}
+
+      <button
+        type="submit"
+        id="signupBtn"
+        class="btn btn-primary text-blue w-full px-6 py-4 text-lg shadow-xl hover:scale-[1.02] hover:shadow-2xl hover:brightness-105 transition duration-300 ease-in-out rounded-xl tracking-wide font-semibold flex items-center justify-center gap-3"
+      >
+        <svg id="spinner" class="animate-spin h-6 w-6 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none"
+          viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor"
+            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+        </svg>
+        <span id="signupText">Sign Up</span>
+      </button>
+    </form>
+
+    <!-- Social login divider -->
+    <div class="relative my-10 flex items-center justify-center">
+      <span class="px-4 bg-base-100 text-base-content/70 text-sm font-medium z-10">OR</span>
+      <p class="px-4 bg-base-100 text-base-content/70 text-sm font-medium z-10">Continue with</p>
+      <div class="absolute inset-0 border-t border-base-300"></div>
+    </div>
+    
+    <div class="flex flex-col md:flex-row md:justify-center md:space-x-6 space-y-4 md:space-y-0 motion-safe:animate-fadeInUp">
+      <!-- Google Button -->
+      <a href="#" class="btn w-full md:w-64 bg-white border border-gray-300 hover:shadow-md transition duration-200 flex items-center justify-start gap-4">
+        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" class="w-7 h-7" />
+        <span class="text-sm text-gray-800 font-medium">Google</span>
+      </a>
+
+      <!-- GitHub Button -->
+      <a href="#" class="btn w-full md:w-64 bg-gray-900 hover:bg-black text-white transition duration-200 flex items-center justify-start gap-4">
+        <img src="https://www.svgrepo.com/show/475647/github-color.svg" alt="GitHub Logo" class="w-7 h-7" />
+        <span class="text-sm font-medium">GitHub</span>
+      </a>
+    </div>
+
+    <p class="text-center text-sm mt-10">
+      Already have an account?
+      <a href="{% url 'login' %}" class="link link-primary font-medium hover:underline">Login here</a>
+    </p>
+  </div>
+</section>
+
+{% endblock %}
+
+<script>
+  const form = document.querySelector("form");
+  const signupBtn = document.getElementById("signupBtn");
+  const spinner = document.getElementById("spinner");
+  const signupText = document.getElementById("signupText");
+
+  form?.addEventListener("submit", () => {
+    signupBtn.disabled = true;
+    signupText.textContent = "Signing Up...";
+    spinner.classList.remove("hidden");
+  });
+</script>

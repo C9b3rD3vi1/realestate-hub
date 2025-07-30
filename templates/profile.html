@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<section class="min-h-screen bg-base-200 py-12 px-6">
+  <div class="max-w-3xl mx-auto bg-base-100 p-8 shadow-2xl rounded-2xl">
+    <h2 class="text-3xl font-bold mb-6 text-center">My Profile</h2>
+
+    <div role="tablist" class="tabs tabs-boxed justify-center mb-8 bg-base-300 p-2 rounded-xl shadow-lg">
+      <a role="tab" id="tab-view"
+         onclick="switchTab('view')"
+         class="tab tab-active text-green-500 bg-primary hover:bg-primary-focus focus:outline-none transition duration-300 ease-in-out rounded-lg px-6 py-2 font-semibold shadow">
+        View
+      </a>
+      <a role="tab" id="tab-edit"
+         onclick="switchTab('edit')"
+         class="tab text-primary bg-white hover:bg-primary hover:text-blue-500 focus:outline-none transition duration-300 ease-in-out rounded-lg px-6 py-2 font-semibold shadow">
+        Edit
+      </a>
+    </div>
+
+    <!-- View Tab -->
+    <div id="view-section">
+      <div class="space-y-4">
+        <div class="flex items-center gap-4">
+          {% if profile.profile_picture %}
+            <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="w-24 h-24 rounded-full object-cover" />
+          {% else %}
+            <div class="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center text-xl">N/A</div>
+          {% endif %}
+          <div>
+            <h3 class="text-xl font-semibold">{{ request.user.username }}</h3>
+            <p class="text-sm text-gray-500">{{ request.user.email }}</p>
+          </div>
+        </div>
+        <p><strong>Bio:</strong> {{ profile.bio }}</p>
+        <p><strong>Phone Number:</strong> {{ profile.phone_number }}</p>
+        <p><strong>Address:</strong> {{ profile.address }}</p>
+        <p><strong>Date of Birth:</strong> {{ profile.date_of_birth }}</p>
+      </div>
+    </div>
+
+    <!-- Edit Tab -->
+    <div id="edit-section" class="hidden mt-6">
+      <form method="POST" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        
+        {% for field in form %}
+          <div>
+            <label class="block mb-1 font-medium">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+              <p class="text-sm text-gray-500">{{ field.help_text }}</p>
+            {% endif %}
+            {% for error in field.errors %}
+              <p class="text-sm text-red-500">{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endfor %}
+        
+        <button type="submit" class="btn btn-primary">Update Profile</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  function switchTab(tab) {
+    document.getElementById("view-section").classList.toggle("hidden", tab !== "view");
+    document.getElementById("edit-section").classList.toggle("hidden", tab !== "edit");
+    document.getElementById("tab-view").classList.toggle("tab-active", tab === "view");
+    document.getElementById("tab-edit").classList.toggle("tab-active", tab === "edit");
+  }
+</script>
+{% endblock %}

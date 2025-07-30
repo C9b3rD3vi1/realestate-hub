@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+
+# Virtual env
+venv/
+
+# Django stuff
+*.pyc
+*.pyo
+*.pyd
+db.sqlite3
+.env
+
+# VSCode
+.vscode/
+
+# config
+config.json
+config.yaml
+.env
+
+# secrets
+
+
+#tailwindcss
+static/css/tailwindcss

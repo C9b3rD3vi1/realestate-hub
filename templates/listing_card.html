@@ -1,0 +1,45 @@
+<div class="card w-full max-w-md bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out rounded-3xl border border-base-200 group">
+  <figure class="relative">
+    <img src="{{ item.image.url }}" alt="{{ item.title }}" class="h-64 w-full object-cover transition duration-300 group-hover:scale-105 rounded-t-3xl" />
+    
+    <!-- Badge -->
+    <div class="absolute top-4 right-4">
+      <span class="badge badge-success badge-lg bg-green-500 shadow-lg text-white">For Sale</span>
+    </div>
+
+    <!-- Optional Category Badge (left side) -->
+    {% if item.category %}
+    <div class="absolute top-4 left-4">
+      <span class="badge badge-secondary text-white shadow-md">
+        {{ item.category }}
+      </span>
+    </div>
+    {% endif %}
+  </figure>
+
+  <div class="card-body px-6 py-5 space-y-3">
+    <h2 class="text-2xl font-semibold text-base-content truncate group-hover:text-primary transition duration-200">
+      {{ item.title }}
+    </h2>
+
+    <div class="flex items-center text-sm text-gray-500">
+      <i class="fa-solid fa-location-dot text-primary mr-2"></i>
+      <i class="fa-solid fa-location-dot text-primary mr-2"></i> {{ item.location }}
+    </div>
+
+    <div class="text-xl font-bold text-primary">
+      Ksh {{ item.price }}
+    </div>
+
+    {% if item.size %}
+    <p class="text-sm text-gray-600">Size: {{ item.size }}</p>
+    {% endif %}
+
+    <div class="card-actions mt-4 justify-end">
+      <a href="{{ item.get_absolute_url }}" class="btn btn-primary font-bold bg-blue-500 btn-sm btn-outline hover:text-white hover:shadow-md transition">
+        View Details
+        <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+      </a>
+    </div>
+  </div>
+</div>
