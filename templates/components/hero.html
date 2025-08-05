@@ -1,5 +1,3 @@
-
-
 {% load static %}
 
 <!-- components/hero.html -->
@@ -8,7 +6,11 @@
     images: [
       '{% static "images/heroimage.jpg" %}',
       '{% static "images/heroimage2.jpg" %}',
-      '{% static "images/heroimage3.webp" %}'
+      '{% static "images/heroimage3.webp" %}',
+      '{% static "images/heroimage4.webp" %}',
+      '{% static "images/heroimage5.webp" %}',
+      '{% static "images/heroimage6.webp" %}',
+      '{% static "images/heroimage7.webp" %}'
     ],
     index: 0, zoom: true,
     init() {
@@ -37,5 +39,42 @@
         Browse Listings
       </a>
     </div>
+  </div>
+</section>
+
+
+<section class="py-24 bg-white px-6">
+  <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 items-center">
+    
+    <!-- Left Content -->
+    <div class="lg:w-1/2" data-aos="fade-right">
+      <p class="text-sm text-black font-semibold text-orange-600 uppercase mb-3">About Our Agency</p>
+      <h2 class="text-4xl font-bold text-gray-900 leading-tight mb-6">
+        We Build Trust, <br />
+        We Find Homes
+      </h2>
+      <p class="text-gray-600 mb-6">
+        At Luxe Living, we don’t just sell houses. We match dreams to doors. Our expert agents,
+        global network, and concierge approach ensure your next move is the right one.
+      </p>
+
+      <!-- Features -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 text-sm font-medium text-gray-700">
+        <div class="flex items-center gap-2"><i class="fa fa-check-circle text-orange-500"></i> Verified Listings</div>
+        <div class="flex items-center gap-2"><i class="fa fa-star text-orange-500"></i> Trusted Agents</div>
+        <div class="flex items-center gap-2"><i class="fa fa-clock text-orange-500"></i> 24/7 Support</div>
+      </div>
+
+      <a href="#properties" class="btn btn-primary text-white px-6">Explore Listings</a>
+    </div>
+
+    <!-- Right Image Grid -->
+    <div class="lg:w-1/2 grid grid-cols-2 gap-4" data-aos="fade-left">
+      <img src="https://ix-marketing.imgix.net/case-study_tile_rew.png?auto=format,compress&w=1946" class="w-full rounded-lg shadow-lg object-cover h-52" alt="Luxury Room" />
+      <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2" class="w-full rounded-lg shadow-lg object-cover h-52" alt="Penthouse" />
+      <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" class="w-full rounded-lg shadow-lg object-cover h-52" alt="Loft Interior" />
+      <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be" class="w-full rounded-lg shadow-lg object-cover h-52" alt="Exterior" />
+    </div>
+
   </div>
 </section>

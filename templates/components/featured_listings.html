@@ -1,65 +1,50 @@
 {% load static %}
-<section class="py-24 bg-gradient-to-br from-base-300 via-base-200 to-base-100 w-full overflow-hidden">
+
+<head>
+  <<link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      AOS.init({ duration: 800, easing: 'ease-in-out', once: true });
+    });
+  </script>
+</head>
+
+
+<section class="py-24 bg-gradient-to-br from-base-300 via-base-200 to-base-100">
   <div class="max-w-screen-xl mx-auto px-4">
-    <h2 class="text-5xl font-extrabold text-center text-primary mb-14">Featured Listings</h2>
+    <h2 class="text-5xl font-extrabold text-center text-primary mb-14" data-aos="fade-down">
+      Featured Listings
+    </h2>
 
     {% if featured_listings %}
-    <div 
-      x-data="{
-        start() {
-          const el = this.$refs.track;
-          this.interval = setInterval(() => {
-            if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 1) {
-              el.scrollTo({ left: 0, behavior: 'auto' });
-            } else {
-              el.scrollBy({ left: 1, behavior: 'smooth' });
-            }
-          }, 30);
-        },
-        stop() {
-          clearInterval(this.interval);
-        }
-      }" 
-      x-init="start()" 
-      @mouseenter="stop()" 
-      @mouseleave="start()" 
-      x-ref="track" 
-      class="overflow-x-auto whitespace-nowrap scroll-smooth"
-    >
-      <div class="flex space-x-6 min-w-max px-2">
-        {% for listing in featured_listings %}
-        <div class="w-[22rem] flex-shrink-0">
-          <div class="card bg-base-100 shadow-2xl border border-base-300 hover:scale-105 transition-transform duration-300 h-full">
-            <figure>
-              <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="h-56 w-full object-cover rounded-t-xl" />
-            </figure>
-            <div class="card-body px-6 py-4">
-              <h3 class="card-title text-xl font-bold text-primary mb-1">{{ listing.title }}</h3>
-              <p class="text-base-content/70 text-sm mb-2">{{ listing.description|truncatechars:100 }}</p>
-              <p class="text-secondary text-lg font-semibold">KES {{ listing.price }}</p>
-              <a href="#" class="btn btn-sm btn-outline btn-primary mt-3">View Details</a>
-            </div>
-          </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for listing in featured_listings %}
+      <div 
+        class="group relative card bg-base-100 border border-base-300 shadow-lg hover:shadow-xl transition duration-300 overflow-hidden"
+        data-aos="flip-up" data-aos-delay="{{ forloop.counter0|add:"1" }}00"
+      >
+        <!-- Image -->
+        <figure class="h-56 overflow-hidden rounded-t-xl">
+          <img src="{{ listing.image.url }}" alt="{{ listing.title }}"
+               class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
+        </figure>
+
+        <!-- Card Body -->
+        <div class="card-body px-6 py-4">
+          <h3 class="card-title text-xl font-bold text-primary mb-2">{{ listing.title }}</h3>
+          <p class="text-sm text-base-content/70 mb-2">{{ listing.description|truncatechars:80 }}</p>
+          <p class="text-lg font-semibold text-secondary mb-4">KES {{ listing.price }}</p>
+          <a href="" class="btn btn-outline btn-primary btn-sm w-full">View Details</a>
         </div>
-        {% endfor %}
-        
-        <!-- Duplicate to simulate infinite loop -->
-        {% for listing in featured_listings %}
-        <div class="w-[22rem] flex-shrink-0 opacity-70">
-          <div class="card bg-base-100 shadow-xl border border-base-300 h-full">
-            <figure>
-              <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="h-56 w-full object-cover rounded-t-xl" />
-            </figure>
-            <div class="card-body px-6 py-4">
-              <h3 class="card-title text-xl font-bold text-primary mb-1">{{ listing.title }}</h3>
-              <p class="text-base-content/70 text-sm mb-2">{{ listing.description|truncatechars:100 }}</p>
-              <p class="text-secondary text-lg font-semibold">KES {{ listing.price }}</p>
-              <a href="#" class="btn btn-sm btn-outline btn-primary mt-3">View Details</a>
-            </div>
-          </div>
+
+        <!-- Hover Overlay -->
+        <div class="absolute inset-0 bg-black/80 text-white opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-center items-center px-6 text-center">
+          <p class="text-sm mb-3">{{ listing.description|truncatechars:180 }}</p>
+          <a href="#" class="btn btn-sm btn-accent mt-2">More Info</a>
         </div>
-        {% endfor %}
       </div>
+      {% endfor %}
     </div>
     {% else %}
     <p class="text-center text-base-content/60 italic">No featured listings available at the moment.</p>

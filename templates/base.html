@@ -21,6 +21,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  
 </head>
 
 <body class="bg-base-100 text-base-content font-sans">
@@ -109,35 +111,28 @@
   {% block content %}{% endblock %}
 </main>
 
-<!-- ✉️ Newsletter Modal
-<div x-data="{ open: false, email: '', toast: false }">
-  <!-- Button 
-  <button @click="open = true" class="btn btn-primary fixed bottom-6 right-6 z-50">📬 Subscribe</button>
+<!-- Newsletter Section -->
+<section class="bg-base-100 dark:bg-base-200 py-12 px-4">
+  <div class="max-w-md mx-auto text-center space-y-4">
+    <h2 class="text-2xl font-bold text-base-content dark:text-base-content-dark">
+      Stay Updated
+    </h2>
+    <p class="text-base-content/70 dark:text-base-content-dark/70">
+      Get the latest news and offers straight to your inbox.
+    </p>
 
-  <!-- Modal
-  <div x-show="open" class="fixed inset-0 bg-black/50 z-40 flex items-end justify-center" @click.away="open = false">
-    <div class="bg-base-100 p-6 w-full max-w-md rounded-t-2xl shadow-lg">
-      <h3 class="text-lg font-bold mb-2">Subscribe to Newsletter</h3>
-      <form method="POST" action="{% url 'subscribe_newsletter' %}" @submit.prevent="
-          $el.submit(); open = false; toast = true; setTimeout(() => toast = false, 3000)">
-        {% csrf_token %}
-        <input type="email" name="email" x-model="email" placeholder="you@example.com"
-               class="input input-bordered w-full mb-3" required />
-        <div class="flex justify-end gap-2">
-          <button type="button" @click="open = false" class="btn">Cancel</button>
-          <button type="submit" class="btn btn-primary">Subscribe</button>
-        </div>
-      </form>
-    </div>
-  </div>  
- 
-
-  <!-- Toast
-  <div x-show="toast" x-transition class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-success text-white px-4 py-2 rounded-lg shadow">
-    ✅ Subscribed successfully!
+    <form class="space-y-3">
+      <div class="flex">
+        <input type="email" placeholder="digitalcatalyst@example.com"
+          class="input input-bordered rounded-r-none focus:ring-2 focus:ring-primary flex-1" required />
+        <button type="submit" class="btn btn-primary rounded-l-none px-6">Subscribe </button>
+      </div>
+      <p class="text-xs text-base-content/60">
+        We respect your privacy. <a href="#" class="link link-primary">Privacy Policy</a>.
+      </p>
+    </form>
   </div>
-</div>  
--->
+</section>
 
 
 <!-- 📥 Footer -->

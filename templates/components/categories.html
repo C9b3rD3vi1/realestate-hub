@@ -1,45 +1,104 @@
 {% load static %}
 
-<section class="bg-gradient-to-br from-base-100 via-base-200 to-base-100 py-20">
-  <div class="max-w-screen-xl mx-auto px-6 text-center">
-    <h2 class="text-4xl font-bold text-primary mb-14">What Are You Looking For?</h2>
+<section class="py-24 bg-white px-6">
+  <div class="max-w-7xl mx-auto space-y-24">
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-      <!-- Houses -->
-      <div class="card bg-base-100 border border-base-300 shadow-xl hover:shadow-2xl transition-transform duration-300 group hover:scale-[1.03]">
-        <figure class="px-6 pt-6">
-          <img src="{% static 'images/estate.jpeg' %}" alt="Buy a Home" class="rounded-xl h-44 w-full object-cover group-hover:opacity-90 transition duration-300" />
-        </figure>
-        <div class="card-body items-center text-center">
-          <h3 class="card-title text-primary text-lg font-bold">🏡 Buy a Home</h3>
-          <p class="text-sm text-base-content/70">Find your dream home from trusted sellers and agents.</p>
-          <a href="{% url 'listing'%}" class="btn btn-primary btn-sm mt-4">Browse Homes</a>
-        </div>
+    <!-- CARD 1 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center" data-aos="fade-up">
+      <!-- Text -->
+      <div>
+        <h2 class="text-4xl font-extrabold text-gray-900 mb-4">Find Your Dream Property</h2>
+        <p class="text-lg text-gray-600 mb-6">
+            Step into your dream lifestyle with our curated collection of homes across Kenya.
+            Whether you're looking for a serene countryside retreat, a modern city apartment, or a family home in a secure estate, 
+            we connect you with verified listings that match your goals. Our homes are vetted for quality, legal clarity,
+            and investment potential — making your journey to ownership both smooth and secure.
+        </p>
+        <a href="{% url 'listing' %}" class="inline-flex items-center text-blue-600 font-medium hover:text-blue-800 transition-all">
+          Browse Listings
+          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </a>
       </div>
 
-      <!-- Land -->
-      <div class="card bg-base-100 border border-base-300 shadow-xl hover:shadow-2xl transition-transform duration-300 group hover:scale-[1.03]">
-        <figure class="px-6 pt-6">
-          <img src="{% static 'images/land.png' %}" alt="Find Land" class="rounded-xl h-44 w-full object-cover group-hover:opacity-90 transition duration-300" />
-        </figure>
-        <div class="card-body items-center text-center">
-          <h3 class="card-title text-primary text-lg font-bold">🌍 Find Land</h3>
-          <p class="text-sm text-base-content/70">Perfect plots for farming, building, or investment.</p>
-          <a href="{% url 'listing' %}" class="btn btn-secondary btn-sm mt-4">Explore Plots</a>
-        </div>
+      <!-- Image -->
+      <div class="overflow-hidden rounded-2xl shadow-xl" data-aos="fade-up" data-aos-delay="150">
+        <img src="{% static 'images/estate.jpeg' %}" alt="Luxury Home"
+          class="w-full h-80 object-cover transition-transform duration-700 hover:scale-105" loading="lazy" />
+      </div>
+    </div>
+
+    <!-- CARD 2 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center" data-aos="fade-up" data-aos-delay="200">
+      <!-- Image -->
+      <div class="md:order-2 overflow-hidden rounded-2xl shadow-xl">
+        <img src="{% static 'images/land.webp' %}" alt="Land Plot"
+          class="w-full h-80 object-cover transition-transform duration-700 hover:scale-105" loading="lazy" />
       </div>
 
-      <!-- Cars -->
-      <div class="card bg-base-100 border border-base-300 shadow-xl hover:shadow-2xl transition-transform duration-300 group hover:scale-[1.03]">
-        <figure class="px-6 pt-6">
-          <img src="{% static 'images/cars1.webp' %}" alt="Buy a Car" class="rounded-xl h-44 w-full object-cover group-hover:opacity-90 transition duration-300" />
-        </figure>
-        <div class="card-body items-center text-center">
-          <h3 class="card-title text-primary text-lg font-bold">🚗 Buy a Car</h3>
-          <p class="text-sm text-base-content/70">New and used cars available across Kenya.</p>
-          <a href="{% url 'listing'%}" class="btn btn-accent btn-sm mt-4">See Cars</a>
-        </div>
+      <!-- Text -->
+      <div class="md:order-1">
+        <h2 class="text-4xl font-extrabold text-gray-900 mb-4">Premium Land Plots</h2>
+        <p class="text-lg text-gray-600 mb-6">
+            Unlock investment opportunities with access to premium land parcels across the country. 
+            From fertile farmland and scenic residential plots to high-potential commercial spaces,
+            every listing is carefully screened for clean title deeds and development readiness.
+            Whether you're building a home, launching a business, or expanding your real estate portfolio, 
+            we help you find land that grows in value — and possibility.
+        </p>
+        <a href="{% url 'listing' %}" class="inline-flex items-center text-blue-600 font-medium hover:text-blue-800 transition-all">
+          Explore Land
+          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </a>
       </div>
+    </div>
+
+    <!-- CARD 3 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center" data-aos="fade-up" data-aos-delay="300">
+      <!-- Text -->
+      <div>
+        <h2 class="text-4xl font-extrabold text-gray-900 mb-4">Quality Vehicles</h2>
+        <p class="text-lg text-gray-600 mb-6">
+            Explore a range of new and pre-owned vehicles that meet every style,
+            budget, and performance need. From rugged off-roaders to fuel-efficient city rides, each vehicle comes inspected and ready for the road. 
+            Our platform simplifies your car search with transparency,
+            verified dealers, and flexible purchase options — so you can drive away with confidence and peace of mind.
+        </p>
+        <a href="{% url 'listing' %}" class="inline-flex items-center text-blue-600 font-medium hover:text-blue-800 transition-all">
+          View Inventory
+          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- Image -->
+      <div class="overflow-hidden rounded-2xl shadow-xl" data-aos="fade-up" data-aos-delay="450">
+        <img src="{% static 'images/cars1.webp' %}" alt="Luxury Car"
+          class="w-full h-80 object-cover transition-transform duration-700 hover:scale-105" loading="lazy" />
+      </div>
+    </div>
+
+    <!-- Agency Statement -->
+    <div class="text-center pt-20" data-aos="fade-up" data-aos-delay="500">
+      <p class="text-2xl text-gray-700 max-w-3xl mx-auto">
+        We’re more than a real estate platform — we’re your trusted partner in finding the perfect property.
+      </p>
+      <p class="text-sm text-gray-500 mt-4">Trusted by thousands of clients across Kenya</p>
     </div>
   </div>
 </section>
+
+<!-- AOS Scripts (place before </body>) -->
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+<script>
+  AOS.init({
+    duration: 800,
+    easing: 'ease-in-out',
+    once: true
+  });
+</script>
