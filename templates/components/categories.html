@@ -1,6 +1,6 @@
 {% load static %}
 
-<section class="py-24 bg-white px-6">
+<section class="py-24 bg-gradient-to-br from-base-300 via-base-200 to-base-100">
   <div class="max-w-7xl mx-auto space-y-24">
 
     <!-- CARD 1 -->
@@ -47,11 +47,10 @@
             Whether you're building a home, launching a business, or expanding your real estate portfolio, 
             we help you find land that grows in value — and possibility.
         </p>
-        <a href="{% url 'listing' %}" class="inline-flex items-center text-blue-600 font-medium hover:text-blue-800 transition-all">
-          Explore Land
-          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
+        <a href="{% url 'listing' %}" 
+           class="btn bg-blue-500 from-success to-primary text-white shadow-md hover:shadow-lg">
+          View Lands
+          <svg class="w-5 h-5 ml-2">...</svg>
         </a>
       </div>
     </div>
@@ -67,11 +66,20 @@
             Our platform simplifies your car search with transparency,
             verified dealers, and flexible purchase options — so you can drive away with confidence and peace of mind.
         </p>
-        <a href="{% url 'listing' %}" class="inline-flex items-center text-blue-600 font-medium hover:text-blue-800 transition-all">
-          View Inventory
-          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
+        <a href="{% url 'listing' %}" 
+           class="btn btn-success hover:btn-primary transition-all duration-300 group">
+          <span class="flex items-center">
+            View Inventory
+            <svg class="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" 
+                 fill="none" 
+                 stroke="currentColor" 
+                 viewBox="0 0 24 24">
+              <path stroke-linecap="round" 
+                    stroke-linejoin="round" 
+                    stroke-width="2" 
+                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </span>
         </a>
       </div>
 
