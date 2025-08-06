@@ -83,6 +83,8 @@
 
       {% if user.is_authenticated %}
         <span class="text-neutral/70">Hi, {{ user.username }}</span>
+        <a href="{% url 'property_dashboard' %}" 
+            class="btn btn-sm btn-outline btn-primary hover:bg-orange-600 text-blue-500 dark:text-white-500 font-semibold px-4 py-2 rounded transition duration-300">Dashboard</a>
         <a href="{% url 'add_property' %}" 
             class="btn btn-sm btn-outline btn-primary hover:bg-orange-600 text-blue-500 dark:text-white-500 font-semibold px-4 py-2 rounded transition duration-300">Add Property</a>
         <a href="{% url 'profile' %}" class="btn btn-sm btn-outline btn-secondary">Profile</a>

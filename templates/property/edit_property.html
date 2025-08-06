@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<h1 class="text-4xl font-extrabold mb-10 text-blue-800 dark:text-gray-100 text-center tracking-tight">
+  Manage Property
+</h1>
+
+<div class="max-w-5xl mx-auto mt-16 px-8 py-10 bg-black-500 dark:bg-gray-900 rounded-2xl shadow-2xl transition-all duration-300">
+  <h2 class="text-4xl font-extrabold mb-10 text-orange-800 dark:text-gray-100 text-center tracking-tight">
+    Edit {{ category|title }} Property
+  </h2>
+
+  <form id="propertyForm" method="post" enctype="multipart/form-data" class="space-y-10">
+    {% csrf_token %}
+
+    <!-- Property Type (Read-Only Select) -->
+    <div>
+      <label for="property_type" class="select select-primary">
+        Property Type
+      </label>
+      <select id="property_type" name="property_type" disabled
+        class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white py-2 px-3 text-lg cursor-not-allowed">
+        <option value="">-- Choose --</option>
+        <option value="land" {% if category == 'land' %}selected{% endif %}>Land</option>
+        <option value="house" {% if category == 'house' %}selected{% endif %}>House</option>
+        <option value="car" {% if category == 'car' %}selected{% endif %}>Car</option>
+      </select>
+    </div>
+
+    <!-- Image Upload -->
+    <div>
+      <label for="images" class="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+        Upload Images
+      </label>
+      <input type="file" id="images" name="images" accept="image/*" multiple
+        class="block w-full text-sm text-gray-700 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        onchange="previewImages(event)">
+      <div id="imagePreview" class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- FORM FIELDS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-lg border
+      {% if category == 'land' %}
+        bg-green-50 dark:bg-green-900 border-green-200 dark:border-green-700
+      {% elif category == 'house' %}
+        bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700
+      {% else %}
+        bg-yellow-50 dark:bg-yellow-900 border-yellow-200 dark:border-yellow-700
+      {% endif %}
+    ">
+      {% for field in form %}
+        <div>
+          <label class="block text-sm font-bold mb-1
+            {% if category == 'land' %} text-green-900 dark:text-green-200
+            {% elif category == 'house' %} text-blue-900 dark:text-blue-200
+            {% else %} text-yellow-900 dark:text-yellow-200 {% endif %}
+          ">
+            {{ field.label }}
+          </label>
+
+          {% if field.name == "description" or field.name == "location" %}
+            {{ field|add_class:"textarea textarea-bordered w-full h-32 bg-white dark:bg-gray-800" }}
+          {% elif field.name == "is_featured" %}
+            <label class="flex items-center gap-2">
+              {{ field }}
+              <span>Featured Listing?</span>
+            </label>
+          {% else %}
+            {{ field|add_class:"w-full rounded-md border py-2 px-3 bg-white dark:bg-gray-800 text-black dark:text-white" }}
+          {% endif %}
+
+          {% if field.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ field.errors }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-between gap-4">
+      <a href="{% url 'property_dashboard' %}"
+        class="w-full bg-gray-700 hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-md shadow transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 text-center">
+        Cancel
+      </a>
+      <button type="submit"
+        class="w-full bg-orange-600 hover:bg-orange-700 text-black font-bold py-3 px-6 rounded-md shadow transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500">
+        Save Changes
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  function previewImages(event) {
+    const files = event.target.files;
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = "";
+
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.className = "h-32 w-full object-cover rounded-md border";
+        preview.appendChild(img);
+      }
+      reader.readAsDataURL(file);
+    });
+  }
+</script>
+{% endblock %}

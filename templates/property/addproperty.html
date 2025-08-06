@@ -101,6 +101,7 @@
 
 <!-- Preview Modal -->
 <!-- Right-side Sliding Preview Panel -->
+<div id="previewContent" class="p-4 space-y-4 text-gray-800 dark:text-gray-200 max-h-[70vh] overflow-y-auto">
 <div id="previewModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50">
   <div class="absolute right-0 top-0 h-full w-full sm:w-[90%] md:w-[75%] lg:w-[40%] bg-white dark:bg-gray-900 shadow-xl overflow-y-auto transition-transform duration-300 ease-in-out transform translate-x-full"
        id="previewPanel">
@@ -125,6 +126,7 @@
     </div>
   </div>
 </div>
+</div>  
 
 
 <!-- Scripts -->
@@ -192,11 +194,53 @@
   }
 
   function submitForm() {
+    const submitBtn = document.querySelector("#previewModal button[type='submit']");
+    if (submitBtn) submitBtn.disabled = true;
     closePreview();
     document.getElementById("propertyForm").submit();
   }
 
-  document.addEventListener('DOMContentLoaded', toggleForms);
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("property-form");
+    const requiredFields = form.querySelectorAll("[required]");
+  
+    requiredFields.forEach((field) => {
+      field.addEventListener("input", () => {
+        const errorEl = document.getElementById(`${field.id}-error`);
+        if (!field.validity.valid) {
+          field.classList.add("border-red-500");
+          if (errorEl) {
+            errorEl.classList.remove("hidden");
+            errorEl.textContent = field.validationMessage;
+          }
+        } else {
+          field.classList.remove("border-red-500");
+          if (errorEl) {
+            errorEl.classList.add("hidden");
+            errorEl.textContent = "";
+          }
+        }
+      });
+    });
+  
+    form.addEventListener("submit", (e) => {
+      let isValid = true;
+      requiredFields.forEach((field) => {
+        const errorEl = document.getElementById(`${field.id}-error`);
+        if (!field.checkValidity()) {
+          field.classList.add("border-red-500");
+          if (errorEl) {
+            errorEl.classList.remove("hidden");
+            errorEl.textContent = field.validationMessage;
+          }
+          isValid = false;
+        }
+      });
+      if (!isValid) {
+        e.preventDefault();
+      }
+    });
+  });
   
   function openPreview() {
     if (!validateForm()) return;

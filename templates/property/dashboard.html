@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-blue-800 dark:text-white">Your Properties</h1>
+    <a href="{% url 'add_property' %}" class="bg-blue-500 text-black-500  dark:text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-300">
+      <i class="fas fa-plus mr-2"></i>Add New Property
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    
+    <!-- HOUSING -->
+    {% for house in housing_properties %}
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-500 hover:scale-[1.02] animate-fadeIn">
+      <!-- Image Carousel -->
+      <div class="relative h-48 bg-gray-200" x-data="{ active: 0, total: {{ house.images.all|length }} }" x-init="setInterval(() => { active = (active + 1) % total }, 3000)">
+        {% for image in house.images.all %}
+          <img x-show="active === {{ forloop.counter0 }}" src="{{ image.image.url }}" alt="{{ house.title }}" class="w-full h-48 object-cover absolute inset-0 transition-opacity duration-500" style="display: none;">
+        {% endfor %}
+      </div>
+
+      <!-- Info -->
+      <div class="p-4">
+        <h3 class="text-lg font-semibold text-gray-800">{{ house.title }}</h3>
+        <p class="text-gray-600 text-sm mt-1"><i class="fas fa-map-marker-alt mr-1"></i>{{ house.location }}</p>
+        <p class="text-gray-900 font-bold mt-2">${{ house.price }}</p>
+
+        <div class="mt-3 pt-3 border-t border-gray-100 text-sm text-gray-600">
+          <span><i class="fas fa-bed mr-1"></i>{{ house.bedrooms }} beds</span>
+          <span class="ml-3"><i class="fas fa-bath mr-1"></i>{{ house.bathrooms }} baths</span>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-5 flex justify-end gap-2">
+          <a href="{{ house.get_absolute_url }}" class="btn bg-green-100 text-green-800 hover:bg-green-200">
+            <i class="fas fa-eye"></i> View
+          </a>
+          <a href="{% url 'edit_property' category='housing' slug=house.slug %}" class="btn bg-blue-100 text-blue-800 hover:bg-blue-200">
+            <i class="fas fa-edit"></i> Edit
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- LAND -->
+    {% for land in land_properties %}
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-500 hover:scale-[1.02] animate-fadeIn">
+      <div class="relative h-48 bg-gray-200" x-data="{ active: 0, total: {{ land.images.all|length }} }" x-init="setInterval(() => { active = (active + 1) % total }, 3000)">
+        {% for image in land.images.all %}
+          <img x-show="active === {{ forloop.counter0 }}" src="{{ image.image.url }}" alt="{{ land.title }}" class="w-full h-48 object-cover absolute inset-0 transition-opacity duration-500" style="display: none;">
+        {% endfor %}
+      </div>
+
+      <div class="p-4">
+        <h3 class="text-lg font-semibold text-gray-800">{{ land.title }}</h3>
+        <p class="text-gray-600 text-sm mt-1"><i class="fas fa-map-marker-alt mr-1"></i>{{ land.location }}</p>
+        <p class="text-gray-900 font-bold mt-2">${{ land.price }}</p>
+
+        <div class="mt-3 pt-3 border-t border-gray-100 text-sm text-gray-600">
+          <span><i class="fas fa-expand mr-1"></i>{{ land.area }} sqft</span>
+          <span class="ml-3"><i class="fas fa-layer-group mr-1"></i>{{ land.zoning_type }}</span>
+        </div>
+
+        <div class="mt-5 flex justify-end gap-2">
+          <a href="{{ land.get_absolute_url }}" class="btn bg-green-100 text-green-800 hover:bg-green-200">
+            <i class="fas fa-eye"></i> View
+          </a>
+          <a href="{% url 'edit_property' category='land' slug=land.slug %}" class="btn bg-blue-100 text-blue-800 hover:bg-blue-200">
+            <i class="fas fa-edit"></i> Edit
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- CARS -->
+    {% for car in car_properties %}
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-500 hover:scale-[1.02] animate-fadeIn">
+      <div class="relative h-48 bg-gray-200" x-data="{ active: 0, total: {{ car.images.all|length }} }" x-init="setInterval(() => { active = (active + 1) % total }, 3000)">
+        {% for image in car.images.all %}
+          <img x-show="active === {{ forloop.counter0 }}" src="{{ image.image.url }}" alt="{{ car.title }}" class="w-full h-48 object-cover absolute inset-0 transition-opacity duration-500" style="display: none;">
+        {% endfor %}
+      </div>
+
+      <div class="p-4">
+        <h3 class="text-lg font-semibold text-gray-800">{{ car.title }}</h3>
+        <p class="text-gray-600 text-sm mt-1"><i class="fas fa-map-marker-alt mr-1"></i>{{ car.location }}</p>
+        <p class="text-gray-900 font-bold mt-2">${{ car.price }}</p>
+
+        <div class="mt-3 pt-3 border-t border-gray-100 text-sm text-gray-600">
+          <span><i class="fas fa-tag mr-1"></i>{{ car.make }} {{ car.model }}</span>
+          <span class="ml-3"><i class="fas fa-calendar-alt mr-1"></i>{{ car.year }}</span>
+        </div>
+
+        <div class="mt-5 flex justify-end gap-2">
+          <a href="{{ car.get_absolute_url }}" class="btn bg-green-100 text-green-800 hover:bg-green-200">
+            <i class="fas fa-eye"></i> View
+          </a>
+          <a href="{% url 'edit_property' category='car' slug=car.slug %}" class="btn bg-blue-100 text-blue-800 hover:bg-blue-200">
+            <i class="fas fa-edit"></i> Edit
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Empty State -->
+    {% if not housing_properties and not land_properties and not car_properties %}
+    <div class="col-span-full text-center mt-10 p-10 bg-white shadow rounded-lg">
+      <i class="fas fa-home text-5xl text-gray-300 mb-4"></i>
+      <p class="text-gray-600 text-lg">You don't have any properties listed yet.</p>
+      <a href="{% url 'add_property' %}" class="inline-block mt-4 text-blue-600 hover:underline font-semibold">Add your first property</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- TailwindCSS Animations -->
+<style>
+  @keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.8s ease-in-out;
+  }
+
+  .btn {
+    @apply inline-flex items-center gap-1 px-4 py-1.5 rounded-full text-sm font-medium transition duration-300;
+  }
+</style>
+{% endblock %}

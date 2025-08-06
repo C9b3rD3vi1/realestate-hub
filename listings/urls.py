@@ -41,6 +41,10 @@ urlpatterns = [
      #path('add-house/', properties.add_house_property, name='add_housing_property'),
      #path('add-car/', properties.add_car_property, name='add_car_property'),
      path('addproperty/', properties.add_property, name='add_property'),
+     path('dashboard/', properties.property_dashboard, name='property_dashboard'),
+     path('edit/<str:category>/<slug:slug>/', properties.edit_property, name='edit_property'),
      
-
+    # flutterwave payment callback and configuration
+    path('payment/', properties.make_payment, name='make_payment'),
+    path('payment/callback/', properties.payment_callback, name='payment_callback'),
 ]

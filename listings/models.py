@@ -1,10 +1,13 @@
 from django.db import models
+from django.conf import settings
 from django.urls import reverse
 from django.utils.http import MAX_URL_LENGTH
 from django.utils.text import slugify
 from taggit.managers import TaggableManager
 from django.utils.regex_helper import Choice
 from django.contrib.auth.models import User, AbstractUser
+from django.utils import timezone
+from datetime import timedelta, datetime
 
 
 #Custom User model
@@ -381,3 +384,81 @@ class FAQ(models.Model):
 
     def __str__(self):
         return self.question
+
+# payment system
+class Payment(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    tx_ref = models.CharField("Transaction Reference", max_length=100, unique=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=10, default="KES")
+    status = models.CharField(max_length=20, default="pending")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Payment"
+        verbose_name_plural = "Payments"
+
+    def __str__(self):
+        return f"{self.user.username} - {self.tx_ref} - {self.status}"
+
+
+class Subscription(models.Model):
+    PLAN_FREE = 'free'
+    PLAN_PREMIUM = 'premium'
+    PLAN_BUSINESS = 'business'
+
+    PLAN_CHOICES = (
+        (PLAN_FREE, 'Free'),
+        (PLAN_PREMIUM, 'Premium'),
+        (PLAN_BUSINESS, 'Business'),
+    )
+
+    DURATION_CHOICES = (
+        (30, '1 Month'),
+        (90, '3 Months'),
+        (180, '6 Months'),
+        (365, '1 Year'),
+    )
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default=PLAN_FREE)
+    duration = models.PositiveIntegerField(choices=DURATION_CHOICES, default=30)  # in days
+    started_at = models.DateTimeField(default=timezone.now)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    auto_renew = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Subscription"
+        verbose_name_plural = "Subscriptions"
+
+    def is_active(self):
+        """Return True if subscription is premium/business and not expired."""
+        return (
+            self.plan != self.PLAN_FREE and
+            self.expires_at and
+            self.expires_at > timezone.now()
+        )
+
+    def days_remaining(self):
+        """Return days left before expiration."""
+        if self.expires_at:
+            return (self.expires_at - timezone.now()).days
+        return 0
+
+    def activate(self, plan, duration_days):
+        """Use this to set subscription on payment success."""
+        self.plan = plan
+        self.duration = duration_days
+        self.started_at = timezone.now()
+        self.expires_at = timezone.now() + timedelta(days=duration_days)
+        self.save()
+
+    def deactivate(self):
+        self.plan = self.PLAN_FREE
+        self.duration = 0
+        self.expires_at = None
+        self.save()
+
+    def __str__(self):
+        return f"{self.user.username} - {self.plan.capitalize()} ({self.duration}d)"

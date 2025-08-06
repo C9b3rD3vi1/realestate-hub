@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import dj_database_url
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -162,7 +163,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 LOGIN_URL = '/login'
 
-
+# Fluttervwave config
+FLW_PUBLIC_KEY = config('FLW_PUBLIC_KEY')
+FLW_SECRET_KEY = config('FLW_SECRET_KEY')
+FLW_ENCRYPTION_KEY = config('FLW_ENCRYPTION_KEY')
 
 # jazmin admin interface
 JAZZMIN_SETTINGS = {

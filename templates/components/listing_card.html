@@ -1,43 +1,46 @@
-<div class="card w-full max-w-md bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out rounded-2xl border border-base-200 group overflow-hidden">
-  <figure class="relative h-64 w-full">
-    <!-- Image with better alt text and loading optimization -->
+<div
+  class="card w-full max-w-md bg-base-100 border border-base-200 shadow-md rounded-2xl overflow-hidden transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl motion-safe:animate-fadeInUp"
+>
+
+  <!-- Image Section -->
+  <figure class="relative h-64 w-full overflow-hidden">
     <img 
       src="{{ item.image.url }}" 
       alt="{{ item.title }} property in {{ item.location }}" 
-      class="h-full w-full object-cover transition duration-300 group-hover:scale-105" 
+      class="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105" 
       loading="lazy"
       width="400"
       height="256"
     />
-    
-    <!-- Badges with your original style but improved contrast -->
+
+    <!-- Badges -->
     <div class="absolute top-4 right-4">
-      <span class="badge badge-lg bg-green-500 text-white shadow-md px-3 py-1 font-medium">
+      <span class="badge badge-lg bg-green-500 text-white shadow-md px-3 py-1 font-medium animate-fadeInDown">
         For Sale
       </span>
     </div>
 
     {% if item.category %}
     <div class="absolute top-4 left-4">
-      <span class="badge badge-secondary text-white shadow-md px-3 py-1 font-medium">
+      <span class="badge badge-secondary text-white shadow-md px-3 py-1 font-medium animate-fadeInDown delay-100">
         {{ item.category }}
       </span>
     </div>
     {% endif %}
   </figure>
 
+  <!-- Card Content -->
   <div class="card-body px-6 py-5 space-y-3">
-    <h2 class="text-2xl font-semibold text-base-content group-hover:text-primary transition-colors duration-200 truncate" title="{{ item.title }}">
+    
+    <h2 class="text-2xl font-semibold text-base-content truncate group-hover:text-primary transition-colors duration-200" title="{{ item.title }}">
       {{ item.title }}
     </h2>
 
-    <!-- Location with your preferred icon style -->
-    <div class="flex items-center text-gray-500 text-sm">
+    <div class="flex items-center text-sm text-gray-500">
       <i class="fas fa-map-marker-alt text-primary mr-2"></i>
       {{ item.location }}
     </div>
 
-    <!-- Price - kept your original styling -->
     <div class="text-xl font-bold text-primary">
       Ksh {{ item.price|floatformat:"0"|default:"0" }}
     </div>
@@ -50,12 +53,12 @@
       <a
         href="{{ item.get_absolute_url }}"
         aria-label="View details for {{ item.title }}"
-        class=" inline-flex items-center px-4 py-2 text-sm font-semibold text-primary border-2 border-primary rounded-lg shadow-sm transition-colors duration-200 ease-in-out 
-          hover:bg-primary hover:text-white 
-          focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">View Details
+        class="inline-flex items-center px-4 py-2 text-sm font-semibold text-primary border-2 border-primary rounded-lg shadow-sm transition duration-200 
+               hover:bg-primary hover:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+      >
+        View Details
         <i class="fas fa-arrow-right ml-2 text-xs"></i>
       </a>
     </div>
-
   </div>
 </div>

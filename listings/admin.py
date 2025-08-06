@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 # Register your models here.
 from .models import CustomUser
 from .models import CustomUser, Profile, LandProperties, Contact, CarProperties, LandPropertiesImage, HousePropertiesImage
-from .models import HousingProperties, Testimonials, NewsletterSubscriber, CarPropertiesImage, FAQ
+from .models import HousingProperties, Testimonials, NewsletterSubscriber, CarPropertiesImage, FAQ, Payment, Subscription
 
 
 #register your models here.
@@ -21,6 +21,7 @@ admin.site.register(NewsletterSubscriber)
 admin.site.register(CarPropertiesImage)
 admin.site.register(HousePropertiesImage)
 admin.site.register(LandPropertiesImage)
+#admin.site.register(Payment)
 
 
 @admin.register(FAQ)
@@ -38,3 +39,13 @@ class CustomUserAdmin(UserAdmin):
         *(UserAdmin.fieldsets or ()),
         (_('Role info'), {'fields': ('role',)}),
     )
+    
+admin.register(Subscription)
+class SubscriptionAdmin(admin.ModelAdmin):
+    list_display = ("user", "plan", "started_at", "expires_at", "is_active")
+    list_filter = ("plan", "started_at", "expires_at")
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ("user", "tx_ref", "amount", "status", "created_at")
+    list_filter = ("status", "currency", "created_at")

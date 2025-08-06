@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Property Plans</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        .floating-badge {
+            animation: float 3s ease-in-out infinite;
+        }
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        }
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.7);
+            transform: scale(0);
+            animation: ripple 600ms linear;
+            pointer-events: none;
+        }
+        @keyframes ripple {
+            to { transform: scale(4); opacity: 0; }
+        }
+        .feature-icon {
+            transition: transform 0.3s ease;
+        }
+        li:hover .feature-icon {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-base-200 to-base-100 via-base-150 bg-fixed">
+    <section class="min-h-screen px-4 py-20">
+        <div class="text-center mb-16 max-w-4xl mx-auto">
+            <span class="badge badge-lg badge-primary mb-4 animate-fade-in">Pricing Plans</span>
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Grow Your Real Estate Business</h2>
+            <p class="text-lg md:text-xl text-base-content/80 leading-relaxed">
+                Choose the perfect plan to showcase your properties and connect with more buyers.
+                <span class="block mt-2 text-sm text-primary">No hidden fees · Cancel anytime</span>
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch">
+            <!-- Free Plan -->
+            <div class="card bg-base-100 shadow-xl border border-base-300/50 card-hover group">
+                <div class="card-body p-8 flex flex-col">
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-bold mb-1">Starter</h3>
+                        <p class="text-sm text-base-content/70">Perfect for new sellers</p>
+                    </div>
+                    <div class="mb-8">
+                        <h4 class="text-4xl font-extrabold">KES 0</h4>
+                        <p class="text-sm text-base-content/60">forever free</p>
+                    </div>
+                    <ul class="space-y-3 mb-8 grow">
+                        <li class="flex items-start group-hover:bg-base-200/50 p-2 rounded-lg transition-colors">
+                            <svg class="feature-icon w-6 h-6 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div>
+                                <span class="font-medium">1 Active Listing</span>
+                                <p class="text-xs text-base-content/50">Showcase one property</p>
+                            </div>
+                        </li>
+                        <!-- More features... -->
+                    </ul>
+                    <a href="{% url 'register' %}" class="btn btn-outline btn-primary w-full mt-auto hover:btn-primary hover:text-primary-content transition-all">
+                        Start Free Today
+                    </a>
+                </div>
+            </div>
+
+            <!-- Premium Plan -->
+            <div class="card bg-gradient-to-br from-primary to-primary-focus text-primary-content shadow-2xl card-hover transform lg:scale-105 relative z-10">
+                <div class="absolute -top-3 right-6 bg-accent text-accent-content px-4 py-1 rounded-full text-sm font-bold floating-badge shadow-lg">
+                    MOST POPULAR
+                </div>
+                <div class="card-body p-8 flex flex-col">
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-bold mb-1">Professional</h3>
+                        <p class="text-sm opacity-90">For serious sellers</p>
+                    </div>
+                    <div class="mb-8">
+                        <h4 class="text-4xl font-extrabold">KES 499</h4>
+                        <p class="text-sm opacity-80">per month</p>
+                    </div>
+                    <ul class="space-y-3 mb-8 grow">
+                        <li class="flex items-start hover:bg-primary-focus p-2 rounded-lg transition-colors">
+                            <svg class="feature-icon w-6 h-6 text-white mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div>
+                                <span class="font-medium">10 Listings</span>
+                                <p class="text-xs opacity-70">Show multiple properties</p>
+                            </div>
+                        </li>
+                        <!-- More features... -->
+                    </ul>
+                    <a href="#" class="btn btn-accent w-full mt-auto text-accent-content hover:scale-[1.02] transition-transform shadow-md">
+                        Get Premium Access
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Business Plan -->
+            <div class="card bg-base-100 shadow-xl border border-base-300/50 card-hover group">
+                <div class="card-body p-8 flex flex-col">
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-bold mb-1">Enterprise</h3>
+                        <p class="text-sm text-base-content/70">For agencies & teams</p>
+                    </div>
+                    <div class="mb-8">
+                        <h4 class="text-4xl font-extrabold">KES 1,999</h4>
+                        <p class="text-sm text-base-content/60">per month</p>
+                    </div>
+                    <ul class="space-y-3 mb-8 grow">
+                        <li class="flex items-start group-hover:bg-base-200/50 p-2 rounded-lg transition-colors">
+                            <svg class="feature-icon w-6 h-6 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div>
+                                <span class="font-medium">Unlimited Listings</span>
+                                <p class="text-xs text-base-content/50">Showcase all your properties</p>
+                            </div>
+                        </li>
+                        <!-- More features... -->
+                    </ul>
+                    <a href="#" class="btn btn-outline btn-secondary w-full mt-auto hover:btn-secondary hover:text-secondary-content transition-all">
+                        Contact Our Team
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trust Indicators -->
+        <div class="max-w-5xl mx-auto mt-20 text-center">
+            <p class="text-sm text-base-content/60 mb-6">TRUSTED BY TOP REAL ESTATE PROFESSIONALS</p>
+            <div class="flex flex-wrap justify-center items-center gap-8 opacity-80">
+                <img src="https://placehold.co/120x40/003366/FFFFFF?text=AgentPro" alt="Logo" class="h-8 opacity-70 hover:opacity-100 transition-opacity">
+                <!-- More logos... -->
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Enhanced interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add ripple effect to all buttons
+            document.querySelectorAll('a, button').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    if (this.getAttribute('disabled')) return;
+                    
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const ripple = document.createElement('span');
+                    ripple.className = 'ripple-effect';
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    
+                    this.appendChild(ripple);
+                    setTimeout(() => ripple.remove(), 600);
+                });
+            });
+
+            // Animate cards on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-up');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.card').forEach((card, index) => {
+                card.style.transitionDelay = `${index * 100}ms`;
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>
