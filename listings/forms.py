@@ -1,6 +1,7 @@
 from django import forms
 from .models import CustomUser, Profile, Contact
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from .models import LandProperties, HousingProperties, CarProperties
 
 class CustomUserCreationForm(UserCreationForm):
     username = forms.CharField(
@@ -204,3 +205,19 @@ class ContactForm(forms.ModelForm):
             self.add_error('message', 'Message cannot be empty.')
 
         return cleaned_data
+        
+# This allows, agents and sellers to create listings.
+class LandPropertyForm(forms.ModelForm):
+    class Meta:
+        model = LandProperties
+        exclude = ['owner', 'slug', 'created_at', 'updated_at']
+
+class HousingPropertyForm(forms.ModelForm):
+    class Meta:
+        model = HousingProperties
+        exclude = ['owner', 'slug', 'created_at', 'updated_at']
+
+class CarPropertyForm(forms.ModelForm):
+    class Meta:
+        model = CarProperties
+        exclude = ['owner', 'slug', 'created_at', 'updated_at']

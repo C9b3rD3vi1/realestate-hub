@@ -60,14 +60,31 @@
     </a>
 
     <!-- Desktop Nav -->
-    <nav class="hidden md:flex items-center gap-4 text-sm font-medium">
+    <nav class="hidden md:flex items-center gap-10 text-sm font-medium">
       <a href="/" class="hover:text-primary transition">Home</a>
       <a href="{% url 'about' %}" class="hover:text-primary transition">About</a>
       <a href="{% url 'contact' %}" class="hover:text-primary transition">Contact</a>
-      <a href="{% url 'listing' %}" class="hover:text-primary transition">Listings</a>
+      <!-- Listings Dropdown on Hover -->
+      <div class="dropdown dropdown-hover">
+        <label tabindex="0" class="hover:text-primary transition flex items-center gap-1 cursor-pointer">
+          Listings
+          <svg class="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </label>
+        <ul tabindex="0" class="dropdown-content menu p-4 shadow bg-base-100 border border-base-300 rounded-box w-80 transition-all duration-200 ease-in-out">
+          <li><a href="{% url 'listing' %}">All Listings</a></li>
+          <li><a href="{% url 'listing' %}?type=house">🏠 Houses</a></li>
+          <li><a href="{% url 'listing' %}?type=land">🌍 Land</a></li>
+          <li><a href="{% url 'listing' %}?type=car">🚗 Cars</a></li>
+        </ul>
+      </div>
+
 
       {% if user.is_authenticated %}
         <span class="text-neutral/70">Hi, {{ user.username }}</span>
+        <a href="{% url 'add_property' %}" 
+            class="btn btn-sm btn-outline btn-primary hover:bg-orange-600 text-blue-500 dark:text-white-500 font-semibold px-4 py-2 rounded transition duration-300">Add Property</a>
         <a href="{% url 'profile' %}" class="btn btn-sm btn-outline btn-secondary">Profile</a>
         <a href="{% url 'logout' %}" class="btn btn-sm btn-outline btn-error">Logout</a>
       {% else %}
@@ -148,7 +165,7 @@
   <div class="max-w-screen-xl mx-auto px-4 md:px-8">
     <div class="grid gap-8 md:grid-cols-3 text-center md:text-left">
       <div>
-        <div class="flex items-center gap-2 justify-center md:justify-start">
+        <div class="flex items-center gap-4 justify-center md:justify-start">
           <img src="{% static 'images/logo.jpeg' %}" alt="Logo" class="w-8 h-8 rounded-full" />
           <span class="text-xl font-bold text-primary">Real Estate Hub</span>
         </div>

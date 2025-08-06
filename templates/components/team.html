@@ -1,13 +1,15 @@
-<section class="bg-white dark:bg-gray-900">
-  <div class="container px-6 py-8 mx-auto">
-    <h2 class="text-2xl font-semibold text-center text-gray-800 capitalize lg:text-3xl dark:text-white">Our Team</h2>
+<section class="bg-white dark:bg-gray-900 py-16">
+  <div class="container px-6 mx-auto">
+    <h2 class="text-3xl lg:text-4xl font-extrabold text-center text-gray-800 dark:text-white mb-12" data-aos="fade-up">
+      Our Team
+    </h2>
 
-    <div class="grid gap-8 mt-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      <!-- Team Member 1 - Original structure with enhanced theme support -->
-      <div class="w-full max-w-xs text-center transition-transform hover:scale-[1.02]">
+    <div class="grid gap-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <!-- Team Member 1 -->
+      <div class="w-full max-w-xs mx-auto text-center transform transition-all duration-500 hover:scale-105" data-aos="fade-up" data-aos-delay="100">
         <img 
-          class="object-cover object-center w-full h-48 mx-auto rounded-lg shadow-md dark:shadow-gray-700" 
-          src="https://images.unsplash.com/photo-1493863641943-9b68992a8d07?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=739&q=80" 
+          class="object-cover object-center w-full h-48 mx-auto rounded-lg shadow-md dark:shadow-gray-700 transition-transform duration-500 group-hover:scale-110" 
+          src="https://images.unsplash.com/photo-1493863641943-9b68992a8d07?ixlib=rb-1.2.1&auto=format&fit=crop&w=739&q=80" 
           alt="Ahmed Omer, CEO" 
         />
         <div class="mt-4">
@@ -17,10 +19,10 @@
       </div>
 
       <!-- Team Member 2 -->
-      <div class="w-full max-w-xs text-center transition-transform hover:scale-[1.02]">
+      <div class="w-full max-w-xs mx-auto text-center transform transition-all duration-500 hover:scale-105" data-aos="fade-up" data-aos-delay="200">
         <img 
           class="object-cover object-center w-full h-48 mx-auto rounded-lg shadow-md dark:shadow-gray-700" 
-          src="https://images.unsplash.com/photo-1516756587022-7891ad56a8cd?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80" 
+          src="https://images.unsplash.com/photo-1516756587022-7891ad56a8cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80" 
           alt="Jane Doe, Co-founder" 
         />
         <div class="mt-4">
@@ -30,10 +32,10 @@
       </div>
 
       <!-- Team Member 3 -->
-      <div class="w-full max-w-xs text-center transition-transform hover:scale-[1.02]">
+      <div class="w-full max-w-xs mx-auto text-center transform transition-all duration-500 hover:scale-105" data-aos="fade-up" data-aos-delay="300">
         <img 
           class="object-cover object-center w-full h-48 mx-auto rounded-lg shadow-md dark:shadow-gray-700" 
-          src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=731&q=80" 
+          src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?ixlib=rb-1.2.1&auto=format&fit=crop&w=731&q=80" 
           alt="Steve Ben, UI/UX Designer" 
         />
         <div class="mt-4">
@@ -43,10 +45,10 @@
       </div>
 
       <!-- Team Member 4 -->
-      <div class="w-full max-w-xs text-center transition-transform hover:scale-[1.02]">
+      <div class="w-full max-w-xs mx-auto text-center transform transition-all duration-500 hover:scale-105" data-aos="fade-up" data-aos-delay="400">
         <img 
           class="object-cover object-center w-full h-48 mx-auto rounded-lg shadow-md dark:shadow-gray-700" 
-          src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80" 
+          src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80" 
           alt="Patterson Johnson, Software Engineer" 
         />
         <div class="mt-4">
@@ -57,3 +59,10 @@
     </div>
   </div>
 </section>
+
+<!-- AOS Scripts -->
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({ duration: 800, easing: 'ease-in-out', once: true });
+</script>

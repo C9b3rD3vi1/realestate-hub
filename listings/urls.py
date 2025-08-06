@@ -1,5 +1,6 @@
 from . import views
 from django.urls import path, include
+from .import properties 
 
 
 # The URL configuration for the listings app
@@ -34,6 +35,12 @@ urlpatterns = [
      
      path('car/<int:car_id>/favorite/', views.favorite_car, name='favorite_car'),
      #path('car/<int:car_id>/test-drive/', views.book_test_drive, name='book_test_drive'),
-
+     # 
+     # Allows Agents and sellers to advertise properties
+     #path('add-land/', properties.add_land_property, name='add_land_property'),
+     #path('add-house/', properties.add_house_property, name='add_housing_property'),
+     #path('add-car/', properties.add_car_property, name='add_car_property'),
+     path('addproperty/', properties.add_property, name='add_property'),
+     
 
 ]

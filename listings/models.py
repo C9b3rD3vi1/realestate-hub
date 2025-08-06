@@ -14,6 +14,7 @@ class CustomUser(AbstractUser):
     ROLE_CHOICES = (
         ('buyer', 'Buyer'),
         ('seller', 'Seller'),
+        ('agent', 'Agent'),
         ('admin', 'Admin'),
     )
 
@@ -31,6 +32,9 @@ class CustomUser(AbstractUser):
     bio = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    # check if user is seller or agent
+    def is_seller_or_agent(self):
+        return self.role in ['seller', 'agent']
 
     def __str__(self):
         return self.username
