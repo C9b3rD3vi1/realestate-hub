@@ -23,6 +23,8 @@ urlpatterns = [
     #path('reset/<uidb64>/<token>/', views.password_reset_confirm, name='password_reset_confirm'),  # Password reset confirm page
     #path('reset/done/', views.password_reset_complete, name='password_reset_complete'),  # Password reset complete page
     path('about/', views.about, name='about'),  # About page
+    path('testimonials/', views.add_testimonial, name='testimonials'),  # Testimonials page
+    
     
     
     path('house/<slug:slug>/', views.housing_detail, name='housing_detail'),

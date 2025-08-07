@@ -43,8 +43,24 @@ class CustomUser(AbstractUser):
         return self.username
 
 
-# land model for real estate listings  # optional, for tagging
 
+class NeighborhoodFeature(models.Model):
+    name = models.CharField(max_length=100)
+    distance = models.CharField(max_length=50)
+    icon = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.distance})"
+
+class Amenity(models.Model):
+    name = models.CharField(max_length=100)
+    icon = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+# land model for real estate listings  # optional, for tagging
 class LandProperties(models.Model):
     LAND_TYPE_CHOICES = [
         ('residential', 'Residential'),
@@ -68,20 +84,22 @@ class LandProperties(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=12, decimal_places=2)
     location = models.CharField(max_length=255)
-    
+
     size = models.DecimalField(max_digits=10, decimal_places=2)
     size_unit = models.CharField(max_length=10, choices=UNIT_CHOICES, default='acres')
 
     land_type = models.CharField(max_length=20, choices=LAND_TYPE_CHOICES, default='residential')
-    
+
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    neighborhood = models.ForeignKey(NeighborhoodFeature, on_delete=models.CASCADE, null=True, blank=True)
 
     is_available = models.BooleanField(default=True)
     is_approved = models.BooleanField(default=False)
     is_featured = models.BooleanField(default=False)
+    amenities = models.ManyToManyField(Amenity, blank=True)
 
-    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='land_properties')
+    owner = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='land_properties')
 
     tags = TaggableManager(blank=True)
 
@@ -153,6 +171,7 @@ class HousingProperties(models.Model):
     size = models.CharField(max_length=20, choices=HOUSE_SIZE_CHOICES, default='Studio')
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     is_available = models.BooleanField(default=True)
+    neighborhood = models.ManyToManyField(NeighborhoodFeature, blank=True)
     is_featured = models.BooleanField(default=False)
     #is_sold = models.BooleanField(default=False)
     slug = models.SlugField(max_length=255, unique=True)
@@ -305,7 +324,7 @@ class CarProperties(models.Model):
         verbose_name = "Car Property"
         verbose_name_plural = "Car Properties"
         ordering = ['-created_at']
-        
+
  # This model stores multiple images for a car property
 class CarPropertiesImage(models.Model):
     car = models.ForeignKey(CarProperties, on_delete=models.CASCADE, related_name='images')
@@ -314,8 +333,8 @@ class CarPropertiesImage(models.Model):
 
     def __str__(self):
         return (self.car.title)
-        
-        
+
+
 class HousePropertiesImage(models.Model):
     house = models.ForeignKey(HousingProperties, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='house_images/')
@@ -331,8 +350,8 @@ class LandPropertiesImage(models.Model):
 
     def __str__(self):
         return (self.land.title)
-        
-        
+
+
 # Profile model connected to CustomUser
 class Profile(models.Model):
     # This model represents a user's profile, which is linked to the CustomUser model
@@ -363,11 +382,11 @@ class Testimonials(models.Model):
     name = models.CharField(max_length=100, blank=False)
     subject = models.CharField(max_length=255, blank=False)
     body = models.TextField(blank=False)
-    
+
     def __str__(self):
         return str(self.name)
-    
-    
+
+
 class NewsletterSubscriber(models.Model):
     email = models.EmailField(unique=True)
     subscribed_at = models.DateTimeField(auto_now_add=True)
@@ -498,3 +517,66 @@ class Subscription(models.Model):
     def __str__(self):
         status = "Active" if self.is_active() else "Expired"
         return f"{self.user.username} - {self.plan.capitalize()} ({status})"
+
+class PropertyTestimonialLand(models.Model):
+    property = models.ForeignKey(LandProperties, on_delete=models.CASCADE, related_name='testimonials')
+    name = models.CharField(max_length=100)
+    comment = models.TextField()
+    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
+    avatar_url = models.URLField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Testimonial by {self.name}"
+
+class PropertyTestimonialCar(models.Model):
+    property = models.ForeignKey(CarProperties, on_delete=models.CASCADE, related_name='testimonials')
+    name = models.CharField(max_length=100)
+    comment = models.TextField()
+    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
+    avatar_url = models.URLField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Testimonial by {self.name}"
+
+
+
+class PropertyTestimonialHouse(models.Model):
+    property = models.ForeignKey(HousingProperties, on_delete=models.CASCADE, related_name='testimonials')
+    name = models.CharField(max_length=100)
+    comment = models.TextField()
+    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
+    avatar_url = models.URLField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Testimonial by {self.name}"
+
+
+
+# Property History prices
+class PriceHistoryLand(models.Model):
+    property = models.ForeignKey(LandProperties, on_delete=models.CASCADE, related_name='price_history')
+    price = models.DecimalField(max_digits=12, decimal_places=2)
+    date_recorded = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.property.title} - {self.price} on {self.date_recorded}"
+
+class PriceHistoryHouse(models.Model):
+    property = models.ForeignKey(HousingProperties, on_delete=models.CASCADE, related_name='price_history')
+    price = models.DecimalField(max_digits=12, decimal_places=2)
+    date_recorded = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.property.title} - {self.price} on {self.date_recorded}"
+
+
+class PriceHistoryCar(models.Model):
+    property = models.ForeignKey(CarProperties, on_delete=models.CASCADE, related_name='price_history')
+    price = models.DecimalField(max_digits=12, decimal_places=2)
+    date_recorded = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.property.title} - {self.price} on {self.date_recorded}"

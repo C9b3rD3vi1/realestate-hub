@@ -238,6 +238,7 @@ def user_login(request):
 
     return render(request, 'components/login.html', {'form': form})
 
+
 # Render user profile page
 @login_required
 def user_profile(request):
@@ -329,3 +330,7 @@ def privacy(request):
 def faq(request):
     # This view displays frequently asked questions
     return render(request, 'faq.html')
+    
+def add_testimonial(request):
+    
+    return render(request, 'testimonials.html')

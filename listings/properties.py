@@ -4,6 +4,7 @@ from django.urls import reverse
 from types import LambdaType
 from django.http import JsonResponse
 from datetime import datetime, timedelta, timezone
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.db.models.options import OrderWrt
 from django.shortcuts import render, redirect
@@ -117,121 +118,199 @@ SUBSCRIPTION_PLANS = {
     'enterprise': {"amount": 5000, "duration_days": 180},
 }
 
-# Payment processing
+@login_required
 def make_payment(request):
     if request.method == 'POST':
-        plan = request.POST.get('plan')  # e.g., 'premium', 'business'
-        duration = int(request.POST.get('duration', 1))  # in months
-
+        plan = request.POST.get('plan')
+        duration = int(request.POST.get('duration', 1))  # Default to 1 month
+        
+        # Validate plan and duration
         if plan not in SUBSCRIPTION_PLANS:
-            return render(request, 'payment/error.html', {"error": "Invalid plan selected."})
+            return render(request, 'payment/error.html', {
+                'error': 'Invalid plan selected',
+                'plans': SUBSCRIPTION_PLANS
+            })
 
-        base_price = SUBSCRIPTION_PLANS[plan]["amount"]
+        if duration <= 0:
+            return render(request, 'payment/error.html', {
+                'error': 'Invalid duration selected',
+                'plans': SUBSCRIPTION_PLANS
+            })
+
+        # Calculate amount
+        base_price = SUBSCRIPTION_PLANS[plan]['amount']
         amount = base_price * duration
-        tx_ref = str(uuid.uuid4())
+        tx_ref = f"PP-{uuid.uuid4()}"  # Custom reference format
 
+        # Create payment record
         payment = Payment.objects.create(
             user=request.user,
             tx_ref=tx_ref,
             amount=amount,
             plan=plan,
+            duration_months=duration,
             status='pending',
         )
 
+        # Prepare Flutterwave payload
         data = {
             "tx_ref": tx_ref,
-            "amount": amount,
+            "amount": str(amount),
             "currency": "KES",
             "redirect_url": request.build_absolute_uri('/payment/callback/'),
             "payment_options": "card,mpesa,banktransfer",
             "customer": {
                 "email": request.user.email,
-                "name": request.user.username,
+                "name": request.user.get_full_name() or request.user.username,
+                "phone_number": request.POST.get('phone', '')  # Optional
             },
             "customizations": {
-                "title": f"{plan.title()} Plan Payment",
-                "description": f"{duration} month(s) of {plan.title()} Plan",
+                "title": "PropertyPro Subscription",
+                "description": f"{SUBSCRIPTION_PLANS[plan]['name']} Plan ({duration} month(s))",
+                "logo": request.build_absolute_uri('/static/images/logo.png')
             },
             "meta": {
+                "user_id": request.user.id,
                 "plan": plan,
                 "duration": duration
             }
         }
 
+        # Make request to Flutterwave
         headers = {
             "Authorization": f"Bearer {settings.FLW_SECRET_KEY}",
             "Content-Type": "application/json"
         }
 
-        response = requests.post('https://api.flutterwave.com/v3/payments', json=data, headers=headers)
+        try:
+            response = requests.post(
+                'https://api.flutterwave.com/v3/payments',
+                json=data,
+                headers=headers,
+                timeout=30  # 30 seconds timeout
+            )
+            response.raise_for_status()  # Raise exception for bad status codes
+            response_data = response.json()
 
-        if response.status_code == 200:
-            return redirect(response.json()['data']['link'])
-        else:
-            return render(request, 'payment/error.html', {"error": "Failed to initialize payment."})
+            if response_data.get('status') == 'success':
+                return redirect(response_data['data']['link'])
+            else:
+                payment.status = 'failed'
+                payment.save()
+                return render(request, 'payment/error.html', {
+                    'error': response_data.get('message', 'Payment initialization failed'),
+                    'plans': SUBSCRIPTION_PLANS
+                })
 
+        except requests.exceptions.RequestException as e:
+            payment.status = 'failed'
+            payment.save()
+            return render(request, 'payment/error.html', {
+                'error': f"Payment processing error: {str(e)}",
+                'plans': SUBSCRIPTION_PLANS
+            })
+
+    # GET request - show payment form
     return render(request, 'payment/payment_form.html', {
-        'plans': SUBSCRIPTION_PLANS
+        'plans': SUBSCRIPTION_PLANS,
+        'user': request.user
     })
 
-
+@csrf_exempt
 def payment_callback(request):
-    status = request.GET.get('status')
+    """Handle payment callback from Flutterwave"""
+    status = request.GET.get('status', '').lower()
     tx_ref = request.GET.get('tx_ref')
 
     if not tx_ref:
-        return render(request, 'payment/payment_result.html', {'status': 'missing tx_ref'})
+        return render(request, 'payment/payment_result.html', {
+            'status': 'error',
+            'message': 'Missing transaction reference'
+        })
 
     try:
         payment = Payment.objects.get(tx_ref=tx_ref)
     except Payment.DoesNotExist:
-        return render(request, 'payment/payment_result.html', {'status': 'invalid transaction'})
+        return render(request, 'payment/payment_result.html', {
+            'status': 'error',
+            'message': 'Invalid transaction reference'
+        })
 
     if status != 'successful':
         payment.status = 'failed'
         payment.save()
-        return render(request, 'payment/payment_result.html', {'status': 'failed'})
+        return render(request, 'payment/payment_result.html', {
+            'status': 'failed',
+            'message': 'Payment was not successful'
+        })
 
     # Verify payment with Flutterwave
     headers = {"Authorization": f"Bearer {settings.FLW_SECRET_KEY}"}
-    verify_url = f"https://api.flutterwave.com/v3/transactions/verify_by_reference?tx_ref={tx_ref}"
-    response = requests.get(verify_url, headers=headers)
-    res_data = response.json()
-
-    if res_data.get('status') != 'success' or res_data['data']['status'] != 'successful':
+    try:
+        verify_url = f"https://api.flutterwave.com/v3/transactions/{payment.id}/verify"
+        response = requests.get(verify_url, headers=headers)
+        response.raise_for_status()
+        verification_data = response.json()
+    except requests.exceptions.RequestException:
         payment.status = 'failed'
         payment.save()
-        return render(request, 'payment/payment_result.html', {'status': 'verification failed'})
+        return render(request, 'payment/payment_result.html', {
+            'status': 'error',
+            'message': 'Payment verification failed'
+        })
+
+    # Check verification status
+    if (verification_data.get('status') != 'success' or 
+        verification_data['data']['status'].lower() != 'successful'):
+        payment.status = 'failed'
+        payment.save()
+        return render(request, 'payment/payment_result.html', {
+            'status': 'failed',
+            'message': 'Payment verification failed'
+        })
 
     # Mark payment as successful
     payment.status = 'successful'
+    payment.flw_ref = verification_data['data'].get('flw_ref')
     payment.save()
 
-    plan = res_data['data']['meta'].get('plan')
-    duration = int(res_data['data']['meta'].get('duration', 1))
+    # Get plan details from verification meta or payment record
+    meta = verification_data['data'].get('meta', {})
+    plan = meta.get('plan') or payment.plan
+    duration = int(meta.get('duration', 1)) or payment.duration_months
 
     if plan not in SUBSCRIPTION_PLANS:
-        return render(request, 'payment/payment_result.html', {'status': 'invalid plan'})
+        return render(request, 'payment/payment_result.html', {
+            'status': 'error',
+            'message': 'Invalid subscription plan'
+        })
 
+    # Calculate subscription period
     total_days = SUBSCRIPTION_PLANS[plan]['duration_days'] * duration
     expires_at = timezone.now() + timedelta(days=total_days)
 
-    # Activate/Update Subscription
-    Subscription.objects.update_or_create(
+    # Create or update subscription
+    subscription, created = Subscription.objects.update_or_create(
         user=payment.user,
         defaults={
             'plan': plan,
+            'payment': payment,
             'started_at': timezone.now(),
-            'expires_at': expires_at
+            'expires_at': expires_at,
+            'is_active': True
         }
     )
 
+    # Send confirmation email (pseudo-code)
+    # send_payment_confirmation_email(payment.user, payment, subscription)
+
     return render(request, 'payment/payment_result.html', {
         'status': 'success',
-        'plan': plan,
+        'payment': payment,
+        'subscription': subscription,
+        'plan': SUBSCRIPTION_PLANS[plan],
         'expires_at': expires_at
-    })
-    
+    }) 
     
 # launch subscription process
 def get_plan_details(plan_id):
