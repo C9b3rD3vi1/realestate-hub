@@ -1,6 +1,8 @@
 import uuid
 import requests
+from django.urls import reverse
 from types import LambdaType
+from django.http import JsonResponse
 from datetime import datetime, timedelta, timezone
 from django.contrib.auth.decorators import login_required
 from django.db.models.options import OrderWrt
@@ -108,30 +110,34 @@ def edit_property(request, category, slug):
     return render(request, 'property/edit_property.html', {'form': form, 'object': obj})
     
     
-    
+# Available plans
+SUBSCRIPTION_PLANS = {
+    'premium': {"amount": 1000, "duration_days": 30},
+    'business': {"amount": 2500, "duration_days": 90},
+    'enterprise': {"amount": 5000, "duration_days": 180},
+}
+
+# Payment processing
 def make_payment(request):
     if request.method == 'POST':
-        plan = request.POST.get('plan')  # 'premium' or 'business'
+        plan = request.POST.get('plan')  # e.g., 'premium', 'business'
         duration = int(request.POST.get('duration', 1))  # in months
 
-        # Example pricing (customize as needed)
-        plan_prices = {
-            'premium': 1000,  # KES
-            'business': 2500,
-        }
+        if plan not in SUBSCRIPTION_PLANS:
+            return render(request, 'payment/error.html', {"error": "Invalid plan selected."})
 
-        amount = plan_prices.get(plan, 0) * duration
+        base_price = SUBSCRIPTION_PLANS[plan]["amount"]
+        amount = base_price * duration
         tx_ref = str(uuid.uuid4())
 
-        # Save the initial payment
         payment = Payment.objects.create(
             user=request.user,
             tx_ref=tx_ref,
             amount=amount,
-            status='pending'
+            plan=plan,
+            status='pending',
         )
 
-        # Prepare payload for Flutterwave
         data = {
             "tx_ref": tx_ref,
             "amount": amount,
@@ -144,7 +150,7 @@ def make_payment(request):
             },
             "customizations": {
                 "title": f"{plan.title()} Plan Payment",
-                "description": f"{duration} Month Subscription to {plan.title()} Plan",
+                "description": f"{duration} month(s) of {plan.title()} Plan",
             },
             "meta": {
                 "plan": plan,
@@ -157,107 +163,184 @@ def make_payment(request):
             "Content-Type": "application/json"
         }
 
-        # Request to Flutterwave
-        response = requests.post(
-            'https://api.flutterwave.com/v3/payments',
-            json=data,
-            headers=headers
-        )
+        response = requests.post('https://api.flutterwave.com/v3/payments', json=data, headers=headers)
 
         if response.status_code == 200:
-            payment_link = response.json()['data']['link']
-            return redirect(payment_link)
+            return redirect(response.json()['data']['link'])
         else:
-            return render(request, 'payment/error.html', {"error": "Payment initiation failed."})
+            return render(request, 'payment/error.html', {"error": "Failed to initialize payment."})
 
-    return render(request, 'payment/payment_form.html')
+    return render(request, 'payment/payment_form.html', {
+        'plans': SUBSCRIPTION_PLANS
+    })
 
 
-# flutterwave payment callback and configuration
 def payment_callback(request):
     status = request.GET.get('status')
     tx_ref = request.GET.get('tx_ref')
 
+    if not tx_ref:
+        return render(request, 'payment/payment_result.html', {'status': 'missing tx_ref'})
+
     try:
         payment = Payment.objects.get(tx_ref=tx_ref)
-
-        if status == 'successful':
-            # Confirm via Flutterwave verification
-            verify_url = f"https://api.flutterwave.com/v3/transactions/verify_by_reference?tx_ref={tx_ref}"
-            headers = {
-                "Authorization": f"Bearer {settings.FLW_SECRET_KEY}",
-            }
-            response = requests.get(verify_url, headers=headers)
-            res_data = response.json()
-
-            if res_data['status'] == 'success' and res_data['data']['status'] == 'successful':
-                payment.status = 'successful'
-                payment.save()
-
-                plan = res_data['data']['meta'].get('plan')
-                duration = int(res_data['data']['meta'].get('duration', 1))
-
-                expires_at = timezone.now() + timedelta(days=30 * duration)
-
-                Subscription.objects.update_or_create(
-                    user=payment.user,
-                    defaults={
-                        'plan': plan,
-                        'started_at': timezone.now(),
-                        'expires_at': expires_at
-                    }
-                )
-
-        else:
-            payment.status = 'failed'
-            payment.save()
-
-    except Payment.DoesNotExist:
-        pass
-
-    return render(request, 'payment/payment_result.html', {'status': status})
-
-
-# subscription plans 
-SUBSCRIPTION_PLANS = {
-    0: {"plan": "free", "duration_days": 30},
-    499: {"plan": "premium", "duration_days": 90},
-    1999: {"plan": "enterprise", "duration_days": 180},
-    4999: {"plan": "ultimate", "duration_days": 365},
-}
-
-def activate_subscription(request):
-    status = request.GET.get('status')
-    tx_ref = request.GET.get('tx_ref')
-
-    if status != 'successful' or not tx_ref:
-        return render(request, 'payment/payment_result.html', {'status': 'failed'})
-
-    try:
-        payment = Payment.objects.get(tx_ref=tx_ref, status='pending')
     except Payment.DoesNotExist:
         return render(request, 'payment/payment_result.html', {'status': 'invalid transaction'})
+
+    if status != 'successful':
+        payment.status = 'failed'
+        payment.save()
+        return render(request, 'payment/payment_result.html', {'status': 'failed'})
+
+    # Verify payment with Flutterwave
+    headers = {"Authorization": f"Bearer {settings.FLW_SECRET_KEY}"}
+    verify_url = f"https://api.flutterwave.com/v3/transactions/verify_by_reference?tx_ref={tx_ref}"
+    response = requests.get(verify_url, headers=headers)
+    res_data = response.json()
+
+    if res_data.get('status') != 'success' or res_data['data']['status'] != 'successful':
+        payment.status = 'failed'
+        payment.save()
+        return render(request, 'payment/payment_result.html', {'status': 'verification failed'})
 
     # Mark payment as successful
     payment.status = 'successful'
     payment.save()
 
-    # Determine plan from amount paid
-    plan_info = SUBSCRIPTION_PLANS.get(int(payment.amount))
-    if not plan_info:
-        return render(request, 'payment/payment_result.html', {'status': 'unknown plan'})
+    plan = res_data['data']['meta'].get('plan')
+    duration = int(res_data['data']['meta'].get('duration', 1))
 
-    duration = timedelta(days=plan_info['duration_days'])
+    if plan not in SUBSCRIPTION_PLANS:
+        return render(request, 'payment/payment_result.html', {'status': 'invalid plan'})
 
-    # Create or update the user's subscription
-    subscription, _ = Subscription.objects.get_or_create(user=payment.user)
-    subscription.plan = plan_info['plan']
-    subscription.started_at = timezone.now()
-    subscription.expires_at = timezone.now() + duration
-    subscription.save()
+    total_days = SUBSCRIPTION_PLANS[plan]['duration_days'] * duration
+    expires_at = timezone.now() + timedelta(days=total_days)
+
+    # Activate/Update Subscription
+    Subscription.objects.update_or_create(
+        user=payment.user,
+        defaults={
+            'plan': plan,
+            'started_at': timezone.now(),
+            'expires_at': expires_at
+        }
+    )
 
     return render(request, 'payment/payment_result.html', {
         'status': 'success',
-        'plan': subscription.plan,
-        'expires_at': subscription.expires_at
+        'plan': plan,
+        'expires_at': expires_at
     })
+    
+    
+# launch subscription process
+def get_plan_details(plan_id):
+    """Helper function to get plan details"""
+    for choice in Subscription.PLAN_CHOICES:
+        if choice[0] == plan_id:
+            return {
+                'id': choice[0],
+                'name': choice[1],
+                'price': get_plan_price(choice[0]),
+                'duration_options': [d[0] for d in Subscription.DURATION_CHOICES],
+                'features': get_plan_features(choice[0])
+            }
+    return None
+
+def get_plan_price(plan_id):
+    """Returns the price for each plan"""
+    prices = {
+        Subscription.PLAN_FREE: 0,
+        Subscription.PLAN_PREMIUM: 499,
+        Subscription.PLAN_BUSINESS: 1999,
+        Subscription.PLAN_ENTERPRISE: 4999
+    }
+    return prices.get(plan_id, 0)
+
+def get_plan_features(plan_id):
+    """Returns features for each plan"""
+    features = {
+        Subscription.PLAN_FREE: ["1 Property Listing", "Basic Support"],
+        Subscription.PLAN_PREMIUM: ["10 Listings", "Featured Listings", "Email Support"],
+        Subscription.PLAN_BUSINESS: ["Unlimited Listings", "Priority Support", "Analytics"],
+        Subscription.PLAN_ENTERPRISE: ["All Business Features", "Dedicated Account Manager"]
+    }
+    return features.get(plan_id, [])
+
+# 
+def subscribe(request, plan_id):
+    """Handle subscription request and render payment form"""
+    if request.method == 'POST':
+        try:
+            duration = int(request.POST.get('duration', '30'))
+            
+            # Validate plan
+            plan = get_plan_details(plan_id)
+            if not plan:
+                messages.error(request, "Invalid subscription plan")
+                return redirect('home')
+
+            # Validate duration
+            if duration not in [d[0] for d in Subscription.DURATION_CHOICES]:
+                duration = 30  # Default to 1 month
+
+            # Calculate amount (monthly rate * number of months)
+            amount = plan['price'] * (duration / 30)
+            tax = amount * 0.16  # 16% VAT
+            total = amount + tax
+            
+            # Store in session for payment processing
+            request.session['subscription_data'] = {
+                'plan_id': plan_id,
+                'duration': duration,
+                'amount': amount,
+                'total_amount': total,
+                'features': get_plan_features(plan_id)
+            }
+            
+            # Redirect to payment page with parameters
+            return redirect(reverse('make_payment') + f"?plan={plan_id}&amount={amount:.2f}&duration={duration}&total={total:.2f}")
+            
+        except ValueError:
+            messages.error(request, "Invalid duration")
+            return redirect('plans')
+    
+    # If not POST, redirect back
+    return redirect('pricing_page')
+        
+        
+
+def process_payment(request):
+    """Process payment and create subscription"""
+    if request.method == 'POST':
+        plan_id = request.POST.get('plan_id')
+        duration = int(request.POST.get('duration'))
+        
+        # Validate plan
+        plan = get_plan_details(plan_id)
+        if not plan:
+            messages.error(request, "Invalid subscription plan")
+            return redirect('home')
+
+        # Validate duration
+        if duration not in [d[0] for d in Subscription.DURATION_CHOICES]:
+            duration = 30  # Default to 1 month
+
+        # Calculate amount (monthly rate * number of months)
+        amount = plan['price'] * (duration / 30)
+
+        # Process payment (e.g., using Stripe API)
+        # ...
+
+        # Create subscription
+        subscription = Subscription.objects.create(
+            user=request.user,
+            plan=plan_id,
+            duration=duration,
+            amount=amount
+        )
+
+        messages.success(request, "Subscription successful!")
+        return redirect('home')
+
+    return redirect('plans')

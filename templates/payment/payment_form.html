@@ -12,6 +12,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* All your existing styles remain the same */
         @keyframes float {
             0%, 100% { transform: translateY(0) rotate(-2deg); }
             50% { transform: translateY(-10px) rotate(2deg); }
@@ -167,32 +168,35 @@
                         </div>
                         
                         <!-- Form Fields -->
-                        <form id="payment-form">
+                        <form id="payment-form" method="post" action="{% url 'payment_callback' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="plan_id" value="{{ request.GET.plan|default:'premium' }}">
+                            <input type="hidden" name="duration" value="{{ request.GET.duration|default:'30' }}">
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-gray-700 mb-2">Cardholder Name</label>
-                                    <input type="text" id="card-name" class="input input-bordered w-full input-highlight" placeholder="Full name as on card" required>
+                                    <input type="text" id="card-name" name="card_name" class="input input-bordered w-full input-highlight" placeholder="Full name as on card" required>
                                 </div>
                                 
                                 <div>
                                     <label class="block text-gray-700 mb-2">Card Number</label>
-                                    <input type="text" id="card-number" class="input input-bordered w-full input-highlight font-mono tracking-widest" placeholder="1234 5678 9012 3456" required>
+                                    <input type="text" id="card-number" name="card_number" class="input input-bordered w-full input-highlight font-mono tracking-widest" placeholder="1234 5678 9012 3456" required>
                                 </div>
                                 
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-gray-700 mb-2">Expiry Date</label>
-                                        <input type="text" id="card-expiry" class="input input-bordered w-full input-highlight" placeholder="MM/YY" required>
+                                        <input type="text" id="card-expiry" name="card_expiry" class="input input-bordered w-full input-highlight" placeholder="MM/YY" required>
                                     </div>
                                     <div>
                                         <label class="block text-gray-700 mb-2">Security Code</label>
-                                        <input type="text" id="card-cvv" class="input input-bordered w-full input-highlight" placeholder="CVV" required>
+                                        <input type="text" id="card-cvv" name="card_cvv" class="input input-bordered w-full input-highlight" placeholder="CVV" required>
                                     </div>
                                 </div>
                                 
                                 <div class="pt-4">
                                     <button type="submit" class="btn btn-primary w-full py-3 text-lg">
-                                        <span id="submit-text">Pay KES 499</span>
+                                        <span id="submit-text">Pay KES {{ request.GET.amount|default:499 }}</span>
                                         <span id="processing-text" class="hidden payment-processing">
                                             <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -216,21 +220,28 @@
                             <p class="text-gray-600 mb-6">You'll receive a payment request on your phone</p>
                             
                             <div class="max-w-md mx-auto">
-                                <div class="form-control mb-4">
-                                    <label class="label">
-                                        <span class="label-text">MPESA Phone Number</span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                            <span class="text-gray-500">+254</span>
+                                <form id="mpesa-form" method="post" action="{% url 'payment_callback' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="plan_id" value="{{ request.GET.plan|default:'premium' }}">
+                                    <input type="hidden" name="duration" value="{{ request.GET.duration|default:'30' }}">
+                                    <input type="hidden" name="amount" value="{{ request.GET.amount|default:499 }}">
+                                    
+                                    <div class="form-control mb-4">
+                                        <label class="label">
+                                            <span class="label-text">MPESA Phone Number</span>
+                                        </label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <span class="text-gray-500">+254</span>
+                                            </div>
+                                            <input type="tel" id="mpesa-phone" name="phone" class="input input-bordered w-full pl-16" placeholder="0712345678" pattern="[0-9]{9}" required>
                                         </div>
-                                        <input type="tel" id="mpesa-phone" class="input input-bordered w-full pl-16" placeholder="712345678" pattern="[0-9]{9}" required>
                                     </div>
-                                </div>
-                                
-                                <button type="button" id="mpesa-pay" class="btn btn-success w-full">
-                                    <i class="fas fa-mobile-alt mr-2"></i> Request Payment
-                                </button>
+                                    
+                                    <button type="submit" id="mpesa-pay" class="btn btn-success w-full">
+                                        <i class="fas fa-mobile-alt mr-2"></i> Request Payment
+                                    </button>
+                                </form>
                                 
                                 <div class="mt-6 bg-yellow-50 p-4 rounded-lg text-sm text-yellow-800">
                                     <i class="fas fa-info-circle mr-2"></i>
@@ -268,28 +279,35 @@
                                     </div>
                                     <div>
                                         <p class="text-sm text-gray-500">Amount</p>
-                                        <p class="font-medium">KES 578.84</p>
+                                        <p class="font-medium">KES {{ request.GET.amount|default:499 }}</p>
                                     </div>
                                 </div>
                                 
-                                <div class="form-control mb-4">
-                                    <label class="label">
-                                        <span class="label-text">Transaction Reference</span>
-                                    </label>
-                                    <input type="text" id="bank-reference" class="input input-bordered w-full" placeholder="Your name or order number" required>
-                                </div>
-                                
-                                <div class="form-control">
-                                    <label class="label">
-                                        <span class="label-text">Upload Payment Receipt (Optional)</span>
-                                    </label>
-                                    <input type="file" class="file-input file-input-bordered w-full">
-                                </div>
+                                <form id="bank-form" method="post" action="{% url 'payment_callback' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="plan_id" value="{{ request.GET.plan|default:'premium' }}">
+                                    <input type="hidden" name="duration" value="{{ request.GET.duration|default:'30' }}">
+                                    <input type="hidden" name="amount" value="{{ request.GET.amount|default:499 }}">
+                                    
+                                    <div class="form-control mb-4">
+                                        <label class="label">
+                                            <span class="label-text">Transaction Reference</span>
+                                        </label>
+                                        <input type="text" id="bank-reference" name="reference" class="input input-bordered w-full" placeholder="Your name or order number" required>
+                                    </div>
+                                    
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text">Upload Payment Receipt (Optional)</span>
+                                        </label>
+                                        <input type="file" name="receipt" class="file-input file-input-bordered w-full">
+                                    </div>
+                                    
+                                    <button type="submit" id="bank-confirm" class="btn btn-primary w-full mt-4">
+                                        <i class="fas fa-check-circle mr-2"></i> Confirm Payment
+                                    </button>
+                                </form>
                             </div>
-                            
-                            <button type="button" id="bank-confirm" class="btn btn-primary w-full">
-                                <i class="fas fa-check-circle mr-2"></i> Confirm Payment
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -320,60 +338,73 @@
             <!-- Order Summary -->
             <div class="lg:w-1/3">
                 <div class="bg-white rounded-xl shadow-md overflow-hidden sticky top-6">
-                    <div class="bg-primary text-white p-4">
+                    <div class="bg-{{ plan.color|default:'primary' }} text-white p-4">
                         <h3 class="text-xl font-bold">Order Summary</h3>
                     </div>
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-4 pb-4 border-b">
                             <div>
-                                <h4 class="font-semibold">Premium Plan</h4>
-                                <p class="text-sm text-gray-500">Monthly Subscription</p>
+                                <h4 class="font-semibold">{{ plan.name|default:"Professional Plan" }}</h4>
+                                <p class="text-sm text-gray-500">{{ duration_display|default:"Monthly" }} Subscription</p>
                             </div>
-                            <span class="font-bold">KES 499</span>
+                            <span class="font-bold">KES {{ request.GET.amount|default:499 }}</span>
                         </div>
                         
                         <div class="space-y-3 mb-6">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Subtotal</span>
-                                <span>KES 499</span>
+                                <span>KES {{ request.GET.amount|default:499 }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Tax (16%)</span>
-                                <span>KES 79.84</span>
+                                <span>KES {{ request.GET.tax|default:79.84 }}</span>
                             </div>
                             <div class="flex justify-between font-bold text-lg pt-2 border-t">
                                 <span>Total</span>
-                                <span>KES 578.84</span>
+                                <span>KES {{ request.GET.total|default:578.84 }}</span>
                             </div>
                         </div>
                         
                         <div class="bg-blue-50 p-4 rounded-lg mb-6">
                             <h4 class="font-semibold text-blue-800 mb-2">What You Get:</h4>
                             <ul class="text-sm space-y-2 text-blue-700">
-                                <li class="flex items-start">
-                                    <svg class="w-4 h-4 mr-2 mt-0.5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                    <span>10 Property Listings</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <svg class="w-4 h-4 mr-2 mt-0.5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                    <span>Featured Listings</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <svg class="w-4 h-4 mr-2 mt-0.5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                    <span>Priority Email Support</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <svg class="w-4 h-4 mr-2 mt-0.5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                    <span>Detailed Analytics</span>
-                                </li>
+                                {% if request.GET.features %}
+                                    {% with features=request.GET.features.split %}
+                                        {% for feature in features %}
+                                        <li class="flex items-start">
+                                            <svg class="w-4 h-4 mr-2 mt-0.5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            <span>{{ feature }}</span>
+                                        </li>
+                                        {% endfor %}
+                                    {% endwith %}
+                                {% else %}
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 mr-2 mt-0.5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span>10 Property Listings</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 mr-2 mt-0.5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span>Featured Listings</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 mr-2 mt-0.5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span>Priority Support</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 mr-2 mt-0.5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span>Detailed Analytics</span>
+                                    </li>
+                                {% endif %}
                             </ul>
                         </div>
                         
@@ -388,6 +419,38 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Extract URL parameters
+            function getUrlParams() {
+                const params = {};
+                const queryString = window.location.search.substring(1);
+                const pairs = queryString.split('&');
+                
+                pairs.forEach(pair => {
+                    const [key, value] = pair.split('=');
+                    params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+                });
+                
+                return params;
+            }
+
+            const urlParams = getUrlParams();
+            
+            // Update payment button text if amount is specified
+            if (urlParams.amount) {
+                const submitText = document.getElementById('submit-text');
+                if (submitText) {
+                    submitText.textContent = `Pay KES ${urlParams.amount}`;
+                }
+            }
+            
+            // Update bank transfer amount if specified
+            if (urlParams.amount) {
+                const bankAmountElements = document.querySelectorAll('#bank-transfer .font-medium');
+                if (bankAmountElements.length > 0) {
+                    bankAmountElements[bankAmountElements.length - 1].textContent = `KES ${urlParams.amount}`;
+                }
+            }
+
             // Payment Method Tabs
             const tabs = document.querySelectorAll('.payment-tab');
             const methods = document.querySelectorAll('.payment-method');
@@ -411,80 +474,90 @@
             const cardExpiry = document.getElementById('card-expiry');
             const cardCvv = document.getElementById('card-cvv');
             
-            cardName.addEventListener('input', function() {
-                document.getElementById('card-name-preview').textContent = 
-                    this.value.toUpperCase() || 'FULL NAME';
-            });
+            if (cardName) {
+                cardName.addEventListener('input', function() {
+                    document.getElementById('card-name-preview').textContent = 
+                        this.value.toUpperCase() || 'FULL NAME';
+                });
+            }
             
-            cardNumber.addEventListener('input', function() {
-                let value = this.value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
-                if (value === '') value = '•••• •••• •••• ••••';
-                document.getElementById('card-number-preview').textContent = value;
-            });
+            if (cardNumber) {
+                cardNumber.addEventListener('input', function() {
+                    let value = this.value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
+                    if (value === '') value = '•••• •••• •••• ••••';
+                    document.getElementById('card-number-preview').textContent = value;
+                });
+            }
             
-            cardExpiry.addEventListener('input', function() {
-                let value = this.value;
-                if (value.length > 2 && !value.includes('/')) {
-                    value = value.substring(0, 2) + '/' + value.substring(2);
-                }
-                this.value = value;
-                document.getElementById('card-expiry-preview').textContent = 
-                    value || 'MM/YY';
-            });
+            if (cardExpiry) {
+                cardExpiry.addEventListener('input', function() {
+                    let value = this.value;
+                    if (value.length > 2 && !value.includes('/')) {
+                        value = value.substring(0, 2) + '/' + value.substring(2);
+                    }
+                    this.value = value;
+                    document.getElementById('card-expiry-preview').textContent = 
+                        value || 'MM/YY';
+                });
+            }
             
-            cardCvv.addEventListener('input', function() {
-                document.getElementById('card-cvv-preview').textContent = 
-                    '•'.repeat(this.value.length) || '•••';
-            });
+            if (cardCvv) {
+                cardCvv.addEventListener('input', function() {
+                    document.getElementById('card-cvv-preview').textContent = 
+                        '•'.repeat(this.value.length) || '•••';
+                });
+            }
             
             // Form Submission
             const paymentForm = document.getElementById('payment-form');
             if (paymentForm) {
                 paymentForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    processPayment('credit-card');
+                    processPayment('credit-card', this);
                 });
             }
             
             // MPESA Payment
-            const mpesaPay = document.getElementById('mpesa-pay');
-            if (mpesaPay) {
-                mpesaPay.addEventListener('click', function() {
+            const mpesaForm = document.getElementById('mpesa-form');
+            if (mpesaForm) {
+                mpesaForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
                     const phone = document.getElementById('mpesa-phone');
-                    if (phone.value.length !== 9) {
+                    if (phone.value.length !== 10) {
                         phone.focus();
                         return;
                     }
-                    processPayment('mpesa');
+                    processPayment('mpesa', this);
                 });
             }
             
             // Bank Transfer Confirmation
-            const bankConfirm = document.getElementById('bank-confirm');
-            if (bankConfirm) {
-                bankConfirm.addEventListener('click', function() {
+            const bankForm = document.getElementById('bank-form');
+            if (bankForm) {
+                bankForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
                     const reference = document.getElementById('bank-reference');
                     if (reference.value.trim() === '') {
                         reference.focus();
                         return;
                     }
-                    processPayment('bank-transfer');
+                    processPayment('bank-transfer', this);
                 });
             }
             
             // Payment Processing Function
-            function processPayment(method) {
+            function processPayment(method, form) {
                 // Show processing state
                 const buttons = {
                     'credit-card': paymentForm?.querySelector('button[type="submit"]'),
-                    'mpesa': mpesaPay,
-                    'bank-transfer': bankConfirm
+                    'mpesa': document.getElementById('mpesa-pay'),
+                    'bank-transfer': document.getElementById('bank-confirm')
                 };
                 
                 const button = buttons[method];
                 if (!button) return;
                 
-                const originalText = button.innerHTML;
+                const originalText = button.innerFHTML;
                 button.innerHTML = `
                     <span class="payment-processing">
                         <svg class="animate-spin -ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -496,10 +569,33 @@
                 `;
                 button.disabled = true;
                 
-                // Simulate payment processing
-                setTimeout(function() {
-                    window.location.href = "payment-success.html";
-                }, 2000);
+                // Submit the form via AJAX
+                const formData = new FormData(form);
+                
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {F
+                    if (data.success) {
+                        window.location.href = data.redirect_url || "{% url 'payment_callback' %}";
+                    } else {
+                        alert(data.message || 'Payment failed. Please try again.');
+                        button.disabled = false;
+                        button.innerHTML = originalText;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred during payment processing.');
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                });
             }
             
             // Add ripple effect to buttons

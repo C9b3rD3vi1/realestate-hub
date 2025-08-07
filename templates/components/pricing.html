@@ -11,6 +11,10 @@
             0%, 100% { transform: translateY(0) rotate(-2deg); }
             50% { transform: translateY(-10px) rotate(2deg); }
         }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .floating-badge {
             animation: float 3s ease-in-out infinite;
         }
@@ -38,6 +42,16 @@
         li:hover .feature-icon {
             transform: scale(1.2);
         }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        .animate-fade-up {
+            animation: fadeIn 0.5s ease-out, moveUp 0.5s ease-out;
+        }
+        @keyframes moveUp {
+            from { transform: translateY(20px); }
+            to { transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-base-200 to-base-100 via-base-150 bg-fixed">
@@ -53,7 +67,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch">
             <!-- Free Plan -->
-            <div class="card bg-base-100 shadow-xl border border-base-300/50 card-hover group">
+            <div class="card bg-base-100 shadow-xl border border-base-300/50 card-hover group animate-fade-up">
                 <div class="card-body p-8 flex flex-col">
                     <div class="mb-6">
                         <h3 class="text-2xl font-bold mb-1">Starter</h3>
@@ -73,7 +87,15 @@
                                 <p class="text-xs text-base-content/50">Showcase one property</p>
                             </div>
                         </li>
-                        <!-- More features... -->
+                        <li class="flex items-start group-hover:bg-base-200/50 p-2 rounded-lg transition-colors">
+                            <svg class="feature-icon w-6 h-6 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div>
+                                <span class="font-medium">Basic Support</span>
+                                <p class="text-xs text-base-content/50">Email assistance</p>
+                            </div>
+                        </li>
                     </ul>
                     <a href="{% url 'register' %}" class="btn btn-outline btn-primary w-full mt-auto hover:btn-primary hover:text-primary-content transition-all">
                         Start Free Today
@@ -82,7 +104,7 @@
             </div>
 
             <!-- Premium Plan -->
-            <div class="card bg-gradient-to-br from-primary to-primary-focus text-primary-content shadow-2xl card-hover transform lg:scale-105 relative z-10">
+            <div class="card bg-gradient-to-br from-primary to-primary-focus text-primary-content shadow-2xl card-hover transform lg:scale-105 relative z-10 animate-fade-up" style="animation-delay: 0.1s">
                 <div class="absolute -top-3 right-6 bg-accent text-accent-content px-4 py-1 rounded-full text-sm font-bold floating-badge shadow-lg">
                     MOST POPULAR
                 </div>
@@ -101,23 +123,45 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
                             <div>
-                                <span class="font-medium">10 Listings</span>
+                                <span class="font-medium">10 Property Listings</span>
                                 <p class="text-xs opacity-70">Show multiple properties</p>
                             </div>
                         </li>
-                        <!-- More features... -->
+                        <li class="flex items-start hover:bg-primary-focus p-2 rounded-lg transition-colors">
+                            <svg class="feature-icon w-6 h-6 text-white mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div>
+                                <span class="font-medium">Featured Listings</span>
+                                <p class="text-xs opacity-70">Highlight your best properties</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start hover:bg-primary-focus p-2 rounded-lg transition-colors">
+                            <svg class="feature-icon w-6 h-6 text-white mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div>
+                                <span class="font-medium">Priority Support</span>
+                                <p class="text-xs opacity-70">Faster response times</p>
+                            </div>
+                        </li>
                     </ul>
-                    <a href="#" class="btn btn-accent w-full mt-auto text-accent-content hover:scale-[1.02] transition-transform shadow-md">
-                        Get Premium Access
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </a>
+                    <form method="post" action="{% url 'subscribe' plan_id='premium' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="plan" value="professional">
+                        <input type="hidden" name="duration" value="30">
+                        <input type="hidden" name="price" value="499">
+                        <input type="hidden" name="name" value="Professional Plan">
+                        <input type="hidden" name="features" value="10 Property Listings,Featured Listings,Priority Support">
+                        <button type="submit" class="btn btn-accent w-full mt-auto text-accent-content hover:scale-[1.02] transition-transform shadow-md">
+                            Get Premium Access
+                        </button>
+                    </form>
                 </div>
             </div>
 
             <!-- Business Plan -->
-            <div class="card bg-base-100 shadow-xl border border-base-300/50 card-hover group">
+            <div class="card bg-base-100 shadow-xl border border-base-300/50 card-hover group animate-fade-up" style="animation-delay: 0.2s">
                 <div class="card-body p-8 flex flex-col">
                     <div class="mb-6">
                         <h3 class="text-2xl font-bold mb-1">Enterprise</h3>
@@ -133,25 +177,51 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
                             <div>
-                                <span class="font-medium">Unlimited Listings</span>
+                                <span class="font-medium">Unlimited Listings</span> 
                                 <p class="text-xs text-base-content/50">Showcase all your properties</p>
                             </div>
                         </li>
-                        <!-- More features... -->
+                        <li class="flex items-start group-hover:bg-base-200/50 p-2 rounded-lg transition-colors">
+                            <svg class="feature-icon w-6 h-6 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div>
+                                <span class="font-medium">Top Featured Listings</span>
+                                <p class="text-xs text-base-content/50">Priority placement</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start group-hover:bg-base-200/50 p-2 rounded-lg transition-colors">
+                            <svg class="feature-icon w-6 h-6 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div>
+                                <span class="font-medium">24/7 Priority Support</span>
+                                <p class="text-xs text-base-content/50">Dedicated account manager</p>
+                            </div>
+                        </li>
                     </ul>
-                    <a href="#" class="btn btn-outline btn-secondary w-full mt-auto hover:btn-secondary hover:text-secondary-content transition-all">
-                        Contact Our Team
-                    </a>
+                    <form method="post" action="{% url 'subscribe' plan_id='enterprise' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="plan" value="enterprise">
+                        <input type="hidden" name="duration" value="30">
+                        <input type="hidden" name="price" value="1999">
+                        <input type="hidden" name="name" value="Enterprise Plan">
+                        <input type="hidden" name="features" value="Unlimited Listings,Top Featured Listings,24/7 Priority Support">
+                        <button type="submit" class="btn btn-outline btn-secondary w-full mt-auto hover:btn-secondary hover:text-secondary-content transition-all">
+                            Subscribe Now
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
 
         <!-- Trust Indicators -->
-        <div class="max-w-5xl mx-auto mt-20 text-center">
+        <div class="max-w-5xl mx-auto mt-20 text-center animate-fade-up" style="animation-delay: 0.3s">
             <p class="text-sm text-base-content/60 mb-6">TRUSTED BY TOP REAL ESTATE PROFESSIONALS</p>
             <div class="flex flex-wrap justify-center items-center gap-8 opacity-80">
-                <img src="https://placehold.co/120x40/003366/FFFFFF?text=AgentPro" alt="Logo" class="h-8 opacity-70 hover:opacity-100 transition-opacity">
-                <!-- More logos... -->
+                <img src="https://placehold.co/120x40/003366/FFFFFF?text=AgentPro" alt="AgentPro" class="h-8 opacity-70 hover:opacity-100 transition-opacity">
+                <img src="https://placehold.co/120x40/003366/FFFFFF?text=RealtorsKE" alt="RealtorsKE" class="h-8 opacity-70 hover:opacity-100 transition-opacity">
+                <img src="https://placehold.co/120x40/003366/FFFFFF?text=PropertyHub" alt="PropertyHub" class="h-8 opacity-70 hover:opacity-100 transition-opacity">
             </div>
         </div>
     </section>
@@ -160,7 +230,7 @@
         // Enhanced interactive elements
         document.addEventListener('DOMContentLoaded', function() {
             // Add ripple effect to all buttons
-            document.querySelectorAll('a, button').forEach(btn => {
+            document.querySelectorAll('button, a.btn').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     if (this.getAttribute('disabled')) return;
                     
@@ -188,13 +258,28 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('animate-fade-up');
+                        observer.unobserve(entry.target);
                     }
                 });
             }, observerOptions);
 
-            document.querySelectorAll('.card').forEach((card, index) => {
-                card.style.transitionDelay = `${index * 100}ms`;
-                observer.observe(card);
+            document.querySelectorAll('.card, .max-w-5xl').forEach((element, index) => {
+                element.style.animationDelay = `${index * 100}ms`;
+                observer.observe(element);
+            });
+
+            // Form submission handling
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const button = this.querySelector('button[type="submit"]');
+                    if (button) {
+                        button.disabled = true;
+                        button.innerHTML = `
+                            <span class="loading loading-spinner"></span>
+                            Processing...
+                        `;
+                    }
+                });
             });
         });
     </script>

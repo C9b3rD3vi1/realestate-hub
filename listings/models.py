@@ -387,11 +387,25 @@ class FAQ(models.Model):
 
 # payment system
 class Payment(models.Model):
+    STATUS_PENDING = 'pending'
+    STATUS_SUCCESS = 'success'
+    STATUS_FAILED = 'failed'
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, 'Pending'),
+        (STATUS_SUCCESS, 'Success'),
+        (STATUS_FAILED, 'Failed'),
+    ]
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     tx_ref = models.CharField("Transaction Reference", max_length=100, unique=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=10, default="KES")
-    status = models.CharField(max_length=20, default="pending")
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_PENDING
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -400,30 +414,40 @@ class Payment(models.Model):
         verbose_name_plural = "Payments"
 
     def __str__(self):
-        return f"{self.user.username} - {self.tx_ref} - {self.status}"
+        return f"{self.user.username} | {self.tx_ref} | {self.status}"
 
 
 class Subscription(models.Model):
     PLAN_FREE = 'free'
     PLAN_PREMIUM = 'premium'
     PLAN_BUSINESS = 'business'
+    PLAN_ENTERPRISE = 'enterprise'
 
-    PLAN_CHOICES = (
+    PLAN_CHOICES = [
         (PLAN_FREE, 'Free'),
         (PLAN_PREMIUM, 'Premium'),
         (PLAN_BUSINESS, 'Business'),
-    )
+        (PLAN_ENTERPRISE, 'Enterprise'),
+    ]
 
-    DURATION_CHOICES = (
+    DURATION_CHOICES = [
         (30, '1 Month'),
         (90, '3 Months'),
         (180, '6 Months'),
         (365, '1 Year'),
-    )
+    ]
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default=PLAN_FREE)
-    duration = models.PositiveIntegerField(choices=DURATION_CHOICES, default=30)  # in days
+    plan = models.CharField(
+        max_length=20,
+        choices=PLAN_CHOICES,
+        default=PLAN_FREE
+    )
+    duration = models.PositiveIntegerField(
+        choices=DURATION_CHOICES,
+        default=30,
+        help_text="Duration in days"
+    )
     started_at = models.DateTimeField(default=timezone.now)
     expires_at = models.DateTimeField(null=True, blank=True)
     auto_renew = models.BooleanField(default=True)
@@ -433,7 +457,9 @@ class Subscription(models.Model):
         verbose_name_plural = "Subscriptions"
 
     def is_active(self):
-        """Return True if subscription is premium/business and not expired."""
+        """
+        Check if the subscription is currently active.
+        """
         return (
             self.plan != self.PLAN_FREE and
             self.expires_at and
@@ -441,24 +467,34 @@ class Subscription(models.Model):
         )
 
     def days_remaining(self):
-        """Return days left before expiration."""
+        """
+        Return the number of days left before expiration.
+        """
         if self.expires_at:
-            return (self.expires_at - timezone.now()).days
+            delta = self.expires_at - timezone.now()
+            return max(delta.days, 0)
         return 0
 
     def activate(self, plan, duration_days):
-        """Use this to set subscription on payment success."""
+        """
+        Activate or renew a subscription based on payment.
+        """
+        now = timezone.now()
         self.plan = plan
         self.duration = duration_days
-        self.started_at = timezone.now()
-        self.expires_at = timezone.now() + timedelta(days=duration_days)
+        self.started_at = now
+        self.expires_at = now + timedelta(days=duration_days)
         self.save()
 
     def deactivate(self):
+        """
+        Revert to the free plan.
+        """
         self.plan = self.PLAN_FREE
         self.duration = 0
         self.expires_at = None
         self.save()
 
     def __str__(self):
-        return f"{self.user.username} - {self.plan.capitalize()} ({self.duration}d)"
+        status = "Active" if self.is_active() else "Expired"
+        return f"{self.user.username} - {self.plan.capitalize()} ({status})"

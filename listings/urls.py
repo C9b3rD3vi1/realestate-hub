@@ -45,6 +45,8 @@ urlpatterns = [
      path('edit/<str:category>/<slug:slug>/', properties.edit_property, name='edit_property'),
      
     # flutterwave payment callback and configuration
+    path('subscribe/<str:plan_id>/', properties.subscribe, name='subscribe'),
     path('payment/', properties.make_payment, name='make_payment'),
     path('payment/callback/', properties.payment_callback, name='payment_callback'),
+    
 ]
