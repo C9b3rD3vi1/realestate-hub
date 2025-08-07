@@ -58,7 +58,7 @@ def add_property(request):
   
  # Show user agent, properties dashboard with list of properties   
 @login_required
-#@seller_or_agent_required
+@seller_or_agent_required
 def property_dashboard(request):
     user = request.user
 

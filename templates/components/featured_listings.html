@@ -43,7 +43,7 @@
         <!-- Hover Overlay -->
         <div class="absolute inset-0 bg-black/80 text-white opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-center items-center px-6 text-center">
           <p class="text-sm mb-3">{{ listing.description|truncatechars:180 }}</p>
-          <a href="#" class="btn btn-sm btn-accent mt-2">More Info</a>
+          <a href="{% url 'listing_detail' listing.slug %}" class="btn btn-sm btn-accent mt-2">More Info</a>
         </div>
       </div>
       {% endfor %}

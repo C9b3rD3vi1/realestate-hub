@@ -15,7 +15,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import LandProperties, CarProperties, HousingProperties, Profile, Testimonials
+from .models import LandProperties, CarProperties, HousingProperties, Profile, Testimonials, PropertyTestimonialHouse
 from .models import NewsletterSubscriber, FAQ
 
 
@@ -55,9 +55,13 @@ def listing(request):
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
     sort = request.GET.get('sort', '-created_at')
+    location = request.GET.get('location')
+    house_type = request.GET.get('house_type')
 
     is_filtered = any([
-        query, min_price, max_price, sort not in ['', '-created_at']
+        query, min_price, max_price, 
+        sort not in ['', '-created_at'],
+        location, house_type
     ])
 
     if is_filtered:
@@ -73,38 +77,65 @@ def listing(request):
         queryset = model.objects.filter(is_available=True)
 
         if query:
-            queryset = queryset.filter(Q(title__icontains=query) | Q(location__icontains=query))
+            queryset = queryset.filter(
+                Q(title__icontains=query) | 
+                Q(location__icontains=query) |
+                Q(description__icontains=query)
+            )
         if min_price:
             queryset = queryset.filter(price__gte=min_price)
         if max_price:
             queryset = queryset.filter(price__lte=max_price)
+        if location:
+            queryset = queryset.filter(location__icontains=location)
+        if house_type and hasattr(model, 'house_type'):
+            queryset = queryset.filter(house_type=house_type)
         if sort:
             queryset = queryset.order_by(sort)
+
+        # Prefetch related data for performance
+        if model in [HousingProperties, LandProperties]:
+            queryset = queryset.prefetch_related('images')
 
         paginator = Paginator(queryset, 12)
         page_number = request.GET.get("page")
         listings = paginator.get_page(page_number)
-
+        # 
+        testimonials = PropertyTestimonialHouse.objects.all()
+        
+        # 
+        #neighborhood = Neighborhood.objects.all()
         return render(request, "components/listings.html", {
             "filtered": True,
+            "testimonials": testimonials,
             "listings": listings,
-            "type": type
+            "type": type,
+            "search_query": query,
+            "min_price": min_price,
+            "max_price": max_price,
+            "location_filter": location,
+            "house_type_filter": house_type,
+            "sort_option": sort,
         })
+        
+    
+    testimonials = PropertyTestimonialHouse.objects.all()
 
     # If no filters — show all 3 types in sections
-    land_listings = LandProperties.objects.filter(is_available=True)[:8]
-    housing_listings = HousingProperties.objects.filter(is_available=True)[:8]
+    land_listings = LandProperties.objects.filter(is_available=True).prefetch_related('images')[:8]
+    housing_listings = HousingProperties.objects.filter(is_available=True).prefetch_related('images')[:8]
     car_listings = CarProperties.objects.filter(is_available=True)[:8]
 
     return render(request, "components/listings.html", {
         "filtered": False,
+        "testimonials": testimonials,
         "land_listings": land_listings,
         "housing_listings": housing_listings,
         "car_listings": car_listings,
     })
 
 
-# Fetch prop
+# Fetch property
 def category_listings(request, category=None):
     context = {}
 
@@ -158,7 +189,7 @@ def listing_detail(request, slug):
 def category_listing(request, category):
     category = category.lower()
     if category == 'house':
-        listings = HouseProperties.objects.all()
+        listings = HousingProperties.objects.all()
     elif category == 'land':
         listings = LandProperties.objects.all()
     elif category == 'car':
@@ -222,6 +253,7 @@ def user_logout(request):
     return redirect('home')
 
 
+
 # User login and authentication functionality
 def user_login(request):
     if request.user.is_authenticated:
@@ -281,6 +313,7 @@ def contact(request):
         form = ContactForm()
     return render(request, 'components/contact.html', {'form': form})
 
+
 @require_POST
 def subscribe_newsletter(request):
     email = request.POST.get('email')
@@ -334,3 +367,12 @@ def faq(request):
 def add_testimonial(request):
     
     return render(request, 'testimonials.html')
+
+def contact_agent(request):
+    
+    return render(request, 'contact_agent.html')
+
+
+def schedule_visit(request):
+    
+    return render(request, 'schedule_visit.html')
