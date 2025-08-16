@@ -59,7 +59,6 @@ class Amenity(models.Model):
     def __str__(self):
         return self.name
 
-
 # land model for real estate listings  # optional, for tagging
 class LandProperties(models.Model):
     LAND_TYPE_CHOICES = [
@@ -166,6 +165,7 @@ class HousingProperties(models.Model):
     image = models.ImageField(upload_to='housing_images/')
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    amenities = models.ManyToManyField(Amenity, related_name='houses')
     location = models.CharField(max_length=255)
     house_type = models.CharField(max_length=255, choices=HOUSE_TYPE_CHOICES, default='Apartment')
     size = models.CharField(max_length=20, choices=HOUSE_SIZE_CHOICES, default='Studio')

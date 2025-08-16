@@ -1,19 +1,18 @@
 import uuid
 import requests
-from django.urls import reverse
 from types import LambdaType
+from django.urls import reverse
+from django.conf import settings
+from django.contrib import messages
 from django.http import JsonResponse
+from django.db.models.options import OrderWrt
+from .decorators import seller_or_agent_required
 from datetime import datetime, timedelta, timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from django.db.models.options import OrderWrt
-from django.shortcuts import render, redirect
-from django.shortcuts import render, get_object_or_404
-from listings.models import LandProperties, CarProperties, HousingProperties, Payment, Subscription
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import LandPropertyForm, HousingPropertyForm, CarPropertyForm
-from .decorators import seller_or_agent_required
-from django.contrib import messages
-from django.conf import settings
+from listings.models import LandProperties, CarProperties, HousingProperties, Payment, Subscription
 
 
 

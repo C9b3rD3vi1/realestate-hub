@@ -1,0 +1,57 @@
+<section class="py-20 bg-base-100">
+  <div class="max-w-screen-xl mx-auto px-4">
+    <h2 class="text-3xl md:text-4xl font-bold mb-10 text-center text-primary animate-fade-in-up">
+      Similar Properties
+    </h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for similar_property in similar_properties %}
+      <a href="{% url 'housing_detail' similar_property.id %}" 
+         class="card bg-base-100 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 rounded-xl overflow-hidden">
+        
+        <figure class="relative h-52 md:h-60 lg:h-64 overflow-hidden">
+          <img src="{{ similar_property.images.first.url }}" 
+               alt="{{ similar_property.title }}" 
+               class="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-105" 
+               loading="lazy"
+               width="300"
+               height="300">
+          {% if similar_property.is_new %}
+          <div class="absolute top-3 right-3 badge badge-accent badge-lg animate-bounce">New</div>
+          {% endif %}
+        </figure>
+
+        <div class="card-body p-4 md:p-6">
+          <h3 class="card-title text-lg md:text-xl font-semibold text-gray-800 truncate">{{ similar_property.title }}</h3>
+          <p class="text-sm md:text-base text-gray-500 mt-1 truncate">{{ similar_property.location }}</p>
+          <div class="flex flex-wrap justify-between items-center mt-4 gap-2">
+            <span class="font-bold text-success text-base md:text-lg">KSh {{ similar_property.price|floatformat:2 }}</span>
+            <span class="font-semibold text-blue-500 text-sm md:text-base">{{ similar_property.type }}</span>
+            <div class="badge badge-outline">{{ similar_property.size }}</div>
+          </div>
+        </div>
+      </a>
+      {% empty %}
+      <div class="col-span-3 text-gray-500 text-center py-10">No similar properties found</div>
+      {% endfor %}
+    </div>
+
+    <div class="text-center mt-12">
+      <a href="{% url 'listing' %}?location={{ house.location }}&house_type={{ house.house_type }}" 
+         class="btn btn-primary btn-outline btn-lg rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg">
+        View All Similar Properties
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Animations -->
+<style>
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(15px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out forwards;
+}
+</style>

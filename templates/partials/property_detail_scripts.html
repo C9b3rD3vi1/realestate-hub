@@ -1,0 +1,249 @@
+<script>
+// Only load heavy resources when needed
+function loadExternalResources() {
+  // Load Chart.js if price history chart exists
+  if (document.getElementById('priceHistoryChart')) {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+    script.onload = initPriceChart;
+    document.head.appendChild(script);
+  }
+
+  // Load Google Maps if map container exists
+  if (document.getElementById('mapContainer')) {
+    const script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap';
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+}
+
+function initPriceChart() {
+  try {
+    const ctx = document.getElementById('priceHistoryChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: JSON.parse('{{ price_history.labels|escapejs }}'),
+        datasets: [{
+          label: 'Price (KSh)',
+          data: JSON.parse('{{ price_history.data|escapejs }}'),
+          borderColor: '#3ABFF8',
+          backgroundColor: 'rgba(58, 191, 248, 0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: false }
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error initializing price chart:', error);
+  }
+}
+
+let map;
+function initMap() {
+  try {
+    const location = { lat: {{ house.latitude }}, lng: {{ house.longitude }} };
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: location,
+      zoom: 15
+    });
+    
+    new google.maps.Marker({
+      position: location,
+      map: map,
+      title: "{{ house.title }}"
+    });
+  } catch (error) {
+    console.error('Error initializing map:', error);
+  }
+}
+
+function toggleMap() {
+  const mapContainer = document.getElementById('mapContainer');
+  const isHidden = mapContainer.classList.toggle('hidden');
+  const button = document.querySelector('[aria-controls="mapContainer"]');
+  
+  button.setAttribute('aria-expanded', !isHidden);
+  
+  if (!isHidden && map) {
+    setTimeout(() => {
+      google.maps.event.trigger(map, 'resize');
+      map.setCenter({ lat: {{ house.latitude }}, lng: {{ house.longitude }} });
+    }, 100);
+  }
+}
+
+// Form handling
+function setupFormHandlers() {
+  const contactForm = document.getElementById('contactForm');
+  if (contactForm) {
+    contactForm.addEventListener('submit', handleContactSubmit);
+  }
+
+  const visitForm = document.getElementById('visitForm');
+  if (visitForm) {
+    visitForm.addEventListener('submit', handleVisitSubmit);
+  }
+}
+
+function handleContactSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const originalBtnText = submitBtn.innerHTML;
+  
+  // Simple validation
+  let isValid = true;
+  ['name', 'email', 'phone', 'message'].forEach(field => {
+    const input = form.querySelector(`[name="${field}"]`);
+    const errorLabel = document.getElementById(`${field}Error`);
+    
+    if (!input.value.trim()) {
+      errorLabel.classList.remove('hidden');
+      isValid = false;
+    } else {
+      errorLabel.classList.add('hidden');
+    }
+  });
+
+  if (!isValid) return;
+
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="loading loading-spinner"></span> Sending...';
+
+  fetch("{% url 'contact_agent' %}", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': '{{ csrf_token }}'
+    },
+    body: JSON.stringify({
+      name: form.name.value,
+      email: form.email.value,
+      phone: form.phone.value,
+      message: form.message.value,
+      property_id: "{{ house.id }}"
+    })
+  })
+  .then(response => {
+    if (!response.ok) throw new Error('Network response was not ok');
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      showToast('Message sent successfully!', 'success');
+      form.reset();
+    } else {
+      throw new Error(data.message || 'Failed to send message');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showToast('Failed to send message. Please try again.', 'error');
+  })
+  .finally(() => {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalBtnText;
+  });
+}
+
+function handleVisitSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const originalBtnText = submitBtn.innerHTML;
+
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="loading loading-spinner"></span> Submitting...';
+
+  fetch("{% url 'schedule_visit' %}", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': '{{ csrf_token }}'
+    },
+    body: JSON.stringify({
+      name: form.name.value,
+      email: form.email.value,
+      phone: form.phone.value,
+      visit_date: form.visit_date.value,
+      message: form.message.value,
+      property_id: "{{ house.id }}"
+    })
+  })
+  .then(response => {
+    if (!response.ok) throw new Error('Network response was not ok');
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      showToast('Visit request submitted successfully!', 'success');
+      form.reset();
+    } else {
+      throw new Error(data.message || 'Failed to submit request');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showToast('Failed to submit request. Please try again.', 'error');
+  })
+  .finally(() => {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalBtnText;
+  });
+}
+
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast toast-top toast-end`;
+  toast.innerHTML = `
+    <div class="alert alert-${type}">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>${message}</span>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 5000);
+}
+
+// Social sharing
+function shareOnFacebook() {
+  const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`;
+  window.open(url, '_blank', 'width=600,height=400');
+  showToast('Opening Facebook share dialog...');
+}
+
+function shareOnTwitter() {
+  const text = `Check out this property: {{ house.title|urlencode }}`;
+  const url = `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(window.location.href)}`;
+  window.open(url, '_blank', 'width=600,height=400');
+  showToast('Opening Twitter share dialog...');
+}
+
+function shareViaClipboard() {
+  const text = `Check out this property: {{ house.title }}\n${window.location.href}`;
+  navigator.clipboard.writeText(text)
+    .then(() => showToast('Link copied to clipboard!', 'success'))
+    .catch(() => prompt('Copy this link:', window.location.href));
+}
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  loadExternalResources();
+  setupFormHandlers();
+});
+</script>

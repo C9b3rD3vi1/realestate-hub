@@ -27,6 +27,7 @@ urlpatterns = [
     path("contact_agent/", views.contact_agent, name='contact_agent'),  # Contact agent page
     path("contact_agent/<slug:slug>/", views.contact_agent, name='contact_agent'),  # Contact agent page
     path("schedule_visit/", views.schedule_visit, name='schedule_visit'),  # Schedule visit page
+    path("api/price-history/<int:house_id>/", views.price_history_api, name="price_history_api"),
     
     
     path('house/<slug:slug>/', views.housing_detail, name='housing_detail'),

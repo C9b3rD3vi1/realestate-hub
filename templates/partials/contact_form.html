@@ -1,0 +1,32 @@
+<!-- components/call_to_action.html -->
+<section class="relative py-20 bg-primary text-primary-content text-center overflow-hidden w-full" data-aos="zoom-in-up">
+  <!-- Floating Motion Background Elements -->
+  <div class="absolute -top-10 left-10 w-32 h-32 bg-secondary/20 rounded-full blur-xl animate-pulse-slow"></div>
+  <div class="absolute bottom-0 right-0 w-40 h-40 bg-accent/20 rounded-full blur-2xl animate-float"></div>
+
+  <div class="max-w-screen-xl mx-auto px-4 relative z-10">
+    <h2 class="text-4xl md:text-5xl font-extrabold mb-4 leading-tight" data-aos="fade-down">Have Questions or Need Help?</h2>
+    <p class="mb-8 text-lg opacity-90 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="150">
+      Contact our support team or list your property with us today. We're here to assist you at every step.
+    </p>
+    <a href="{% url 'contact' %}" 
+       class="btn btn-secondary btn-lg rounded-full px-10 py-4 shadow-lg transform transition hover:scale-105 hover:shadow-xl" 
+       data-aos="zoom-in" data-aos-delay="300">
+      📞 Contact Us
+    </a>
+  </div>
+
+  <!-- Tailwind Keyframe Utilities -->
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    .animate-float {
+      animation: float 8s ease-in-out infinite;
+    }
+    .animate-pulse-slow {
+      animation: pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</section>

@@ -4,9 +4,9 @@ from django.db.models import Q
 from django.views import generic
 from django.http import Http404
 from itertools import chain
+from django.utils import timezone
 from urllib.parse import urlencode
 from django.contrib import messages
-from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from django.core.paginator import Paginator
@@ -15,29 +15,30 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from .models import Amenity, HousePropertiesImage, LandPropertiesImage, CarPropertiesImage, NeighborhoodFeature
 from .models import LandProperties, CarProperties, HousingProperties, Profile, Testimonials, PropertyTestimonialHouse
-from .models import NewsletterSubscriber, FAQ
+from .models import NewsletterSubscriber, FAQ, PriceHistoryHouse, PriceHistoryCar, PriceHistoryLand, PropertyTestimonialCar, PropertyTestimonialLand
 
 
 
 # Create your views here.
-def home(request):  
+def home(request):
     houses = HousingProperties.objects.filter(is_available=True)[:8]
     lands = LandProperties.objects.filter(is_available=True)[:8]
     cars = CarProperties.objects.filter(is_available=True)[:8]
     testimonials = Testimonials.objects.all()[:8]
     faqs = FAQ.objects.filter(is_active=True)
-    
-    
+
+
      # Fetch featured items from each model
     featured_houses = HousingProperties.objects.filter(is_featured=True)
     featured_lands = LandProperties.objects.filter(is_featured=True)
     featured_cars = CarProperties.objects.filter(is_featured=True)
-    
+
         # Merge all featured items into one queryset-like list
     featured_listings = sorted(chain(featured_houses, featured_lands, featured_cars),
         key=lambda x: getattr(x, 'created_at', None),reverse=True)
-      
+
     context = {
             'houses': houses,
             'lands': lands,
@@ -45,8 +46,8 @@ def home(request):
             'testimonials': testimonials,
             'faqs': faqs,
             'featured_listings': featured_listings[:10],  # limit to top 10
-        }  
-    
+        }
+
     return render(request, 'home.html', context)
 
 
@@ -59,10 +60,11 @@ def listing(request):
     house_type = request.GET.get('house_type')
 
     is_filtered = any([
-        query, min_price, max_price, 
+        query, min_price, max_price,
         sort not in ['', '-created_at'],
         location, house_type
     ])
+
 
     if is_filtered:
         # Handle filtered results: default to Land
@@ -78,7 +80,7 @@ def listing(request):
 
         if query:
             queryset = queryset.filter(
-                Q(title__icontains=query) | 
+                Q(title__icontains=query) |
                 Q(location__icontains=query) |
                 Q(description__icontains=query)
             )
@@ -100,10 +102,10 @@ def listing(request):
         paginator = Paginator(queryset, 12)
         page_number = request.GET.get("page")
         listings = paginator.get_page(page_number)
-        # 
+        #
         testimonials = PropertyTestimonialHouse.objects.all()
-        
-        # 
+
+        #
         #neighborhood = Neighborhood.objects.all()
         return render(request, "components/listings.html", {
             "filtered": True,
@@ -117,8 +119,8 @@ def listing(request):
             "house_type_filter": house_type,
             "sort_option": sort,
         })
-        
-    
+
+
     testimonials = PropertyTestimonialHouse.objects.all()
 
     # If no filters — show all 3 types in sections
@@ -162,8 +164,8 @@ def category_listings(request, category=None):
 
     return render(request, 'home.html', context)
 
- 
-    
+
+
 def listing_detail(request, slug):
     listing = None
     listing_type = None
@@ -183,8 +185,8 @@ def listing_detail(request, slug):
         'listing': listing,
         'listing_type': listing_type,
     })
-    
-    
+
+
 # Fetch listing property by categories
 def category_listing(request, category):
     category = category.lower()
@@ -201,17 +203,102 @@ def category_listing(request, category):
         'listings': listings,
         'category': category.capitalize()
     })
-    
 
-# fetch details
+
+# Fetch and handle housing details on housing_detail page
 def housing_detail(request, slug):
+    # Get the main house object
     house = get_object_or_404(HousingProperties, slug=slug)
-    return render(request, "components/housing_detail.html", {"house": house})
 
+    # Get neighborhood feature IDs first
+    neighborhood_feature_ids = house.neighborhood.all().values_list('id', flat=True)
+
+
+       # Convert size to float if it's a string
+    try:
+        size = float(house.size) if house.size else 0
+    except (ValueError, TypeError):
+        size = 0
+
+    # Prepare all context data
+    context = {
+        'house': house,
+        'house_images': HousePropertiesImage.objects.filter(house=house),
+        'amenities': house.amenities.all(),  # Using ManyToMany relationship
+        'neighborhood_features': house.neighborhood.all(),  # Using the ManyToMany relationship
+
+        #  Fetch property testimonials
+        'testimonials': PropertyTestimonialHouse.objects.filter(
+            Q(property=house) | Q(property__isnull=True)
+        ).order_by('-created_at')[:4],
+
+        # Fetch price history
+        'price_history': {
+                    'labels': [ph.date_recorded.strftime('%b %Y') for ph in
+                             house.price_history.all().order_by('date_recorded')],
+                    'data': [float(ph.price) for ph in
+                            house.price_history.all().order_by('date_recorded')]
+                },
+        # Fetch similar properties
+        'similar_properties': HousingProperties.objects.filter(
+            Q(neighborhood__in=neighborhood_feature_ids) |  # Use the IDs list|
+            Q(house_type=house.house_type)
+        ).exclude(pk=house.pk).order_by('?')[:3],
+        'today': timezone.now().date(),
+    }
+
+    # Calculate price per sqm if size exists
+    if size > 0:
+           context['price_per_sqm'] = float(house.price) / size
+
+    return render(request, "components/housing_detail.html", context)
+
+def price_history_api(request, house_id):
+    house = get_object_or_404(HousingProperties, id=house_id)
+    price_history = house.price_history.all().order_by('date_recorded')
+    return JsonResponse({
+        "labels": [ph.date_recorded.strftime('%b %Y') for ph in price_history],
+        "data": [float(ph.price) for ph in price_history]
+    })
+
+
+# Fetch and handle land details
 def land_detail(request, slug):
     land = get_object_or_404(LandProperties, slug=slug)
+    # Display all and data in context
+    context = {
+         'land': land,
+         'land_images': LandPropertiesImage.objects.filter(land=land),
+         'amenities': land.amenities.all(),  # Using ManyToMany relationship
+         'neighborhood_features': land.neighborhood.all(),  # Using the ManyToMany relationship
+
+         #  Fetch property testimonials
+         'testimonials': PropertyTestimonialLand.objects.filter(
+             Q(property=land) | Q(property__isnull=True)
+         ).order_by('-created_at')[:4],
+
+         # Fetch price history
+         'price_history': {
+             'labels': [ph.date.strftime('%b %Y') for ph in
+                      PriceHistoryLand.objects.filter(land=land).order_by('date_recorded')],
+             'data': [float(ph.price) for ph in
+                     PriceHistoryLand.objects.filter(land=land).order_by('date_recorded')]
+         },
+         # Fetch similar properties
+         'similar_properties': LandProperties.objects.filter(
+             Q(neighborhood=land.neighborhood) | Q(house_type=land.land_type)
+         ).exclude(pk=land.pk).order_by('?')[:3],
+         'today': timezone.now().date(),
+     }
+
+     # Calculate price per sqm if size exists
+    if land.size and land.size > 0:
+         context['price_per_sqm'] = land.price / land.size
+
     return render(request, "components/land_detail.html", {"land": land})
 
+
+# Fetch car properties in details
 def car_detail(request, slug):
     car = get_object_or_404(CarProperties, slug=slug)
     similar_cars = CarProperties.objects.filter(make=car.make).exclude(id=car.id)[:3]
@@ -363,16 +450,16 @@ def privacy(request):
 def faq(request):
     # This view displays frequently asked questions
     return render(request, 'faq.html')
-    
+
 def add_testimonial(request):
-    
+
     return render(request, 'testimonials.html')
 
 def contact_agent(request):
-    
+
     return render(request, 'contact_agent.html')
 
 
 def schedule_visit(request):
-    
+
     return render(request, 'schedule_visit.html')

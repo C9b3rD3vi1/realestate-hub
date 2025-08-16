@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 # Register your models here.
-from .models import CustomUser, PriceHistoryHouse, PriceHistoryLand
+from .models import CustomUser, PriceHistoryHouse, PriceHistoryLand, Amenity
 from .models import CustomUser, Profile, LandProperties, Contact, CarProperties, LandPropertiesImage, HousePropertiesImage
 from .models import HousingProperties, Testimonials, NewsletterSubscriber, CarPropertiesImage, FAQ, Payment, Subscription
 from .models import NeighborhoodFeature, PropertyTestimonialLand, PriceHistoryLand, PropertyTestimonialHouse, PropertyTestimonialCar, PriceHistoryCar
@@ -32,6 +32,7 @@ admin.site.register(NeighborhoodFeature)
 admin.site.register(PropertyTestimonialLand)
 admin.site.register(PropertyTestimonialHouse)
 admin.site.register(PropertyTestimonialCar)
+admin.site.register(Amenity)
 #admin.site.register(Payment)
 
 
