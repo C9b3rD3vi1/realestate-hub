@@ -1,4 +1,3 @@
-
 from .forms import *
 from django.db.models import Q
 from django.views import generic
@@ -243,7 +242,7 @@ def housing_detail(request, slug):
         'similar_properties': HousingProperties.objects.filter(
             Q(neighborhood__in=neighborhood_feature_ids) |  # Use the IDs list|
             Q(house_type=house.house_type)
-        ).exclude(pk=house.pk).order_by('?')[:3],
+        ).exclude(pk=house.pk).order_by('?')[:7],
         'today': timezone.now().date(),
     }
 
