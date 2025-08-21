@@ -2,84 +2,150 @@
 {% block title %}{{ car.title }} - Car Details{% endblock %}
 
 {% block content %}
-<section class="min-h-screen bg-base-200 py-10">
+<section class="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 py-10">
   <div class="container mx-auto px-4 motion-safe:animate-fadeIn">
-    
+
     <!-- Back to Listings Floating Button -->
-    <a href="{% url 'listing' %}" class="fixed bottom-6 right-6 z-50 btn btn-accent shadow-xl">
+    <a href="{% url 'listing' %}" 
+       class="fixed bottom-6 right-6 z-50 btn btn-accent shadow-xl animate-bounce hover:scale-110 transition-transform duration-300">
       ← Back to Listings
     </a>
 
-    <div class="bg-base-100 shadow-xl rounded-xl p-6 md:p-10 grid md:grid-cols-2 gap-8 overflow-hidden">
-      
+    <div class="car-card bg-white/80 backdrop-blur-md shadow-2xl rounded-3xl p-6 md:p-10 grid md:grid-cols-2 gap-8 overflow-hidden relative group perspective hover:shadow-2xl transition-all duration-500">
+
       <!-- Swipeable Carousel -->
-      <div class="relative">
-        <div class="carousel rounded-box max-w-full overflow-hidden">
+      <div class="relative rounded-2xl overflow-hidden shadow-inner hover:shadow-2xl transition-all duration-500 transform-gpu">
+        <div class="carousel max-w-full overflow-hidden group-hover:scale-105 transition-transform duration-700">
           {% for image in car.images.all %}
           <div class="carousel-item w-full">
-            <img src="{{ image.url }}" class="w-full h-72 md:h-[400px] object-cover" alt="Car Image" />
+            <img src="{{ image.url }}" class="w-full h-72 md:h-[400px] object-cover rounded-2xl transition-transform duration-500 group-hover:scale-105" alt="Car Image" />
           </div>
           {% empty %}
           <div class="carousel-item w-full">
-            <img src="{{ car.image.url }}" class="w-full h-72 md:h-[400px] object-cover" alt="{{ car.title }}" />
+            <img src="{{ car.image.url }}" class="w-full h-72 md:h-[400px] object-cover rounded-2xl" alt="{{ car.title }}" />
           </div>
           {% endfor %}
         </div>
+
+        <!-- Shine Sweep Effect -->
+        <div class="absolute -left-40 top-0 w-40 h-full bg-white/20 rotate-12 translate-x-0 group-hover:translate-x-[300%] transition-transform duration-1000 pointer-events-none rounded-2xl"></div>
       </div>
 
       <!-- Car Details -->
-      <div class="space-y-4">
-        <h1 class="text-3xl font-bold text-primary">{{ car.title }}</h1>
-        <p class="text-base text-gray-500 leading-relaxed">{{ car.description }}</p>
+      <div class="space-y-4 motion-safe:animate-fadeInRight">
+
+        <h1 class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight">{{ car.title }}</h1>
+        <p class="text-base md:text-lg text-gray-600 leading-relaxed">{{ car.description }}</p>
 
         <!-- Badges with Icons -->
         <div class="flex flex-wrap gap-3 mt-4">
-          <div class="badge badge-outline flex items-center gap-1">
+          <div class="badge badge-outline flex items-center gap-2 shimmer-badge transition-all duration-500 hover:scale-110 hover:shadow-lg">
             <i class="fa-solid fa-car text-primary"></i> {{ car.make }}
           </div>
-          <div class="badge badge-outline flex items-center gap-1">
+          <div class="badge badge-outline flex items-center gap-2 shimmer-badge transition-all duration-500 hover:scale-110 hover:shadow-lg">
             <i class="fa-solid fa-road text-primary"></i> {{ car.model }}
           </div>
-          <div class="badge badge-outline flex items-center gap-1">
+          <div class="badge badge-outline flex items-center gap-2 shimmer-badge transition-all duration-500 hover:scale-110 hover:shadow-lg">
             <i class="fa-solid fa-calendar text-primary"></i> {{ car.year_of_manufacture }}
           </div>
-          <div class="badge badge-outline flex items-center gap-1">
+          <div class="badge badge-outline flex items-center gap-2 shimmer-badge transition-all duration-500 hover:scale-110 hover:shadow-lg">
             <i class="fa-solid fa-cogs text-primary"></i> {{ car.transmission }}
           </div>
-          <div class="badge badge-outline flex items-center gap-1">
+          <div class="badge badge-outline flex items-center gap-2 shimmer-badge transition-all duration-500 hover:scale-110 hover:shadow-lg">
             <i class="fa-solid fa-gas-pump text-primary"></i> {{ car.fuel_type }}
           </div>
-          <div class="badge badge-outline flex items-center gap-1">
+          <div class="badge badge-outline flex items-center gap-2 shimmer-badge transition-all duration-500 hover:scale-110 hover:shadow-lg">
             <i class="fa-solid fa-tachometer-alt text-primary"></i> {{ car.mileage }} km
           </div>
         </div>
 
         <!-- Features -->
         {% if car.features %}
-        <div class="mt-4">
-          <h2 class="text-md font-semibold text-neutral">Features:</h2>
-          <p class="text-sm text-gray-600">{{ car.features }}</p>
+        <div class="mt-6">
+          <h2 class="text-lg font-semibold text-neutral mb-2">Features:</h2>
+          <p class="text-sm md:text-base text-gray-600">{{ car.features }}</p>
         </div>
         {% endif %}
 
         <!-- Price and Location -->
         <div class="mt-6 space-y-2">
-          <p class="text-xl font-bold text-success">KSh {{ car.price|floatformat:2 }}</p>
-          <p class="flex items-center text-sm text-gray-700">
+          <p class="text-3xl md:text-4xl font-extrabold text-success">KSh {{ car.price|floatformat:2 }}</p>
+          <p class="flex items-center text-sm md:text-base text-gray-700">
             <i class="fa-solid fa-location-dot text-primary mr-2"></i> {{ car.location }}
           </p>
         </div>
 
         <!-- Action Buttons -->
-        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <a href="/contact/" class="btn btn-primary w-full">Contact Seller</a>
-          <a href="#" class="btn btn-outline w-full">Book Test Drive</a>
-          <button class="btn btn-secondary w-full sm:col-span-2">
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <a href="/contact/" class="btn btn-primary w-full hover:scale-105 hover:shadow-lg transition-transform duration-300">Contact Seller</a>
+          <a href="#" class="btn btn-outline w-full hover:scale-105 hover:shadow-lg transition-transform duration-300">Book Test Drive</a>
+          <button class="btn btn-secondary w-full sm:col-span-2 hover:scale-105 hover:shadow-lg transition-transform duration-300">
             <i class="fa-solid fa-heart mr-2"></i> Favorite This Car
           </button>
         </div>
+
       </div>
     </div>
   </div>
 </section>
+
+<style>
+/* Fade in animations */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.motion-safe\:animate-fadeIn { animation: fadeIn 0.8s ease-out forwards; }
+
+@keyframes fadeInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+.motion-safe\:animate-fadeInRight { animation: fadeInRight 0.8s ease-out forwards; }
+
+/* Shimmer badge effect */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer-badge {
+  background-image: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.15) 0%,
+    rgba(255,255,255,0.4) 50%,
+    rgba(255,255,255,0.15) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+/* Card Hover Glow + 3D tilt */
+.car-card.group:hover {
+  box-shadow: 0 35px 80px rgba(37, 99, 235, 0.35);
+  transition: box-shadow 0.5s ease;
+}
+
+.perspective { perspective: 1200px; }
+.car-card.group {
+  transition: transform 0.3s ease;
+  transform-style: preserve-3d;
+  border-radius: 1.5rem;
+}
+</style>
+
+<script>
+// 3D Tilt Effect
+document.addEventListener('DOMContentLoaded', () => {
+  const card = document.querySelector('.car-card.group');
+
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const rotateX = ((y / rect.height) - 0.5) * 10;
+    const rotateY = ((x / rect.width) - 0.5) * 10;
+
+    card.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+  });
+
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+  });
+});
+</script>
 {% endblock %}

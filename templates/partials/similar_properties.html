@@ -1,81 +1,92 @@
-<section class="py-20 bg-base-100">
-  <div class="max-w-screen-2xl mx-auto px-4">
+<section class="py-24 bg-base-100 flex justify-center">
+  <div class="max-w-screen-2xl mx-auto px-4 md:px-8">
+
     <!-- Section Heading -->
     <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-primary animate-fade-in-up">
       Similar Properties
     </h2>
 
     <!-- Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 mb-16">
       {% for similar_property in similar_properties %}
-      <a href="{% url 'housing_detail' similar_property.slug %}" 
+      <a href="{% url 'housing_detail' similar_property.slug %}"
          aria-label="View details for {{ similar_property.title }}"
-         class="card relative bg-base-100 shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500 ease-out rounded-2xl overflow-hidden opacity-0 reveal-on-scroll">
+         class="card relative bg-base-100 shadow-xl hover:shadow-2xl hover:-translate-y-3 transition-all duration-500 ease-out rounded-2xl overflow-hidden opacity-0 reveal-on-scroll group border-2 border-transparent hover:border-primary">
 
-             <!-- Badges -->
-             <div class="absolute top-3 right-3 z-20 flex flex-col gap-2">
-               {% if similar_property.is_new %}
-               <div class="badge bg-green-600 text-white badge-lg animate-bounce shadow-md">New</div>
-               {% endif %}
-               {% if similar_property.is_featured %}
-               <div class="badge bg-yellow-500 text-white badge-lg shadow-md">Featured</div>
-               {% endif %}
-               {% if similar_property.is_discount %}
-               <div class="badge bg-red-600 text-white badge-lg shadow-md">Discount</div>
-               {% endif %}
-             </div>
+        <!-- Gradient overlay on hover -->
+        <div class="absolute inset-0 bg-gradient-to-t from-purple-200 via-indigo-50 to-transparent opacity-0 group-hover:opacity-40 transition-opacity duration-500 pointer-events-none rounded-2xl"></div>
 
-        <!-- Image with overlay -->
-        <figure class="relative h-72 md:h-80 lg:h-96 overflow-hidden">
-          <img 
-            src="{{ similar_property.images.first.url|default:'/static/images/heroimage3.webp' }}" 
-            alt="{{ similar_property.title|default:'Property Image' }}" 
-            class="w-full h-full object-cover object-center transition-transform duration-700 ease-out hover:scale-110 blur-sm"
-            onload="this.classList.remove('blur-sm')"
-            loading="lazy"
-            width="500"
-            height="400">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent"></div>
-        </figure>
+        <!-- Hover Glow -->
+        <div class="absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-50 transition-opacity duration-500"
+             style="box-shadow: 0 0 20px 5px rgba(37, 99, 235, 0.2);"></div>
+
+        <!-- Shine Sweep -->
+        <div class="absolute -left-40 top-0 w-40 h-full bg-white/20 rotate-12 translate-x-0 group-hover:translate-x-[300%] transition-transform duration-1000 pointer-events-none rounded-2xl"></div>
+
+        <!-- Badges -->
+        <div class="absolute top-3 right-3 z-20 flex flex-col gap-2">
+          {% if similar_property.is_new %}
+          <div class="badge bg-green-600 text-white badge-lg animate-bounce shadow-md shimmer-badge">New</div>
+          {% endif %}
+          {% if similar_property.is_featured %}
+          <div class="badge bg-yellow-500 text-white badge-lg shadow-md shimmer-badge">Featured</div>
+          {% endif %}
+          {% if similar_property.is_discount %}
+          <div class="badge bg-red-600 text-white badge-lg shadow-md shimmer-badge">Discount</div>
+          {% endif %}
+        </div>
+
+        <!-- Image Carousel -->
+        <div class="relative h-72 md:h-80 lg:h-96 overflow-hidden">
+          {% if similar_property.images.exists %}
+          <div class="carousel w-full h-full group-hover:scale-105 transition-transform duration-700">
+            {% for img in similar_property.images.all %}
+            <div class="carousel-item w-full">
+              <img src="{{ img.image.url }}" alt="{{ similar_property.title }}" class="w-full h-full object-cover rounded-2xl">
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <img src="/static/images/heroimage3.webp" alt="Placeholder" class="w-full h-full object-cover rounded-2xl">
+          {% endif %}
+        </div>
 
         <!-- Card Body -->
         <div class="card-body p-6">
-          <h3 class="card-title text-xl md:text-2xl font-bold text-gray-800 truncate">
+          <h3 class="card-title text-xl md:text-2xl font-bold text-gray-800 truncate group-hover:text-primary transition-colors duration-300">
             {{ similar_property.title }}
           </h3>
           <p class="text-sm md:text-base text-gray-500 truncate">
             {{ similar_property.location }}
           </p>
 
-          <!-- Description -->
           {% if similar_property.description %}
           <p class="text-gray-600 text-sm mt-2 line-clamp-2">
             {{ similar_property.description }}
           </p>
           {% endif %}
 
-          <!-- Property Info -->
-          <div class="flex justify-between items-center mt-4 text-gray-600 text-sm md:text-base">
-            <div class="flex items-center gap-2">
-              <i class="fas fa-bed text-primary"></i> {{ similar_property.bedrooms|default:"-" }}
-            </div>
-            <div class="flex items-center gap-2">
-              <i class="fas fa-bath text-blue-500"></i> {{ similar_property.bathrooms|default:"-" }}
-            </div>
-            <div class="flex items-center gap-2">
-              <i class="fas fa-car text-success"></i> {{ similar_property.parking|default:"-" }}
+          <!-- Amenities -->
+          <div class="mb-4 mt-4">
+            <h4 class="text-lg font-semibold mb-2">Amenities</h4>
+            <div class="flex flex-wrap gap-2">
+              {% for amenity in house.amenities.all %}
+              <span class="badge badge-outline bg-green-500 hover:bg-primary text-white transition-all duration-300 shimmer-badge">{{ amenity.name }}</span>
+              {% empty %}
+              <span class="text-gray-400">No amenities listed</span>
+              {% endfor %}
             </div>
           </div>
 
           <!-- Price & Type -->
-          <div class="flex flex-wrap justify-between items-center mt-5 gap-2">
+          <div class="flex flex-wrap justify-between items-center mt-4 gap-2">
             <span class="font-bold text-success text-lg md:text-xl">
               KSh {{ similar_property.price }}
             </span>
             <span class="font-semibold text-blue-500 text-sm md:text-base">
               {{ similar_property.type }}
             </span>
-            <div class="badge badge-outline">{{ similar_property.size }}</div>
+            <div class="badge badge-outline shimmer-badge">{{ similar_property.size }}</div>
           </div>
         </div>
       </a>
@@ -86,25 +97,26 @@
       {% endfor %}
     </div>
 
-    <!-- Button -->
-    <div class="text-center mt-14">
-      <a href="{% url 'listing' %}?location={{ house.location }}&house_type={{ house.house_type }}" 
+    <!-- View All Button -->
+    <div class="text-center mt-20">
+      <a href="{% url 'listing' %}?location={{ house.location }}&house_type={{ house.house_type }}"
          class="btn btn-primary btn-outline btn-lg rounded-full transition-all duration-500 hover:scale-110 hover:shadow-2xl hover:bg-primary hover:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-        View All Similar Properties
+         View All Similar Properties
       </a>
     </div>
+
   </div>
 </section>
 
-<!-- Animations -->
 <style>
+/* Fade in for section heading */
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(25px);}
-  to { opacity: 1; transform: translateY(0);}
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.animate-fade-in-up {
-  animation: fade-in-up 0.8s ease-out forwards;
-}
+.animate-fade-in-up { animation: fade-in-up 0.8s ease-out forwards; }
+
+/* Reveal on scroll */
 .reveal-on-scroll {
   opacity: 0;
   transform: translateY(25px);
@@ -114,28 +126,45 @@
   opacity: 1;
   transform: translateY(0);
 }
+
+/* Line clamp for description */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Shimmer badge effect */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer-badge {
+  background-image: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.15) 0%,
+    rgba(255,255,255,0.4) 50%,
+    rgba(255,255,255,0.15) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+}
 </style>
 
-<!-- Intersection Observer -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const elements = document.querySelectorAll(".reveal-on-scroll");
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry, i) => {
       if (entry.isIntersecting) {
-        entry.target.style.transitionDelay = `${i * 100}ms`; // stagger
+        entry.target.style.transitionDelay = `${i * 100}ms`;
         entry.target.classList.add("visible");
         observer.unobserve(entry.target);
       }
     });
   }, { threshold: 0.15 });
 
-  elements.forEach((el) => observer.observe(el));
+  elements.forEach(el => observer.observe(el));
 });
 </script>

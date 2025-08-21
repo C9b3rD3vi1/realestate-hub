@@ -1,27 +1,22 @@
-<section id="property-section" class="bg-base-100 rounded-box shadow-xl overflow-hidden transition-shadow duration-300 hover:shadow-2xl animate-property-fade-in">
+<!-- Property Section -->
+<section id="property-section" 
+         class="bg-base-100 rounded-box shadow-xl overflow-hidden transition-shadow duration-300 hover:shadow-2xl mb-32 pb-12 fade-in-section">
+
   <div class="grid md:grid-cols-2 gap-0">
+    
     <!-- Image Gallery -->
-    <div class="relative group">
+    <div class="relative group fade-in-up">
       <!-- Main Image Carousel -->
       <div class="carousel w-full h-64 sm:h-80 md:h-96" id="propertyCarousel">
         {% for image in house.images.all %}
-        <div id="slide{{ forloop.counter }}" class="carousel-item relative w-full">
+        <div class="carousel-item relative w-full fade-in">
           <img src="{{ image.image.url }}" 
                alt="Property image {{ forloop.counter }}" 
                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-               loading="lazy"
-               width="800"
-               height="600">
-          <!-- Nav Arrows -->
-          <div class="absolute flex justify-between transform -translate-y-1/2 left-4 right-4 top-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <a href="#slide{% if forloop.first %}{{ house.images.count }}{% else %}{{ forloop.counter|add:'-1' }}{% endif %}" 
-               class="btn btn-circle btn-sm bg-base-100/70 hover:bg-primary hover:text-primary-content transition-colors" aria-label="Previous image">❮</a> 
-            <a href="#slide{% if forloop.last %}1{% else %}{{ forloop.counter|add:'1' }}{% endif %}" 
-               class="btn btn-circle btn-sm bg-base-100/70 hover:bg-primary hover:text-primary-content transition-colors" aria-label="Next image">❯</a>
-          </div>
+               loading="lazy" width="800" height="600">
         </div>
         {% empty %}
-        <div class="carousel-item relative w-full">
+        <div class="carousel-item relative w-full fade-in">
           <div class="w-full h-full bg-gray-200 flex items-center justify-center">
             <span class="text-gray-500">No images available</span>
           </div>
@@ -29,97 +24,63 @@
         {% endfor %}
       </div>
 
-      <!-- Auto-scroll script scoped to this section -->
-      <script>
-        document.addEventListener("DOMContentLoaded", function() {
-          const section = document.querySelector("#property-section");
-          const slides = section.querySelectorAll("#propertyCarousel .carousel-item");
-          let current = 0;
-          if (slides.length > 0) {
-            setInterval(() => {
-              let link = slides[current].querySelector("a[href]");
-              if (link) link.click();
-              current = (current + 1) % slides.length;
-            }, 5000); // Change slide every 5s
-          }
-        });
-      </script>
-      
       <!-- Thumbnail Strip -->
-      <div class="flex space-x-2 mt-3 overflow-x-auto py-2 px-2 scrollbar-thin scrollbar-thumb-primary scrollbar-track-base-200">
+      <div class="flex space-x-2 mt-3 overflow-x-auto py-2 px-2 scrollbar-thin scrollbar-thumb-primary scrollbar-track-base-200 fade-in-up">
         {% for image in house.images.all %}
-          <a href="#slide{{ forloop.counter }}" class="flex-none">
+          <button onclick="showSlide({{ forloop.counter0 }})" class="flex-none focus:outline-none">
             <img src="{{ image.image.url }}" 
                  class="w-16 h-16 object-cover rounded cursor-pointer border-2 border-transparent hover:border-primary transition-colors duration-200"
-                 alt="Thumbnail {{ forloop.counter }}"
-                 loading="lazy"
-                 width="100"
-                 height="100">
-          </a>
+                 alt="Thumbnail {{ forloop.counter }}" loading="lazy">
+          </button>
         {% endfor %}
       </div>
-      
-      <!-- Property Badges -->
-      <div class="absolute top-4 left-4 flex flex-col space-y-2 animate-property-fade-in-down">
-        <div class="badge badge-lg badge-primary shadow-md">
-          {{ house.get_house_type_display }}
-        </div>
-        <div class="badge badge-lg {% if house.is_available %}badge-success{% else %}badge-error{% endif %} shadow-md">
-          {% if house.is_available %}Available{% else %}Not Available{% endif %}
-        </div>
-      </div>
-      
-      <!-- Favorite Button -->
-      <button class="absolute top-4 right-4 btn btn-circle btn-ghost text-white hover:bg-error hover:text-error-content transition-colors animate-bounce"
-              aria-label="Add to favorites">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
-      </button>
     </div>
 
     <!-- House Details -->
-    <div class="p-6 sm:p-8 animate-property-fade-in-up">
-      <div class="flex justify-between items-start">
-        <div>
-          <h1 class="text-3xl sm:text-4xl font-bold text-primary mb-1">
-            {{ house.title }}
-          </h1>
-          <div class="flex items-center text-sm text-gray-500 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span class="font-medium">{{ house.location }}</span>
-          </div>
+    <div class="p-6 sm:p-8 fade-in-up">
+      <!-- Title & Location -->
+      <h1 class="text-3xl sm:text-4xl font-bold text-primary mb-1 fade-in">{{ house.title }}</h1>
+      <div class="flex items-center text-sm text-gray-500 mb-4 fade-in-up">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span class="font-medium">{{ house.location }}</span>
+      </div>
+
+      <!-- Price -->
+      <div class="text-right fade-in">
+        <div class="text-2xl sm:text-3xl font-bold text-success mb-1 animate-pulse">
+          KSh {{ house.price|floatformat:2 }}
         </div>
-        
-        <div class="text-right">
-          <div class="text-2xl sm:text-3xl font-bold text-success mb-1 animate-pulse">
-            KSh {{ house.price|floatformat:2 }}
-          </div>
-          <div class="text-xs text-gray-500">Price</div>
-        </div>
+        <div class="text-xs text-gray-500">Price</div>
       </div>
 
       <!-- Features Grid -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 my-6">
-        <!-- size, bedrooms, bathrooms (same as before) -->
-        ...
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 my-6 text-gray-700 text-sm stagger-container">
+        <div class="flex items-center gap-2 stagger-item"><i class="fas fa-ruler-combined text-primary"></i><span>{{ house.size }}</span></div>
+        <div class="flex items-center gap-2 stagger-item"><i class="fas fa-bed text-primary"></i><span>{{ house.bedrooms }} Bedrooms</span></div>
+        <div class="flex items-center gap-2 stagger-item"><i class="fas fa-bath text-primary"></i><span>{{ house.bathrooms }} Bathrooms</span></div>
+        {% if house.garages %}
+        <div class="flex items-center gap-2 stagger-item"><i class="fas fa-car text-primary"></i><span>{{ house.garages }} Garage(s)</span></div>
+        {% endif %}
+        {% if house.year_built %}
+        <div class="flex items-center gap-2 stagger-item"><i class="fas fa-calendar-alt text-primary"></i><span>Built in {{ house.year_built }}</span></div>
+        {% endif %}
       </div>
 
       <!-- Description -->
-      <div class="prose max-w-none mb-6">
+      <div class="prose max-w-none mb-6 fade-in">
         <h2 class="text-lg font-semibold mb-2">Description</h2>
         <p class="text-base-content/80">{{ house.description }}</p>
       </div>
 
       <!-- Amenities -->
-      <div class="mb-6">
+      <div class="mb-6 stagger-container">
         <h2 class="text-lg font-semibold mb-3">Amenities</h2>
         <div class="flex flex-wrap gap-2">
           {% for amenity in house.amenities.all %}
-          <span class="badge badge-outline hover:badge-primary transition-all duration-300">{{ amenity.name }}</span>
+          <span class="badge badge-outline text-blue-500 hover:badge-primary transition-all duration-300 stagger-item">{{ amenity.name }}</span>
           {% empty %}
           <span class="text-gray-500">No amenities listed</span>
           {% endfor %}
@@ -127,15 +88,12 @@
       </div>
 
       <!-- Action Buttons -->
-      <div class="flex flex-col sm:flex-row gap-3 mt-8">
-        <a href="#contactForm" class="btn btn-primary btn-wide gap-2 animate-property-fade-in">
+      <div class="flex flex-col sm:flex-row gap-3 mt-8 fade-in-up">
+        <a href="#contactForm" class="btn btn-primary btn-wide gap-2">
           Contact Owner
         </a>
-        
-        <div class="dropdown dropdown-end animate-property-fade-in">
-          <button class="btn btn-outline btn-wide gap-2">
-            Share
-          </button>
+        <div class="dropdown dropdown-end" id="shareDropdown">
+          <button class="btn btn-outline btn-wide gap-2" id="shareToggle">Share</button>
           <ul class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-20">
             <li><button onclick="shareOnFacebook()" class="hover:bg-blue-50"><span class="text-blue-600">Facebook</span></button></li>
             <li><button onclick="shareOnTwitter()" class="hover:bg-sky-50"><span class="text-sky-400">Twitter</span></button></li>
@@ -147,52 +105,67 @@
   </div>
 </section>
 
-<!-- Scoped animations only for #property-section -->
+<!-- Animations -->
 <style>
-#property-section .animate-property-fade-in { animation: fade-in 0.7s ease-in-out; }
-#property-section .animate-property-fade-in-up { animation: fade-in-up 0.7s ease-in-out; }
-#property-section .animate-property-fade-in-down { animation: fade-in-down 0.7s ease-in-out; }
+.fade-in, .fade-in-up, .fade-in-down {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.fade-in.show, .fade-in-up.show, .fade-in-down.show {
+  opacity: 1;
+  transform: translateY(0);
+}
 
-@keyframes fade-in { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
-@keyframes fade-in-up { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} }
-@keyframes fade-in-down { from { opacity: 0; transform: translateY(-20px);} to { opacity: 1; transform: translateY(0);} }
+/* Stagger effect */
+.stagger-item {
+  opacity: 0;
+  transform: translateY(15px) scale(0.98);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.stagger-item.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
 </style>
 
-<!-- Auto-scroll script scoped to this section with pause on hover -->
-<!-- Auto-scroll script scoped to this section with pause on hover (no page jump) -->
+<!-- Scroll-trigger fade + stagger -->
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    const section = document.querySelector("#property-section");
-    const carousel = section.querySelector("#propertyCarousel");
-    const slides = carousel.querySelectorAll(".carousel-item");
-    let current = 0;
-    let interval;
+    const faders = document.querySelectorAll('.fade-in, .fade-in-up, .fade-in-down, .stagger-container');
+    const appearOptions = { threshold: 0.2 };
+    const appearOnScroll = new IntersectionObserver(function(entries, observer) {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
 
-    function showSlide(index) {
-      slides.forEach((slide, i) => {
-        slide.classList.toggle("hidden", i !== index);
+        if (!entry.target.classList.contains('stagger-container')) {
+          entry.target.classList.add('show');
+        } else {
+          const children = entry.target.querySelectorAll('.stagger-item');
+          children.forEach((child, index) => {
+            setTimeout(() => child.classList.add('show'), index * 150);
+          });
+        }
+
+        observer.unobserve(entry.target);
       });
-    }
+    }, appearOptions);
 
-    function startAutoScroll() {
-      interval = setInterval(() => {
-        current = (current + 1) % slides.length;
-        showSlide(current);
-      }, 5000); // every 5s
-    }
+    faders.forEach(fader => { appearOnScroll.observe(fader); });
 
-    function stopAutoScroll() {
-      clearInterval(interval);
-    }
+    // Carousel
+    const carousel = document.querySelector("#propertyCarousel");
+    const slides = carousel.querySelectorAll(".carousel-item");
+    let current = 0, interval;
+    function showSlide(index) { slides.forEach((s, i) => s.classList.toggle("hidden", i !== index)); }
+    function startAutoScroll() { interval = setInterval(() => { current = (current + 1) % slides.length; showSlide(current); }, 5000); }
+    function stopAutoScroll() { clearInterval(interval); }
+    if (slides.length > 0) { showSlide(current); startAutoScroll(); carousel.addEventListener("mouseenter", stopAutoScroll); carousel.addEventListener("mouseleave", startAutoScroll); window.showSlide = showSlide; }
 
-    if (slides.length > 0) {
-      // Initially show the first slide
-      showSlide(current);
-      startAutoScroll();
-
-      // Pause on hover
-      carousel.addEventListener("mouseenter", stopAutoScroll);
-      carousel.addEventListener("mouseleave", startAutoScroll);
-    }
+    // Dynamic spacing for Share dropdown
+    const section = document.querySelector("#property-section");
+    const shareDropdown = document.querySelector("#shareDropdown");
+    shareDropdown.addEventListener("focusin", () => section.classList.add("pb-24"));
+    shareDropdown.addEventListener("focusout", () => section.classList.remove("pb-24"));
   });
 </script>

@@ -1,12 +1,16 @@
-<section class="my-12 sm:my-16 md:my-24 lg:my-32 px-4 md:px-10 flex justify-center">
-  <div class="card bg-base-100 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 w-full max-w-6xl animate-fade-in-up">
-    <div class="card-body p-6 sm:p-8 md:p-12">
+<section class="mt-20 my-12 sm:my-16 md:my-24 lg:my-32 px-4 md:px-10 flex justify-center">
+  <div class="card relative bg-white/80 backdrop-blur-md rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 w-full max-w-6xl animate-fade-in-up overflow-hidden group">
+    
+    <!-- Gradient overlay on hover -->
+    <div class="absolute inset-0 bg-gradient-to-tr from-indigo-200 via-purple-100 to-blue-50 opacity-0 group-hover:opacity-30 transition-opacity duration-500 pointer-events-none rounded-3xl"></div>
+
+    <div class="card-body p-6 sm:p-8 md:p-12 relative z-10 space-y-8">
 
       <!-- Header -->
       <div class="flex items-center justify-between mb-10">
         <h2 class="card-title text-2xl md:text-3xl font-extrabold text-primary flex items-center gap-3 animate-slide-down">
           <svg xmlns="http://www.w3.org/2000/svg" 
-               class="h-8 w-8 md:h-9 md:w-9 text-primary" 
+               class="h-8 w-8 md:h-9 md:w-9 text-primary animate-float" 
                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" 
                   d="M3 3v18h18M9 17l4-4 4 4M13 13V7" />
@@ -19,15 +23,19 @@
       </div>
 
       <!-- Chart Container -->
-      <div class="relative bg-base-200 rounded-2xl p-4 md:p-6 shadow-inner">
-        <div class="h-72 sm:h-80 md:h-96 w-full animate-slide-up">
+      <div class="relative bg-white/50 backdrop-blur-md rounded-2xl p-4 md:p-6 shadow-inner overflow-hidden">
+        <!-- Shimmer overlay -->
+        <div class="absolute inset-0 pointer-events-none">
+          <div class="shimmer h-full w-full"></div>
+        </div>
+        <div class="h-72 sm:h-80 md:h-96 w-full animate-slide-up relative z-10">
           <canvas id="priceHistoryChart" aria-label="Property price history chart" role="img"></canvas>
         </div>
       </div>
+
     </div>
   </div>
 </section>
-
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -36,127 +44,120 @@
 {{ price_history|json_script:"priceHistoryData" }}
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const ctx = document.getElementById("priceHistoryChart").getContext("2d");
-    let priceHistory = JSON.parse(document.getElementById("priceHistoryData").textContent);
+document.addEventListener("DOMContentLoaded", () => {
+  const ctx = document.getElementById("priceHistoryChart").getContext("2d");
+  let priceHistory = JSON.parse(document.getElementById("priceHistoryData").textContent);
 
-    const totalDuration = 3000; // ms to draw whole line
-    const delayBetweenPoints = totalDuration / priceHistory.data.length;
+  const totalDuration = 3000; // ms
+  const delayBetweenPoints = totalDuration / priceHistory.data.length;
 
-    const previousY = (ctx) => ctx.index === 0 
-      ? ctx.chart.scales.y.getPixelForValue(priceHistory.data[0]) 
-      : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
+  const previousY = (ctx) => ctx.index === 0 
+    ? ctx.chart.scales.y.getPixelForValue(priceHistory.data[0]) 
+    : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
 
-    const config = {
-      type: "line",
-      data: {
-        labels: priceHistory.labels,
-        datasets: [{
-          label: "Price (USD)",
-          data: priceHistory.data,
-          borderColor: "#2563eb",
-          backgroundColor: "rgba(37, 99, 235, 0.15)",
-          borderWidth: 3,
-          tension: 0.4,
-          fill: true,
-          pointBackgroundColor: "#2563eb",
-          pointBorderColor: "#fff",
-          pointBorderWidth: 2,
-          pointRadius: 4,
-          pointHoverRadius: 7,
-          pointHoverBorderWidth: 3
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: {
-          x: {
-            type: 'number',
-            easing: 'linear',
-            duration: delayBetweenPoints,
-            from: NaN,
-            delay(ctx) {
-              if (ctx.type !== 'data' || ctx.xStarted) return 0;
-              ctx.xStarted = true;
-              return ctx.index * delayBetweenPoints;
-            }
-          },
-          y: {
-            type: 'number',
-            easing: 'linear',
-            duration: delayBetweenPoints,
-            from: previousY,
-            delay(ctx) {
-              if (ctx.type !== 'data' || ctx.yStarted) return 0;
-              ctx.yStarted = true;
-              return ctx.index * delayBetweenPoints;
-            }
+  // Create gradient for line
+  const gradient = ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
+  gradient.addColorStop(0, '#4f46e5');
+  gradient.addColorStop(0.5, '#2563eb');
+  gradient.addColorStop(1, '#60a5fa');
+
+  const config = {
+    type: "line",
+    data: {
+      labels: priceHistory.labels,
+      datasets: [{
+        label: "Price (USD)",
+        data: priceHistory.data,
+        borderColor: gradient,
+        borderWidth: 3,
+        tension: 0.4,
+        fill: true,
+        backgroundColor: "rgba(37, 99, 235, 0.1)",
+        pointBackgroundColor: "#2563eb",
+        pointBorderColor: "#fff",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 7,
+        pointHoverBorderWidth: 3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        x: {
+          type: 'number',
+          easing: 'linear',
+          duration: delayBetweenPoints,
+          from: NaN,
+          delay(ctx) {
+            if (ctx.type !== 'data' || ctx.xStarted) return 0;
+            ctx.xStarted = true;
+            return ctx.index * delayBetweenPoints;
           }
         },
-        interaction: { intersect: false, mode: "index" },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: "#1f2937",
-            titleColor: "#fff",
-            bodyColor: "#e5e7eb",
-            padding: 12,
-            cornerRadius: 8,
-            callbacks: {
-              label: (ctx) => `$${ctx.formattedValue.toLocaleString()}`
-            }
-          }
-        },
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: { color: "#6b7280", font: { size: 12 } }
-          },
-          y: {
-            grid: { color: "rgba(0,0,0,0.05)" },
-            ticks: { 
-              color: "#6b7280",
-              callback: (value) => `$${value.toLocaleString()}`
-            }
+        y: {
+          type: 'number',
+          easing: 'linear',
+          duration: delayBetweenPoints,
+          from: previousY,
+          delay(ctx) {
+            if (ctx.type !== 'data' || ctx.yStarted) return 0;
+            ctx.yStarted = true;
+            return ctx.index * delayBetweenPoints;
           }
         }
+      },
+      interaction: { intersect: false, mode: "index" },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: "#1f2937",
+          titleColor: "#fff",
+          bodyColor: "#e5e7eb",
+          padding: 12,
+          cornerRadius: 8,
+          callbacks: {
+            label: (ctx) => `$${ctx.formattedValue.toLocaleString()}`
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: "#6b7280", font: { size: 12 } } },
+        y: { grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: "#6b7280", callback: v => `$${v.toLocaleString()}` } }
       }
-    };
+    }
+  };
 
-    const priceChart = new Chart(ctx, config);
+  const priceChart = new Chart(ctx, config);
 
-    // Auto restart animation every 8s
-    setInterval(() => {
-      priceChart.reset();
-      priceChart.update();
-    }, 8000);
-  });
+  // Auto restart animation every 8s
+  setInterval(() => {
+    priceChart.reset();
+    priceChart.update();
+  }, 8000);
+});
 </script>
 
-<!-- Animations -->
 <style>
-  @keyframes fade-in-up {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .animate-fade-in-up {
-    animation: fade-in-up 0.8s ease-out forwards;
-  }
+@keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in-up { animation: fade-in-up 0.8s ease-out forwards; }
 
-  @keyframes slide-up {
-    from { opacity: 0; transform: translateY(40px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .animate-slide-up {
-    animation: slide-up 1s ease-out forwards;
-  }
+@keyframes slide-up { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+.animate-slide-up { animation: slide-up 1s ease-out forwards; }
 
-  @keyframes slide-down {
-    from { opacity: 0; transform: translateY(-40px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .animate-slide-down {
-    animation: slide-down 1s ease-out forwards;
-  }
+@keyframes slide-down { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: translateY(0); } }
+.animate-slide-down { animation: slide-down 1s ease-out forwards; }
+
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.animate-float { animation: float 3s ease-in-out infinite; }
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.shimmer {
+  background: linear-gradient(120deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.15) 100%);
+  animation: shimmer 2s infinite;
+}
 </style>

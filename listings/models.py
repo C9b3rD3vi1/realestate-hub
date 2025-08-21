@@ -43,15 +43,42 @@ class CustomUser(AbstractUser):
         return self.username
 
 
-
+# Neighborhood 
 class NeighborhoodFeature(models.Model):
+    CATEGORY_CHOICES = [
+        ("education", "Education"),
+        ("healthcare", "Healthcare"),
+        ("shopping", "Shopping"),
+        ("transport", "Transport"),
+        ("recreation", "Recreation"),
+        ("other", "Other"),
+    ]
+
+    ICON_DEFAULTS = {
+        "education": "fas fa-school",
+        "healthcare": "fas fa-hospital",
+        "shopping": "fas fa-store",
+        "transport": "fas fa-bus",
+        "recreation": "fas fa-tree",
+        "other": "fas fa-map-marker-alt",
+    }
+
     name = models.CharField(max_length=100)
     distance = models.CharField(max_length=50)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default="other")
     icon = models.CharField(max_length=50, blank=True)
+
+    class Meta:
+        ordering = ["category", "name"]
 
     def __str__(self):
         return f"{self.name} ({self.distance})"
 
+    def get_icon(self):
+        """Return the assigned icon, or a default based on category"""
+        return self.icon or self.ICON_DEFAULTS.get(self.category, "fas fa-map-marker-alt")      
+        
+# 
 class Amenity(models.Model):
     name = models.CharField(max_length=100)
     icon = models.CharField(max_length=50, blank=True)
