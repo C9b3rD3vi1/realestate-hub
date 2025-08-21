@@ -2,10 +2,10 @@
 {% block title %}{{ car.title }} - Car Details{% endblock %}
 
 {% block content %}
-<section class="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 py-10">
-  <div class="container mx-auto px-4 motion-safe:animate-fadeIn">
+<section class="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 py-12">
+  <div class="container mx-auto px-4">
 
-    <!-- Back to Listings Floating Button -->
+    <!-- Back Button -->
     <a href="{% url 'listing' %}" 
        class="fixed bottom-6 right-6 z-50 btn btn-accent shadow-xl animate-bounce hover:scale-110 transition-transform duration-300">
       ← Back to Listings
@@ -13,61 +13,62 @@
 
     <div class="car-card bg-white/80 backdrop-blur-md shadow-2xl rounded-3xl p-6 md:p-10 grid md:grid-cols-2 gap-8 overflow-hidden relative group perspective hover:shadow-2xl transition-all duration-500">
 
-      <!-- Swipeable Carousel -->
-      <div class="relative rounded-2xl overflow-hidden shadow-inner hover:shadow-2xl transition-all duration-500 transform-gpu">
-        <div class="carousel max-w-full overflow-hidden group-hover:scale-105 transition-transform duration-700">
-          {% for image in car.images.all %}
-          <div class="carousel-item w-full">
-            <img src="{{ image.url }}" class="w-full h-72 md:h-[400px] object-cover rounded-2xl transition-transform duration-500 group-hover:scale-105" alt="Car Image" />
+      <!-- Carousel -->
+      <div class="relative rounded-2xl overflow-hidden shadow-inner transform-gpu">
+        <div class="carousel relative w-full overflow-hidden">
+          {% for image in car_images %}
+          <div class="carousel-item w-full transition-opacity duration-700 ease-in-out">
+            <img src="{{ image.image.url }}" class="w-full h-72 md:h-[400px] object-cover rounded-2xl" loading="lazy" alt="{{ car.title }}">
           </div>
           {% empty %}
-          <div class="carousel-item w-full">
-            <img src="{{ car.image.url }}" class="w-full h-72 md:h-[400px] object-cover rounded-2xl" alt="{{ car.title }}" />
+          <div class="carousel-item w-full transition-opacity duration-700 ease-in-out">
+            <img src="{{ car.image.url }}" class="w-full h-72 md:h-[400px] object-cover rounded-2xl" loading="lazy" alt="{{ car.title }}">
           </div>
           {% endfor %}
+
+          <!-- Controls -->
+          <button class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white/90 rounded-full p-2 shadow-md transition" onclick="prevSlide()">‹</button>
+          <button class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white/90 rounded-full p-2 shadow-md transition" onclick="nextSlide()">›</button>
+
+          <!-- Indicators -->
+          <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+            {% for image in car_images %}
+            <button class="carousel-dot w-3 h-3 rounded-full bg-white/50 hover:bg-white transition-colors" onclick="goToSlide({{ forloop.counter0 }})"></button>
+            {% endfor %}
+          </div>
         </div>
 
-        <!-- Shine Sweep Effect -->
+        <!-- Shine Effect -->
         <div class="absolute -left-40 top-0 w-40 h-full bg-white/20 rotate-12 translate-x-0 group-hover:translate-x-[300%] transition-transform duration-1000 pointer-events-none rounded-2xl"></div>
       </div>
 
       <!-- Car Details -->
       <div class="space-y-4 motion-safe:animate-fadeInRight">
-
         <h1 class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight">{{ car.title }}</h1>
         <p class="text-base md:text-lg text-gray-600 leading-relaxed">{{ car.description }}</p>
 
-        <!-- Badges with Icons -->
+        <!-- Badges -->
         <div class="flex flex-wrap gap-3 mt-4">
-          <div class="badge badge-outline flex items-center gap-2 shimmer-badge transition-all duration-500 hover:scale-110 hover:shadow-lg">
-            <i class="fa-solid fa-car text-primary"></i> {{ car.make }}
+          {% for badge in badges %}
+          <div class="badge badge-outline flex items-center gap-2 shimmer-badge hover:scale-110 hover:shadow-lg">
+            <i class="fa-solid {{ badge.icon }} text-primary"></i> {{ badge.value }}
           </div>
-          <div class="badge badge-outline flex items-center gap-2 shimmer-badge transition-all duration-500 hover:scale-110 hover:shadow-lg">
-            <i class="fa-solid fa-road text-primary"></i> {{ car.model }}
-          </div>
-          <div class="badge badge-outline flex items-center gap-2 shimmer-badge transition-all duration-500 hover:scale-110 hover:shadow-lg">
-            <i class="fa-solid fa-calendar text-primary"></i> {{ car.year_of_manufacture }}
-          </div>
-          <div class="badge badge-outline flex items-center gap-2 shimmer-badge transition-all duration-500 hover:scale-110 hover:shadow-lg">
-            <i class="fa-solid fa-cogs text-primary"></i> {{ car.transmission }}
-          </div>
-          <div class="badge badge-outline flex items-center gap-2 shimmer-badge transition-all duration-500 hover:scale-110 hover:shadow-lg">
-            <i class="fa-solid fa-gas-pump text-primary"></i> {{ car.fuel_type }}
-          </div>
-          <div class="badge badge-outline flex items-center gap-2 shimmer-badge transition-all duration-500 hover:scale-110 hover:shadow-lg">
-            <i class="fa-solid fa-tachometer-alt text-primary"></i> {{ car.mileage }} km
-          </div>
+          {% endfor %}
         </div>
 
-        <!-- Features -->
-        {% if car.features %}
+        <!-- Amenities -->
+        {% if amenities %}
         <div class="mt-6">
-          <h2 class="text-lg font-semibold text-neutral mb-2">Features:</h2>
-          <p class="text-sm md:text-base text-gray-600">{{ car.features }}</p>
+          <h2 class="text-lg font-semibold text-neutral mb-2">Amenities:</h2>
+          <ul class="list-disc list-inside text-gray-600">
+            {% for amenity in amenities %}
+            <li>{{ amenity.name }}</li>
+            {% endfor %}
+          </ul>
         </div>
         {% endif %}
 
-        <!-- Price and Location -->
+        <!-- Price & Location -->
         <div class="mt-6 space-y-2">
           <p class="text-3xl md:text-4xl font-extrabold text-success">KSh {{ car.price|floatformat:2 }}</p>
           <p class="flex items-center text-sm md:text-base text-gray-700">
@@ -83,69 +84,151 @@
             <i class="fa-solid fa-heart mr-2"></i> Favorite This Car
           </button>
         </div>
-
       </div>
     </div>
+
+    <!-- Price History Chart -->
+    {% if price_history.labels %}
+    <div class="mt-12 bg-white rounded-3xl p-6 shadow-lg">
+      <h2 class="text-2xl font-bold text-primary mb-4">Price History</h2>
+      <canvas id="priceChart" class="w-full h-64"></canvas>
+    </div>
+    {% endif %}
+
+    <!-- Testimonials -->
+    {% if testimonials %}
+    <div class="mt-12">
+      <h2 class="text-2xl font-bold text-primary mb-6">Testimonials</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        {% for t in testimonials %}
+        <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6">
+          <p class="text-gray-600 italic">"{{ t.comment }}"</p>
+          <p class="mt-2 text-sm font-semibold text-gray-700">- {{ t.name }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Similar Cars -->
+    {% if similar_cars %}
+    <div class="mt-12">
+      <h2 class="text-2xl font-bold text-primary mb-6">Similar Cars</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        {% for sc in similar_cars %}
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:scale-105 transition-transform duration-300">
+          <img src="{{ sc.image.url }}" loading="lazy" class="w-full h-48 object-cover" alt="{{ sc.title }}">
+          <div class="p-4">
+            <h3 class="font-bold text-lg">{{ sc.title }}</h3>
+            <p class="text-sm text-gray-600">KSh {{ sc.price|floatformat:2 }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
   </div>
 </section>
 
+<!-- Styles -->
 <style>
-/* Fade in animations */
+/* Animations */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .motion-safe\:animate-fadeIn { animation: fadeIn 0.8s ease-out forwards; }
-
 @keyframes fadeInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
 .motion-safe\:animate-fadeInRight { animation: fadeInRight 0.8s ease-out forwards; }
 
-/* Shimmer badge effect */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-.shimmer-badge {
-  background-image: linear-gradient(
-    90deg,
-    rgba(255,255,255,0.15) 0%,
-    rgba(255,255,255,0.4) 50%,
-    rgba(255,255,255,0.15) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite linear;
-}
+/* Badge shimmer */
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+.shimmer-badge { background-image: linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.15) 100%); background-size: 200% 100%; animation: shimmer 2s infinite linear; }
 
-/* Card Hover Glow + 3D tilt */
-.car-card.group:hover {
-  box-shadow: 0 35px 80px rgba(37, 99, 235, 0.35);
-  transition: box-shadow 0.5s ease;
-}
-
+/* Card tilt */
+.car-card.group:hover { box-shadow: 0 35px 80px rgba(37, 99, 235, 0.35); }
 .perspective { perspective: 1200px; }
-.car-card.group {
-  transition: transform 0.3s ease;
-  transform-style: preserve-3d;
-  border-radius: 1.5rem;
-}
+.car-card.group { transition: transform 0.3s ease; transform-style: preserve-3d; border-radius: 1.5rem; }
 </style>
 
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// 3D Tilt Effect
 document.addEventListener('DOMContentLoaded', () => {
+  // 3D Tilt
   const card = document.querySelector('.car-card.group');
+  if(card){
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const rotateX = ((e.clientY - rect.top)/rect.height - 0.5)*10;
+      const rotateY = ((e.clientX - rect.left)/rect.width - 0.5)*10;
+      card.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg) scale(1.03)`;
+    });
+    card.addEventListener('mouseleave', () => card.style.transform='rotateX(0deg) rotateY(0deg) scale(1)');
+  }
 
-  card.addEventListener('mousemove', (e) => {
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+  // Carousel
+  let currentIndex = 0;
+  const slides = document.querySelectorAll('.carousel-item');
+  const dots = document.querySelectorAll('.carousel-dot');
+  let carouselInterval;
+  const slideDelay = 4000;
 
-    const rotateX = ((y / rect.height) - 0.5) * 10;
-    const rotateY = ((x / rect.width) - 0.5) * 10;
+  function showSlide(index){
+    slides.forEach((slide,i)=>{
+      slide.style.opacity = i===index?'1':'0';
+      slide.style.position = i===index?'relative':'absolute';
+    });
+    dots.forEach((dot,i)=>dot.classList.toggle('bg-white',i===index));
+    currentIndex=index;
+  }
 
-    card.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+  function nextSlide(){ showSlide((currentIndex+1)%slides.length); resetInterval(); }
+  function prevSlide(){ showSlide((currentIndex-1+slides.length)%slides.length); resetInterval(); }
+  function goToSlide(index){ showSlide(index); resetInterval(); }
+  function startInterval(){ carouselInterval=setInterval(nextSlide,slideDelay); }
+  function resetInterval(){ clearInterval(carouselInterval); startInterval(); }
+
+  if(slides.length){
+    showSlide(currentIndex);
+    startInterval();
+
+    // Swipe gestures
+    let startX=0,endX=0,threshold=50;
+    const container = slides[0].parentElement;
+    container.addEventListener('touchstart',e=>startX=e.touches[0].clientX);
+    container.addEventListener('touchmove',e=>endX=e.touches[0].clientX);
+    container.addEventListener('touchend',()=>{
+      const diffX=endX-startX;
+      if(Math.abs(diffX)>threshold){ diffX<0?nextSlide():prevSlide(); }
+      startX=0; endX=0;
+    });
+
+    container.addEventListener('mouseenter',()=>clearInterval(carouselInterval));
+    container.addEventListener('mouseleave',startInterval);
+  }
+
+  // Price Chart
+  {% if price_history.labels %}
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:{{ price_history.labels|safe }},
+      datasets:[{
+        label:'Price (KSh)',
+        data:{{ price_history.data|safe }},
+        borderColor:'#2563EB',
+        backgroundColor:'rgba(37,99,235,0.2)',
+        fill:true,
+        tension:0.3,
+        pointRadius:4
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{y:{beginAtZero:false}}
+    }
   });
-
-  card.addEventListener('mouseleave', () => {
-    card.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
-  });
+  {% endif %}
 });
 </script>
 {% endblock %}

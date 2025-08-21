@@ -300,8 +300,45 @@ def land_detail(request, slug):
 # Fetch car properties in details
 def car_detail(request, slug):
     car = get_object_or_404(CarProperties, slug=slug)
-    similar_cars = CarProperties.objects.filter(make=car.make).exclude(id=car.id)[:3]
-    return render(request, "components/car_detail.html", {"car": car, 'similar_cars': similar_cars,})
+
+    # Badges for car details
+    badges = [
+        {"label": "Make", "icon": "fa-car", "value": car.make},
+        {"label": "Model", "icon": "fa-road", "value": car.model},
+        {"label": "Year", "icon": "fa-calendar", "value": car.year_of_manufacture},
+        {"label": "Transmission", "icon": "fa-cogs", "value": car.transmission},
+        {"label": "Fuel", "icon": "fa-gas-pump", "value": car.fuel_type},
+        {"label": "Mileage", "icon": "fa-tachometer-alt", "value": f"{car.mileage} km"},
+    ]
+
+    # Prepare context
+    context = {
+        "car": car,
+        "badges": badges,
+        "car_images": CarPropertiesImage.objects.filter(car=car),  # For carousel
+        "amenities": car.amenities.all() if hasattr(car, 'amenities') else [],
+
+        # Fetch testimonials (limit 4)
+        "testimonials": PropertyTestimonialCar.objects.filter(
+            Q(property=car) | Q(property__isnull=True)
+        ).order_by('-created_at')[:4],
+
+        # Price history for chart
+        "price_history": {
+            "labels": [ph.date_recorded.strftime('%b %Y') for ph in car.price_history.all().order_by('date_recorded')],
+            "data": [float(ph.price) for ph in car.price_history.all().order_by('date_recorded')]
+        } if hasattr(car, 'price_history') else {"labels": [], "data": []},
+
+        # Similar cars
+        "similar_cars": CarProperties.objects.filter(
+            Q(make=car.make) | Q(model=car.model)
+        ).exclude(pk=car.pk).order_by('?')[:7],
+
+        "today": timezone.now().date(),
+    }
+
+    return render(request, "components/car_detail.html", context)
+
 
 
 @login_required
