@@ -8,6 +8,7 @@ from .models import CustomUser, PriceHistoryHouse, PriceHistoryLand, Amenity
 from .models import CustomUser, Profile, LandProperties, Contact, CarProperties, LandPropertiesImage, HousePropertiesImage
 from .models import HousingProperties, Testimonials, NewsletterSubscriber, CarPropertiesImage, FAQ, Payment, Subscription
 from .models import NeighborhoodFeature, PropertyTestimonialLand, PriceHistoryLand, PropertyTestimonialHouse, PropertyTestimonialCar, PriceHistoryCar
+from .models import RentalHouse, RentalHouseImage, Favorite, ContactAgent
 
 #register your models here.
 admin.site.register(CustomUser)
@@ -34,6 +35,11 @@ admin.site.register(PropertyTestimonialHouse)
 admin.site.register(PropertyTestimonialCar)
 admin.site.register(Amenity)
 #admin.site.register(Payment)
+#
+admin.site.register(RentalHouseImage)
+admin.site.register(RentalHouse)
+admin.site.register(Favorite)
+admin.site.register(ContactAgent)
 
 
 @admin.register(FAQ)

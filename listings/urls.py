@@ -17,6 +17,14 @@ urlpatterns = [
     path('contact/', views.contact, name='contact'),  # Contact page
     path('profile/', views.user_profile, name='profile'),  # User profile page
     #path('profile/view/', views.profile_detail_view, name='profile_detail'),
+    # 
+    # RENTAL HOUSE
+    path('rentalhouse/', views.rentalhouse_index, name='rentalhouse_index'),
+    path('rentalhouse/<slug:slug>/', views.rentalhouse_detail, name='rentalhouse_detail'),
+    path('favorite/<slug:slug>/', views.toggle_favorite, name='toggle_favorite'),
+    # book rentalhouse
+    path('book_house/', views.book_house, name='book_house'),
+    
 
     #path('password_reset/', views.password_reset, name='password_reset'),  # Password reset page
    # path('password_reset/done/', views.password_reset_done, name='password_reset_done'),  # Password reset done page

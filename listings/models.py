@@ -611,6 +611,10 @@ class PriceHistoryCar(models.Model):
         
 
 # RentalHouse models
+from django.db import models
+from django.utils.text import slugify
+from django.urls import reverse
+
 class RentalHouse(models.Model):
     HOUSE_TYPES = [
         ('AP', 'Apartment'),
@@ -629,12 +633,13 @@ class RentalHouse(models.Model):
     ]
     
     title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)  # Added slug
     price = models.DecimalField(max_digits=10, decimal_places=2)
     address = models.CharField(max_length=255)
     city = models.CharField(max_length=100)
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
-    size = models.PositiveIntegerField(help_text="Size in square meters")
+    #size = models.PositiveIntegerField(help_text="Size in square meters")
     house_type = models.CharField(max_length=50, choices=HOUSE_TYPES)
     availability = models.BooleanField(default=True)
     amenities = models.ManyToManyField('Amenity', blank=True)
@@ -642,10 +647,27 @@ class RentalHouse(models.Model):
     main_image = models.ImageField(upload_to='houses/')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    agent = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='houses')
-    
+    agent = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='houses')
+
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        # Auto-generate slug from title if not provided
+        if not self.slug:
+            base_slug = slugify(self.title)
+            slug = base_slug
+            counter = 1
+            # Ensure slug uniqueness
+            while RentalHouse.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('house_detail', kwargs={'slug': self.slug})
+
 
 # Need a House, ContactAgent for more information
 class ContactAgent(models.Model):

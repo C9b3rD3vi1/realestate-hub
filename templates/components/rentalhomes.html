@@ -20,7 +20,7 @@
                     <label class="block text-sm font-medium mb-2">Search</label>
                     <input type="text" name="q" value="{{ search_query }}" placeholder="Location, keywords..." 
                            class="input input-bordered w-full" 
-                           hx-get="{% url 'index' %}" 
+                           hx-get="{% url 'rentalhouse_index' %}" 
                            hx-trigger="keyup changed delay:500ms" 
                            hx-target="#house-listings" 
                            hx-include="[name='type'], [name='amenities']">
@@ -30,7 +30,7 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-2">Property Type</label>
                     <select name="type" class="select select-bordered w-full"
-                            hx-get="{% url 'index' %}" 
+                            hx-get="{% url 'rentalhouse_index' %}" 
                             hx-trigger="change" 
                             hx-target="#house-listings"
                             hx-include="[name='q'], [name='amenities']">
@@ -52,7 +52,7 @@
                             <input type="checkbox" name="amenities" value="{{ amenity.id }}" 
                                    class="checkbox checkbox-sm mr-2"
                                    {% if amenity.id in selected_amenities %}checked{% endif %}
-                                   hx-get="{% url 'index' %}" 
+                                   hx-get="{% url 'rentalhouse_index' %}" 
                                    hx-trigger="change" 
                                    hx-target="#house-listings"
                                    hx-include="[name='q'], [name='type']">
@@ -63,7 +63,7 @@
                 </div>
                 
                 <button class="btn btn-primary w-full" 
-                        hx-get="{% url 'index' %}" 
+                        hx-get="{% url 'rentalhouse_index' %}" 
                         hx-trigger="click" 
                         hx-target="#house-listings"
                         hx-include="[name='q'], [name='type'], [name='amenities']">
@@ -75,7 +75,7 @@
         <!-- House Listings -->
         <div class="md:col-span-3">
             <div id="house-listings" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {% include 'listings/partials/house_list.html' %}
+                {% include 'partials/rentalhouselist.html' %}
             </div>
         </div>
     </div>

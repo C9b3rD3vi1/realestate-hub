@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.views import generic
 from django.http import Http404, JsonResponse
 from itertools import chain
+from decimal import Decimal
 from django.utils import timezone
 from urllib.parse import urlencode
 from django.contrib import messages
@@ -514,7 +515,7 @@ def schedule_visit(request):
 
 def rentalhouse_index(request):
     houses = RentalHouse.objects.filter(availability=True).order_by('-created_at')
-    
+
     # Filter by search query
     query = request.GET.get('q')
     if query:
@@ -524,24 +525,24 @@ def rentalhouse_index(request):
             Q(city__icontains=query) |
             Q(address__icontains=query)
         )
-    
+
     # Filter by house type
     house_type = request.GET.get('type')
     if house_type:
         houses = houses.filter(house_type=house_type)
-    
+
     # Filter by amenities
     amenities = request.GET.getlist('amenities')
     if amenities:
         houses = houses.filter(amenities__id__in=amenities).distinct()
-    
+
     # Pagination
     paginator = Paginator(houses, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     all_amenities = Amenity.objects.all()
-    
+
     context = {
         'page_obj': page_obj,
         'all_amenities': all_amenities,
@@ -549,46 +550,80 @@ def rentalhouse_index(request):
         'selected_type': house_type or '',
         'selected_amenities': [int(a) for a in amenities] if amenities else [],
     }
-    return render(request, 'components/rentalhouse.html', context)
+    return render(request, 'components/rentalhomes.html', context)
 
+# Rental House Detail View
+def rentalhouse_detail(request, slug):
+    # Get the rental house with related data to reduce database queries
+    house = get_object_or_404(
+        RentalHouse.objects.select_related('agent', 'agent__profile')
+                          .prefetch_related('images', 'amenities'),
+        slug=slug,
+        availability=True  # Only show available listings
+    )
 
-# Display rental house detail on the website
-def rentalhouse_detail(request, house_id):
-    house = get_object_or_404(RentalHouse, id=house_id)
+    # Check if the house is favorited by the user
     is_favorited = False
     if request.user.is_authenticated:
-        is_favorited = Favorite.objects.filter(user=request.user, house=house).exists()
+        is_favorited = Favorite.objects.filter(
+            user=request.user,
+            house=house
+        ).exists()
+
+    # Initialize forms with house slug
+    contact_form = ContactAgentForm(initial={'house': house.slug})
+    booking_form = BookingForm(initial={'house': house.slug})
+
+    # Convert price to float for calculations, then back to Decimal for query
+    price_float = float(house.price)
+    min_price = Decimal(str(round(price_float * 0.7, 2)))
+    max_price = Decimal(str(round(price_float * 1.3, 2)))
     
-    contact_form = ContactAgentForm(initial={'house': house.id})
-    booking_form = BookingForm(initial={'house': house.id})
-    
+    # Get similar rentals with more relevant criteria
+    similar_rentals = RentalHouse.objects.filter(
+        Q(address__icontains=house.address) |  # Same address area
+        Q(city=house.city) |  # Same city
+        Q(house_type=house.house_type) |  # Same type
+        Q(price__range=(min_price, max_price))  # Similar price range
+    ).exclude(
+        pk=house.pk
+    ).filter(
+        availability=True  # Only show available listings
+    ).select_related(
+        'agent'
+    ).order_by(
+        '?'
+    )[:5]  # Limit to 4 similar properties
+
     context = {
         'house': house,
         'is_favorited': is_favorited,
         'contact_form': contact_form,
         'booking_form': booking_form,
-        #'map_api_key': settings.GOOGLE_MAPS_API_KEY,  # You'll need to set this up
+        'similar_rentals': similar_rentals,  # Changed to match template variable
+        #'map_api_key': settings.GOOGLE_MAPS_API_KEY,
     }
+
     return render(request, 'components/rentaldetail.html', context)
 
 
 @login_required
-def toggle_favorite(request, house_id):
-    house = get_object_or_404(RentalHouse, id=house_id)
+def toggle_favorite(request, slug):
+    house = get_object_or_404(RentalHouse, slug=slug)
     favorite, created = Favorite.objects.get_or_create(user=request.user, house=house)
-    
+
     if not created:
         favorite.delete()
         return JsonResponse({'status': 'removed', 'is_favorited': False})
-    
+
     return JsonResponse({'status': 'added', 'is_favorited': True})
-    
+
 # Mark house as favorite
 @login_required
 def favorite_list(request):
     favorites = Favorite.objects.filter(user=request.user).select_related('house')
     houses = [fav.house for fav in favorites]
-    
+
     context = {
         'houses': houses,
     }
@@ -606,7 +641,7 @@ def contact_agent(request):
         else:
             return JsonResponse({'status': 'error', 'errors': form.errors})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
-    
+
 
 # login to book rental house
 @login_required

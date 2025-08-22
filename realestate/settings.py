@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     #'querystring_tags',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    #'django_humanize',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',

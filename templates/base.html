@@ -62,6 +62,13 @@
     <!-- Desktop Nav -->
     <nav class="hidden md:flex items-center gap-10 text-sm font-medium">
       <a href="/" class="hover:text-primary transition">Home</a>
+      
+      <div class="flex-1">
+        <a href="{% url 'rentalhouse_index' %}" class="btn btn-ghost normal-case text-xl">
+            <i class="fa-solid fa-house text-primary mr-2"></i>RentalHomes
+        </a>
+      </div>
+      
       <a href="{% url 'about' %}" class="hover:text-primary transition">About</a>
       <a href="{% url 'contact' %}" class="hover:text-primary transition">Contact</a>
       <!-- Listings Dropdown on Hover -->
