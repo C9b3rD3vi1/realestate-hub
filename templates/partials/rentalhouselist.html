@@ -62,7 +62,7 @@
     <div class="join flex justify-center">
         {% if page_obj.has_previous %}
         <a class="join-item btn" 
-           hx-get="{% url 'index' %}?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+           hx-get="{% url 'rentalhouse_index' %}?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
            hx-target="#house-listings">«</a>
         {% endif %}
         
@@ -71,14 +71,14 @@
             <a class="join-item btn btn-active">{{ num }}</a>
             {% else %}
             <a class="join-item btn" 
-               hx-get="{% url 'index' %}?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+               hx-get="{% url 'rentalhouse_index' %}?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
                hx-target="#house-listings">{{ num }}</a>
             {% endif %}
         {% endfor %}
         
         {% if page_obj.has_next %}
         <a class="join-item btn" 
-           hx-get="{% url 'index' %}?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+           hx-get="{% url 'rentalhouse_index' %}?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
            hx-target="#house-listings">»</a>
         {% endif %}
     </div>

@@ -27,6 +27,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
 </head>
 
 <body class="bg-base-100 text-base-content font-sans">
@@ -51,7 +52,7 @@
 
 <!-- 📌 Navbar -->
 <header id="main-navbar" class="navbar bg-base-100 shadow sticky top-0 z-50">
-  <div class="container mx-auto w-full px-4 flex justify-between items-center py-2">
+  <div class="container mx-auto w-full px-4 flex justify-between items-center py-3">
 
     <!-- Logo -->
     <a href="/" class="flex items-center gap-2 text-xl font-bold text-primary">
@@ -60,42 +61,60 @@
     </a>
 
     <!-- Desktop Nav -->
-    <nav class="hidden md:flex items-center gap-10 text-sm font-medium">
-      <a href="/" class="hover:text-primary transition">Home</a>
-      
-      <div class="flex-1">
-        <a href="{% url 'rentalhouse_index' %}" class="btn btn-ghost normal-case text-xl">
-            <i class="fa-solid fa-house text-primary mr-2"></i>RentalHomes
-        </a>
-      </div>
-      
-      <a href="{% url 'about' %}" class="hover:text-primary transition">About</a>
-      <a href="{% url 'contact' %}" class="hover:text-primary transition">Contact</a>
-      <!-- Listings Dropdown on Hover -->
+    <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+      <!-- Home -->
+      <a href="/" 
+         class="transition hover:text-primary {% if request.path == '/' %}text-primary font-bold{% endif %}">
+         Home
+      </a>
+
+      <!-- Rental Homes (button style) -->
+      <a href="{% url 'rentalhouse_index' %}" 
+         class="btn btn-ghost normal-case text-base {% if request.path == '/rental-houses/' %}btn-active text-primary font-bold{% endif %}">
+         <i class="fa-solid fa-house text-primary mr-2"></i> Rental Homes</a>
+
+      <!-- About -->
+      <a href="{% url 'about' %}" 
+         class="transition hover:text-primary {% if request.path == '/about/' %}text-primary font-bold{% endif %}">
+         About
+      </a>
+
+      <!-- Contact -->
+      <a href="{% url 'contact' %}" 
+         class="transition hover:text-primary {% if request.path == '/contact/' %}text-primary font-bold{% endif %}">
+         Contact
+      </a>
+
+      <!-- Listings Dropdown -->
       <div class="dropdown dropdown-hover">
-        <label tabindex="0" class="hover:text-primary transition flex items-center gap-1 cursor-pointer">
+        <label tabindex="0" class="flex items-center gap-1 cursor-pointer transition hover:text-primary">
           Listings
-          <svg class="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          <svg class="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" 
+               fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M19 9l-7 7-7-7" />
           </svg>
         </label>
-        <ul tabindex="0" class="dropdown-content menu p-4 shadow bg-base-100 border border-base-300 rounded-box w-80 transition-all duration-200 ease-in-out">
-          <li><a href="{% url 'listing' %}">All Listings</a></li>
+        <ul tabindex="0" 
+            class="dropdown-content menu p-4 shadow bg-base-100 border border-base-300 rounded-box w-64">
+          <li><a href="{% url 'listing' %}" 
+                 class="{% if request.path == '/listing/' %}text-primary font-bold{% endif %}">All Listings</a></li>
           <li><a href="{% url 'listing' %}?type=house">🏠 Houses</a></li>
           <li><a href="{% url 'listing' %}?type=land">🌍 Land</a></li>
           <li><a href="{% url 'listing' %}?type=car">🚗 Cars</a></li>
         </ul>
       </div>
 
-
+      <!-- Auth Links -->
       {% if user.is_authenticated %}
-        <span class="text-neutral/70">Hi, {{ user.username }}</span>
         <a href="{% url 'property_dashboard' %}" 
-            class="btn btn-sm btn-outline btn-primary hover:bg-orange-600 text-blue-500 dark:text-white-500 font-semibold px-4 py-2 rounded transition duration-300">Dashboard</a>
+           class="btn btn-sm btn-outline btn-primary">Dashboard</a>
         <a href="{% url 'add_property' %}" 
-            class="btn btn-sm btn-outline btn-primary hover:bg-orange-600 text-blue-500 dark:text-white-500 font-semibold px-4 py-2 rounded transition duration-300">Add Property</a>
-        <a href="{% url 'profile' %}" class="btn btn-sm btn-outline btn-secondary">Profile</a>
-        <a href="{% url 'logout' %}" class="btn btn-sm btn-outline btn-error">Logout</a>
+           class="btn btn-sm btn-outline btn-primary">Add Property</a>
+        <a href="{% url 'profile' %}" 
+           class="btn btn-sm btn-outline btn-secondary">Profile</a>
+        <a href="{% url 'logout' %}" 
+           class="btn btn-sm btn-outline btn-error">Logout</a>
       {% else %}
         <a href="{% url 'register' %}" class="btn btn-sm btn-outline btn-secondary">Register</a>
         <a href="{% url 'login' %}" class="btn btn-sm btn-outline btn-primary">Login</a>
@@ -106,31 +125,33 @@
         <label tabindex="0" class="btn btn-sm btn-outline normal-case">
           <i class="fas fa-moon mr-2"></i> Theme
         </label>
-        <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-36">
-          <li><a @click="theme = 'light'">🌞 Light</a></li>
-          <li><a @click="theme = 'dark'">🌚 Dark</a></li>
-          <li><a @click="theme = 'cupcake'">🧁 Cupcake</a></li>
-          <li><a @click="theme = 'dracula'">🧛 Dracula</a></li>
-          <li><a @click="theme = 'business'">💼 Business</a></li>
+        <ul tabindex="0" 
+            class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-36">
+          <li><a onclick="document.documentElement.setAttribute('data-theme','light')">🌞 Light</a></li>
+          <li><a onclick="document.documentElement.setAttribute('data-theme','dark')">🌚 Dark</a></li>
+          <li><a onclick="document.documentElement.setAttribute('data-theme','cupcake')">🧁 Cupcake</a></li>
+          <li><a onclick="document.documentElement.setAttribute('data-theme','dracula')">🧛 Dracula</a></li>
+          <li><a onclick="document.documentElement.setAttribute('data-theme','business')">💼 Business</a></li>
         </ul>
       </div>
     </nav>
 
-    <!-- Mobile Menu -->
+    <!-- Mobile Menu Button -->
     <div class="md:hidden flex items-center">
-      <button @click="open = !open" class="btn btn-ghost btn-sm">
+      <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" 
+              class="btn btn-ghost btn-sm">
         <i class="fas fa-bars text-lg"></i>
       </button>
     </div>
   </div>
 
   <!-- Mobile Dropdown Panel -->
-  <div x-show="open" @click.away="open = false" x-transition class="md:hidden bg-base-100 border-t border-base-300 px-4 pb-6 pt-2">
+  <div id="mobile-menu" class="hidden md:hidden bg-base-100 border-t border-base-300 px-4 pb-6 pt-2">
     <ul class="flex flex-col gap-2">
-      <li><a href="/" class="link link-hover">Home</a></li>
-      <li><a href="{% url 'about' %}" class="link link-hover">About</a></li>
-      <li><a href="{% url 'contact' %}" class="link link-hover">Contact</a></li>
-      <li><a href="{% url 'listing' %}" class="link link-hover">Listings</a></li>
+      <li><a href="/" class="link link-hover {% if request.path == '/' %}text-primary font-bold{% endif %}">Home</a></li>
+      <li><a href="{% url 'about' %}" class="link link-hover {% if request.path == '/about/' %}text-primary font-bold{% endif %}">About</a></li>
+      <li><a href="{% url 'contact' %}" class="link link-hover {% if request.path == '/contact/' %}text-primary font-bold{% endif %}">Contact</a></li>
+      <li><a href="{% url 'listing' %}" class="link link-hover {% if request.path == '/listing/' %}text-primary font-bold{% endif %}">Listings</a></li>
       {% if user.is_authenticated %}
         <li class="text-neutral">Hi, {{ user.username }}</li>
         <li><a href="{% url 'profile' %}" class="link link-hover">Profile</a></li>
@@ -140,14 +161,15 @@
         <li><a href="{% url 'login' %}" class="link link-hover">Login</a></li>
       {% endif %}
       <li class="mt-3 font-semibold">🎨 Theme</li>
-      <li><a @click="theme = 'light'">🌞 Light</a></li>
-      <li><a @click="theme = 'dark'">🌚 Dark</a></li>
-      <li><a @click="theme = 'cupcake'">🧁 Cupcake</a></li>
-      <li><a @click="theme = 'dracula'">🧛 Dracula</a></li>
-      <li><a @click="theme = 'business'">💼 Business</a></li>
+      <li><a onclick="document.documentElement.setAttribute('data-theme','light')">🌞 Light</a></li>
+      <li><a onclick="document.documentElement.setAttribute('data-theme','dark')">🌚 Dark</a></li>
+      <li><a onclick="document.documentElement.setAttribute('data-theme','cupcake')">🧁 Cupcake</a></li>
+      <li><a onclick="document.documentElement.setAttribute('data-theme','dracula')">🧛 Dracula</a></li>
+      <li><a onclick="document.documentElement.setAttribute('data-theme','business')">💼 Business</a></li>
     </ul>
   </div>
 </header>
+
 
 <!-- 🔲 Page Content -->
 <main class="min-h-[calc(100vh-200px)] px-4 sm:px-6 lg:px-8">
