@@ -1,7 +1,7 @@
 from .forms import *
 from django.db.models import Q
 from django.views import generic
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from itertools import chain
 from django.utils import timezone
 from urllib.parse import urlencode
@@ -14,7 +14,8 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import Amenity, HousePropertiesImage, LandPropertiesImage, CarPropertiesImage, NeighborhoodFeature
+from .forms import BookingForm, ContactAgentForm
+from .models import Amenity, HousePropertiesImage, LandPropertiesImage, CarPropertiesImage, NeighborhoodFeature, RentalHouse, Favorite
 from .models import LandProperties, CarProperties, HousingProperties, Profile, Testimonials, PropertyTestimonialHouse
 from .models import NewsletterSubscriber, FAQ, PriceHistoryHouse, PriceHistoryCar, PriceHistoryLand, PropertyTestimonialCar, PropertyTestimonialLand
 
@@ -263,38 +264,52 @@ def price_history_api(request, house_id):
 
 # Fetch and handle land details
 def land_detail(request, slug):
-    land = get_object_or_404(LandProperties, slug=slug)
-    # Display all and data in context
+    # Fetch land object with prefetching for efficiency
+    land = get_object_or_404(
+        LandProperties.objects.prefetch_related('images', 'amenities', 'neighborhood'),
+        slug=slug
+    )
+
+    # Price history
+    price_records = PriceHistoryLand.objects.filter(property=land).order_by('date_recorded')
+    price_labels = [ph.date_recorded.strftime('%b %Y') for ph in price_records]
+    price_data = [float(ph.price) for ph in price_records]
+
+    # Testimonials
+    testimonials = PropertyTestimonialLand.objects.filter(
+        Q(property=land) | Q(property__isnull=True)
+    ).order_by('-created_at')[:4]
+
+    # Safely get neighborhood IDs
+    neighborhood_ids = []
+    if hasattr(land, 'neighborhood') and land.neighborhood:
+        try:
+            neighborhood_ids = land.neighborhood.values_list('id', flat=True)
+        except Exception:
+            neighborhood_ids = []
+
+    # Similar properties
+    similar_properties = LandProperties.objects.filter(
+        Q(neighborhood__in=neighborhood_ids) | Q(land_type=land.land_type)
+    ).exclude(pk=land.pk).order_by('?')[:3]
+
+    # Price per sqm
+    price_per_sqm = (land.price / land.size) if land.size else None
+
     context = {
-         'land': land,
-         'land_images': LandPropertiesImage.objects.filter(land=land),
-         'amenities': land.amenities.all(),  # Using ManyToMany relationship
-         'neighborhood_features': land.neighborhood.all(),  # Using the ManyToMany relationship
+        'land': land,
+        'land_images': land.images.all() if hasattr(land, 'images') else [],
+        'amenities': land.amenities.all() if hasattr(land, 'amenities') else [],
+        'neighborhood_features': land.neighborhood.all() if hasattr(land, 'neighborhood') and land.neighborhood else [],
+        'testimonials': testimonials,
+        'price_history': {'labels': price_labels, 'data': price_data},
+        'similar_properties': similar_properties,
+        'price_per_sqm': price_per_sqm,
+        'today': timezone.now().date(),
+    }
 
-         #  Fetch property testimonials
-         'testimonials': PropertyTestimonialLand.objects.filter(
-             Q(property=land) | Q(property__isnull=True)
-         ).order_by('-created_at')[:4],
+    return render(request, "components/land_detail.html", context)
 
-         # Fetch price history
-         'price_history': {
-             'labels': [ph.date.strftime('%b %Y') for ph in
-                      PriceHistoryLand.objects.filter(land=land).order_by('date_recorded')],
-             'data': [float(ph.price) for ph in
-                     PriceHistoryLand.objects.filter(land=land).order_by('date_recorded')]
-         },
-         # Fetch similar properties
-         'similar_properties': LandProperties.objects.filter(
-             Q(neighborhood=land.neighborhood) | Q(house_type=land.land_type)
-         ).exclude(pk=land.pk).order_by('?')[:3],
-         'today': timezone.now().date(),
-     }
-
-     # Calculate price per sqm if size exists
-    if land.size and land.size > 0:
-         context['price_per_sqm'] = land.price / land.size
-
-    return render(request, "components/land_detail.html", {"land": land})
 
 
 # Fetch car properties in details
@@ -491,11 +506,118 @@ def add_testimonial(request):
 
     return render(request, 'testimonials.html')
 
-def contact_agent(request):
-
-    return render(request, 'contact_agent.html')
-
 
 def schedule_visit(request):
 
     return render(request, 'schedule_visit.html')
+
+
+def rentalhouse_index(request):
+    houses = RentalHouse.objects.filter(availability=True).order_by('-created_at')
+    
+    # Filter by search query
+    query = request.GET.get('q')
+    if query:
+        houses = houses.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(city__icontains=query) |
+            Q(address__icontains=query)
+        )
+    
+    # Filter by house type
+    house_type = request.GET.get('type')
+    if house_type:
+        houses = houses.filter(house_type=house_type)
+    
+    # Filter by amenities
+    amenities = request.GET.getlist('amenities')
+    if amenities:
+        houses = houses.filter(amenities__id__in=amenities).distinct()
+    
+    # Pagination
+    paginator = Paginator(houses, 9)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    all_amenities = Amenity.objects.all()
+    
+    context = {
+        'page_obj': page_obj,
+        'all_amenities': all_amenities,
+        'search_query': query or '',
+        'selected_type': house_type or '',
+        'selected_amenities': [int(a) for a in amenities] if amenities else [],
+    }
+    return render(request, 'components/rentalhouse.html', context)
+
+
+# Display rental house detail on the website
+def rentalhouse_detail(request, house_id):
+    house = get_object_or_404(RentalHouse, id=house_id)
+    is_favorited = False
+    if request.user.is_authenticated:
+        is_favorited = Favorite.objects.filter(user=request.user, house=house).exists()
+    
+    contact_form = ContactAgentForm(initial={'house': house.id})
+    booking_form = BookingForm(initial={'house': house.id})
+    
+    context = {
+        'house': house,
+        'is_favorited': is_favorited,
+        'contact_form': contact_form,
+        'booking_form': booking_form,
+        #'map_api_key': settings.GOOGLE_MAPS_API_KEY,  # You'll need to set this up
+    }
+    return render(request, 'components/rentaldetail.html', context)
+
+
+@login_required
+def toggle_favorite(request, house_id):
+    house = get_object_or_404(RentalHouse, id=house_id)
+    favorite, created = Favorite.objects.get_or_create(user=request.user, house=house)
+    
+    if not created:
+        favorite.delete()
+        return JsonResponse({'status': 'removed', 'is_favorited': False})
+    
+    return JsonResponse({'status': 'added', 'is_favorited': True})
+    
+# Mark house as favorite
+@login_required
+def favorite_list(request):
+    favorites = Favorite.objects.filter(user=request.user).select_related('house')
+    houses = [fav.house for fav in favorites]
+    
+    context = {
+        'houses': houses,
+    }
+    return render(request, 'listings/favorites.html', context)
+
+# login to contact agent
+#@login_required
+def contact_agent(request):
+    if request.method == 'POST':
+        form = ContactAgentForm(request.POST)
+        if form.is_valid():
+            contact = form.save()
+            # Send email notification to agent (implementation depends on your email setup)
+            return JsonResponse({'status': 'success', 'message': 'Your message has been sent successfully!'})
+        else:
+            return JsonResponse({'status': 'error', 'errors': form.errors})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+    
+
+# login to book rental house
+@login_required
+def book_house(request):
+    if request.method == 'POST':
+        form = BookingForm(request.POST)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.user = request.user
+            booking.save()
+            return JsonResponse({'status': 'success', 'message': 'Your booking request has been submitted!'})
+        else:
+            return JsonResponse({'status': 'error', 'errors': form.errors})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})

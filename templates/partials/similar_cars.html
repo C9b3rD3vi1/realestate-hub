@@ -1,0 +1,57 @@
+<section class="py-24 bg-base-100 flex justify-center">
+  <div class="max-w-screen-2xl mx-auto px-4 md:px-8">
+
+    <!-- Section Heading -->
+    <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-primary fade-in-up">
+      Similar Cars
+    </h2>
+
+    <!-- Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 mb-16">
+      {% for similar_car in similar_cars %}
+      <div class="reveal-on-scroll">
+        <a href="{% url 'car_detail' similar_car.slug %}" 
+           aria-label="View details for {{ similar_car.title }}"
+           class="card relative bg-base-100 shadow-xl hover:shadow-2xl hover:-translate-y-3 transition-all duration-500 ease-out rounded-2xl overflow-hidden group border-2 border-transparent hover:border-primary">
+
+          <!-- Image Carousel -->
+          <div class="carousel-wrapper relative h-72 md:h-80 lg:h-96 overflow-hidden" data-carousel="similar-{{ forloop.counter }}">
+            {% if similar_car.images.exists %}
+            {% for img in similar_car.images.all %}
+            <div class="carousel-slide w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
+              <img src="{{ img.image.url }}" alt="{{ similar_car.title }}" class="w-full h-full object-cover rounded-2xl">
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="carousel-slide w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
+              <img src="/static/images/heroimage3.webp" alt="Placeholder" class="w-full h-full object-cover rounded-2xl">
+            </div>
+            {% endif %}
+
+            <!-- Controls -->
+            <button class="carousel-prev absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white/90 rounded-full p-2 shadow-md transition">‹</button>
+            <button class="carousel-next absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white/90 rounded-full p-2 shadow-md transition">›</button>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body p-6">
+            <h3 class="card-title text-xl md:text-2xl font-bold text-gray-800 truncate group-hover:text-primary transition-colors duration-300">
+              {{ similar_car.title }}
+            </h3>
+            <p class="text-sm md:text-base text-gray-500 truncate">
+              {{ similar_car.location }}
+            </p>
+            <span class="font-bold text-success text-lg md:text-xl">KSh {{ similar_car.price }}</span>
+            <div class="badge badge-outline shimmer-badge">{{ similar_car.make }}</div>
+          </div>
+        </a>
+      </div>
+      {% empty %}
+      <div class="col-span-5 text-gray-500 text-center py-12 fade-in-up">
+        No similar cars found
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>

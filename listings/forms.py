@@ -1,7 +1,7 @@
 from django import forms
 from .models import CustomUser, Profile, Contact
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import LandProperties, HousingProperties, CarProperties
+from .models import LandProperties, HousingProperties, CarProperties, Booking, ContactAgent
 
 class CustomUserCreationForm(UserCreationForm):
     username = forms.CharField(
@@ -221,3 +221,24 @@ class CarPropertyForm(forms.ModelForm):
     class Meta:
         model = CarProperties
         exclude = ['owner', 'slug', 'created_at', 'updated_at']
+        
+# This allows users to contact sellers.
+class ContactAgentForm(forms.ModelForm):
+    class Meta:
+        model = ContactAgent
+        fields = ['house', 'name', 'email', 'phone', 'message']
+        widgets = {
+            'house': forms.HiddenInput(),
+            'message': forms.Textarea(attrs={'rows': 4}),
+        }
+# This form allows users to book properties.
+class BookingForm(forms.ModelForm):
+    class Meta:
+        model = Booking
+        fields = ['house', 'start_date', 'end_date', 'message']
+        widgets = {
+            'house': forms.HiddenInput(),
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
+            'message': forms.Textarea(attrs={'rows': 4}),
+        }

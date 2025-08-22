@@ -2,45 +2,197 @@
 {% block title %}{{ land.title }} - Land Details{% endblock %}
 
 {% block content %}
-<section class="w-full px-4 sm:px-8 md:px-12 py-12">
-  <div class="bg-base-100 shadow-xl rounded-2xl p-6 sm:p-10 lg:p-12 motion-safe:animate-fadeInUp">
-    <div class="flex flex-col lg:flex-row gap-8 items-start">
-      <!-- Left: Image -->
-      {% if land.image %}
-      <div class="w-full lg:w-1/2">
-        <img src="{{ land.image.url }}" alt="{{ land.title }}" class="w-full h-auto rounded-xl shadow" />
+<section class="w-full px-4 sm:px-8 md:px-12 py-12 space-y-12">
+
+  <!-- Main Property Carousel & Basic Info -->
+  <div class="stagger-item bg-base-100 shadow-xl rounded-2xl p-6 sm:p-10 lg:p-12 grid lg:grid-cols-2 gap-8 items-start">
+
+    <!-- Carousel -->
+    <div class="uc-carousel relative rounded-2xl overflow-hidden shadow-lg flex flex-col items-center">
+      {% if land_images %}
+      <div class="uc-slides relative w-full h-80 md:h-[400px] overflow-hidden rounded-2xl">
+        {% for img in land_images %}
+        <div class="uc-slide w-full h-full absolute opacity-0 transition-opacity duration-700">
+          <img src="{{ img.image.url }}" alt="{{ land.title }}" class="w-full h-full object-cover rounded-2xl">
+        </div>
+        {% endfor %}
       </div>
+
+      <!-- Thumbnails -->
+      <div class="uc-thumbnails mt-4 flex justify-center flex-wrap gap-2">
+        {% for img in land_images %}
+        <img src="{{ img.image.url }}" alt="{{ land.title }} thumbnail" loading="lazy"
+             class="uc-thumb w-20 h-16 md:w-24 md:h-20 object-cover rounded-md border-2 border-transparent cursor-pointer hover:border-primary transition">
+        {% endfor %}
+      </div>
+      {% else %}
+      <img src="{{ land.image.url }}" alt="{{ land.title }}" class="w-full h-80 md:h-[400px] object-cover rounded-2xl">
       {% endif %}
+    </div>
 
-      <!-- Right: Details -->
-      <div class="w-full lg:w-1/2 space-y-6">
-        <h1 class="text-3xl sm:text-4xl font-bold text-base-content">{{ land.title }}</h1>
-        <p class="text-sm text-gray-500 flex items-center">
-          <i class="fa-solid fa-location-dot text-primary mr-2"></i> {{ land.location }}
-        </p>
+    <!-- Property Details -->
+    <div class="space-y-6">
+      <h1 class="text-3xl sm:text-4xl font-bold text-base-content">{{ land.title }}</h1>
+      <p class="text-sm text-gray-500 flex items-center">
+        <i class="fa-solid fa-location-dot text-primary mr-2"></i> {{ land.location }}
+      </p>
+      <div class="prose max-w-full text-base-content">{{ land.description|linebreaks }}</div>
 
-        <div class="prose max-w-full text-base-content">
-          {{ land.description|linebreaks }}
-        </div>
-
-        <div class="pt-4 space-y-3">
-          <p class="text-xl font-semibold">
-            Price: <span class="text-success text-green-500">Ksh {{ land.price }}</span>
-          </p>
-          <p class="text-base font-medium">
-            Status:
-            {% if land.is_available %}
-              <span class="badge badge-success text-green-500">Available</span>
-            {% else %}
-              <span class="badge badge-error text-red-500 ">Sold</span>
-            {% endif %}
-          </p>
-          {% if land.size %}
-          <p class="text-base text-gray-600">Size: <span class="font-bold">{{ land.size}} {{ land.size_unit }}</span></p>
-          {% endif %}
-        </div>
+      <div class="flex flex-wrap gap-4 mt-4">
+        <span class="badge badge-success text-lg">KSh {{ land.price }}</span>
+        <span class="badge badge-accent">{{ land.land_type }}</span>
+        <span class="badge badge-info">{{ land.size }} {{ land.size_unit }}</span>
+        <span class="badge {% if land.is_available %}badge-success{% else %}badge-error{% endif %}">
+          {% if land.is_available %}Available{% else %}Sold{% endif %}
+        </span>
       </div>
     </div>
   </div>
+
+  <!-- Specifications -->
+  <div class="stagger-item bg-gray-100 rounded-2xl border border-base-200 p-6">
+    <h2 class="text-2xl font-bold mb-4">Specifications</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 text-sm">
+      <div><span class="badge badge-success">Price:</span> KSh {{ land.price }}</div>
+      <div><span class="badge badge-primary">Type:</span> {{ land.land_type }}</div>
+      <div><span class="badge badge-warning">Size:</span> {{ land.size }} {{ land.size_unit }}</div>
+      <div><span class="badge badge-info">Status:</span> {% if land.is_available %}Available{% else %}Sold{% endif %}</div>
+      <div><span class="badge badge-accent">Location:</span> {{ land.location }}</div>
+      <div><span class="badge badge-secondary">Added On:</span> {{ land.created_at|date:"M d, Y" }}</div>
+    </div>
+  </div>
+
+  <!-- Amenities -->
+  {% if amenities %}
+  <div class="stagger-item">
+    <h2 class="text-2xl font-bold mb-3">Amenities</h2>
+    <div class="flex flex-wrap gap-2">
+      {% for amenity in amenities %}
+      <span class="badge badge-outline shimmer-badge">{{ amenity.name }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Neighborhood Features -->
+  {% if neighborhood_features %}
+  <div class="stagger-item">
+    <h2 class="text-2xl font-bold mb-3">Neighborhood Features</h2>
+    <div class="flex flex-wrap gap-2">
+      {% for feature in neighborhood_features %}
+      <span class="badge badge-outline">{{ feature.name }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Price History Chart -->
+  {% if price_history.labels %}
+  <div class="stagger-item bg-white rounded-2xl p-6 shadow-lg">
+    <h2 class="text-2xl font-bold text-primary mb-4">Price History</h2>
+    <canvas id="priceChart" class="w-full h-64"></canvas>
+  </div>
+  {% endif %}
+
+  <!-- Testimonials -->
+  {% if testimonials %}
+  <div class="stagger-item">
+    <h2 class="text-2xl font-bold text-primary mb-4">Testimonials</h2>
+    <div class="grid md:grid-cols-2 gap-6">
+      {% for t in testimonials %}
+      <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6 hover:scale-105 transition-transform duration-300">
+        <p class="text-gray-600 italic">"{{ t.comment }}"</p>
+        <p class="mt-2 text-sm font-semibold text-gray-700">- {{ t.name }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Similar Properties -->
+  {% if similar_properties %}
+  <div class="stagger-item">
+    <h2 class="text-2xl font-bold text-primary mb-4">Similar Properties</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      {% for sp in similar_properties %}
+      <a href="{% url 'land_detail' sp.slug %}" class="card shadow-lg rounded-2xl overflow-hidden hover:shadow-2xl transition-transform duration-500">
+        <img src="{{ sp.image.url }}" alt="{{ sp.title }}" class="w-full h-48 object-cover rounded-t-2xl">
+        <div class="p-4">
+          <h3 class="text-lg font-bold">{{ sp.title }}</h3>
+          <p class="text-sm text-gray-500">{{ sp.location }}</p>
+          <p class="text-success font-semibold mt-2">KSh {{ sp.price }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
 </section>
+
+<!-- Sticky Mobile Actions -->
+<div class="sticky-actions md:hidden flex justify-center gap-2 p-2 bg-white/90 backdrop-blur-md shadow-lg fixed bottom-0 left-0 right-0 z-50">
+  <a href="/contact/" class="btn btn-primary flex-1">Contact Seller</a>
+  <a href="#" class="btn btn-outline flex-1">Book Visit</a>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // --- UC Carousel ---
+  const slides = document.querySelectorAll('.uc-slide');
+  const thumbs = document.querySelectorAll('.uc-thumb');
+  let currentIndex = 0;
+
+  function showSlide(index){
+    slides.forEach((s,i)=>{
+      s.style.opacity = i===index?'1':'0';
+      s.style.position = i===index?'relative':'absolute';
+    });
+    currentIndex=index;
+  }
+
+  thumbs.forEach((thumb,i)=>{
+    thumb.addEventListener('click',()=>showSlide(i));
+  });
+
+  if(slides.length) showSlide(0);
+
+  // --- Price Chart ---
+  {% if price_history.labels %}
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:{{ price_history.labels|safe }},
+      datasets:[{
+        label:'Price (KSh)',
+        data:{{ price_history.data|safe }},
+        borderColor:'#2563EB',
+        backgroundColor:'rgba(37,99,235,0.2)',
+        fill:true,
+        tension:0.3,
+        pointRadius:4
+      }]
+    },
+    options:{ responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:false}} }
+  });
+  {% endif %}
+
+  // --- Staggered FadeIn Animation including Thumbnails ---
+  const staggerItems = document.querySelectorAll('.stagger-item, .uc-thumb');
+  staggerItems.forEach((item, idx) => {
+    item.style.opacity = 0;
+    item.style.transform = 'translateY(20px)';
+    setTimeout(() => {
+      item.style.transition = 'opacity 0.7s ease-out, transform 0.7s ease-out';
+      item.style.opacity = 1;
+      item.style.transform = 'translateY(0)';
+    }, idx * 150); // smaller delay between thumbs
+  });
+
+});
+</script>
 {% endblock %}

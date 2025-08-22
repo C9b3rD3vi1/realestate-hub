@@ -118,7 +118,7 @@ class LandProperties(models.Model):
 
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    neighborhood = models.ForeignKey(NeighborhoodFeature, on_delete=models.CASCADE, null=True, blank=True)
+    neighborhood = models.ManyToManyField(NeighborhoodFeature, blank=True, related_name='lands')
 
     is_available = models.BooleanField(default=True)
     is_approved = models.BooleanField(default=False)
@@ -608,3 +608,88 @@ class PriceHistoryCar(models.Model):
 
     def __str__(self):
         return f"{self.property.title} - {self.price} on {self.date_recorded}"
+        
+
+# RentalHouse models
+class RentalHouse(models.Model):
+    HOUSE_TYPES = [
+        ('AP', 'Apartment'),
+        ('VL', 'Villa'),
+        ('ST', 'Studio'),
+        ('S', 'Single'),
+        ('B', 'Bedseater'),
+        ('1 BED', '1 Bedroom'),
+        ('2 BED', '2 Bedrooms'),
+        ('3 BED', '3 Bedrooms'),
+        ('4 BED', '4 Bedrooms'),
+        ('5 BED', '5 Bedrooms'),
+        ('6 BED', '6 Bedrooms'),
+        ('TH', 'Townhouse'),
+        ('CN', 'Condominium'),
+    ]
+    
+    title = models.CharField(max_length=200)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    address = models.CharField(max_length=255)
+    city = models.CharField(max_length=100)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
+    size = models.PositiveIntegerField(help_text="Size in square meters")
+    house_type = models.CharField(max_length=50, choices=HOUSE_TYPES)
+    availability = models.BooleanField(default=True)
+    amenities = models.ManyToManyField('Amenity', blank=True)
+    description = models.TextField()
+    main_image = models.ImageField(upload_to='houses/')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    agent = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='houses')
+    
+    def __str__(self):
+        return self.title
+
+# Need a House, ContactAgent for more information
+class ContactAgent(models.Model):
+    house = models.ForeignKey(RentalHouse, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20, blank=True)
+    message = models.TextField()
+    contacted_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Contact about {self.house.title} from {self.name}"
+        
+
+class RentalHouseImage(models.Model):
+    house = models.ForeignKey(RentalHouse, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='houses/gallery/')
+    
+    def __str__(self):
+        return f"Image for {self.house.title}"
+
+class Favorite(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    house = models.ForeignKey(RentalHouse, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('user', 'house')
+
+# Book rental house
+class Booking(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('CONFIRMED', 'Confirmed'),
+        ('CANCELLED', 'Cancelled'),
+    ]
+    
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    house = models.ForeignKey(RentalHouse, on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
+    message = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Booking for {self.house.title} by {self.user.username}"

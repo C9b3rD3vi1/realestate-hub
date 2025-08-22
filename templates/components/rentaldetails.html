@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+
+{% block extra_head %}
+<style>
+    .house-gallery {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, 200px);
+        gap: 8px;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .house-gallery img:first-child {
+        grid-column: span 2;
+        grid-row: span 2;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Breadcrumb -->
+    <div class="text-sm breadcrumbs mb-6">
+        <ul>
+            <li><a href="{% url 'index' %}">Home</a></li>
+            <li><a href="{% url 'index' %}">Listings</a></li>
+            <li>{{ house.title }}</li>
+        </ul>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2">
+            <!-- Image Gallery -->
+            <div class="house-gallery mb-6">
+                <img src="{{ house.main_image.url }}" alt="{{ house.title }}" class="w-full h-full object-cover">
+                {% for image in house.images.all|slice:"1:5" %}
+                <img src="{{ image.image.url }}" alt="{{ house.title }}" class="w-full h-full object-cover">
+                {% endfor %}
+            </div>
+            
+            <!-- House Details -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex justify-between items-start mb-4">
+                    <h1 class="text-2xl font-bold">{{ house.title }}</h1>
+                    <span class="badge badge-lg {% if house.availability %}badge-success{% else %}badge-error{% endif %}">
+                        {% if house.availability %}Available{% else %}Booked{% endif %}
+                    </span>
+                </div>
+                
+                <p class="text-3xl font-bold text-primary mb-4">${{ house.price }}/month</p>
+                
+                <div class="flex items-center text-gray-600 mb-4">
+                    <i class="fa-solid fa-location-dot mr-2"></i>
+                    <span>{{ house.address }}, {{ house.city }}</span>
+                </div>
+                
+                <div class="flex flex-wrap gap-4 mb-6">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-ruler-combined mr-2 text-primary"></i>
+                        <span>{{ house.size }} m²</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-home mr-2 text-primary"></i>
+                        <span>{{ house.get_house_type_display }}</span>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-2">Description</h3>
+                    <p class="text-gray-700">{{ house.description }}</p>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-2">Amenities</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {% for amenity in house.amenities.all %}
+                        <div class="flex items-center">
+                            <i class="{{ amenity.icon }} mr-2 text-secondary"></i>
+                            <span>{{ amenity.name }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Map -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-lg font-semibold mb-4">Location</h3>
+                <div class="h-64 bg-gray-200 rounded-lg" id="map">
+                    <!-- Map will be loaded here via JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="lg:col-span-1">
+            <!-- Action Buttons -->
+            <div class="bg-white rounded-lg shadow-md p-6 sticky top-6">
+                {% if user.is_authenticated %}
+                <button id="favorite-btn" class="btn btn-outline w-full mb-4" 
+                        hx-post="{% url 'toggle_favorite' house.id %}" 
+                        hx-trigger="click" 
+                        hx-swap="none">
+                    {% if is_favorited %}
+                    <i class="fa-solid fa-heart text-red-500 mr-2"></i> Remove from Favorites
+                    {% else %}
+                    <i class="fa-regular fa-heart mr-2"></i> Add to Favorites
+                    {% endif %}
+                </button>
+                {% endif %}
+                
+                <!-- Contact Agent -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Contact Agent</h3>
+                    <form id="contact-form" hx-post="{% url 'contact_agent' %}" hx-swap="none">
+                        {{ contact_form.house }}
+                        <div class="space-y-4">
+                            <div>
+                                <label class="label">Your Name</label>
+                                {{ contact_form.name }}
+                            </div>
+                            <div>
+                                <label class="label">Email</label>
+                                {{ contact_form.email }}
+                            </div>
+                            <div>
+                                <label class="label">Phone (Optional)</label>
+                                {{ contact_form.phone }}
+                            </div>
+                            <div>
+                                <label class="label">Message</label>
+                                {{ contact_form.message }}
+                            </div>
+                            <button type="submit" class="btn btn-primary w-full">
+                                <i class="fa-solid fa-envelope mr-2"></i> Send Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Book House -->
+                {% if house.availability %}
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Book This Property</h3>
+                    <form id="booking-form" hx-post="{% url 'book_house' %}" hx-swap="none">
+                        {{ booking_form.house }}
+                        <div class="space-y-4">
+                            <div>
+                                <label class="label">Check-in Date</label>
+                                {{ booking_form.start_date }}
+                            </div>
+                            <div>
+                                <label class="label">Check-out Date</label>
+                                {{ booking_form.end_date }}
+                            </div>
+                            <div>
+                                <label class="label">Message (Optional)</label>
+                                {{ booking_form.message }}
+                            </div>
+                            <button type="submit" class="btn btn-accent w-full">
+                                <i class="fa-solid fa-calendar-check mr-2"></i> Request Booking
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Map Script -->
+<script>
+    function initMap() {
+        const location = { lat: {{ house.latitude }}, lng: {{ house.longitude }} };
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center: location,
+        });
+        new google.maps.Marker({
+            position: location,
+            map: map,
+            title: "{{ house.title }}",
+        });
+    }
+</script>
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key={{ map_api_key }}&callback=initMap">
+</script>
+
+<script>
+    // Handle form submissions
+    document.getElementById('contact-form').addEventListener('htmx:afterRequest', function(e) {
+        const response = JSON.parse(e.detail.xhr.responseText);
+        if (response.status === 'success') {
+            showToast(response.message, 'success');
+            this.reset();
+        } else {
+            showToast('There was an error sending your message.', 'error');
+        }
+    });
+    
+    document.getElementById('booking-form').addEventListener('htmx:afterRequest', function(e) {
+        const response = JSON.parse(e.detail.xhr.responseText);
+        if (response.status === 'success') {
+            showToast(response.message, 'success');
+            this.reset();
+        } else {
+            showToast('There was an error with your booking request.', 'error');
+        }
+    });
+    
+    document.getElementById('favorite-btn').addEventListener('htmx:afterRequest', function(e) {
+        const response = JSON.parse(e.detail.xhr.responseText);
+        if (response.status === 'added') {
+            this.innerHTML = '<i class="fa-solid fa-heart text-red-500 mr-2"></i> Remove from Favorites';
+            showToast('Added to favorites!', 'success');
+        } else if (response.status === 'removed') {
+            this.innerHTML = '<i class="fa-regular fa-heart mr-2"></i> Add to Favorites';
+            showToast('Removed from favorites.', 'info');
+        }
+    });
+</script>
+{% endblock %}

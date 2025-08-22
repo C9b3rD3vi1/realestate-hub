@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div x-data="{ filtersOpen: false }" class="mb-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold">Find Your Dream Rental Home</h1>
+        <button @click="filtersOpen = !filtersOpen" class="btn btn-outline md:hidden">
+            <i class="fa-solid fa-filter mr-2"></i> Filters
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Filters Sidebar -->
+        <div class="md:col-span-1" :class="{ 'hidden md:block': !filtersOpen, 'block': filtersOpen }">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Filters</h2>
+                
+                <!-- Search -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Search</label>
+                    <input type="text" name="q" value="{{ search_query }}" placeholder="Location, keywords..." 
+                           class="input input-bordered w-full" 
+                           hx-get="{% url 'index' %}" 
+                           hx-trigger="keyup changed delay:500ms" 
+                           hx-target="#house-listings" 
+                           hx-include="[name='type'], [name='amenities']">
+                </div>
+                
+                <!-- Property Type -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Property Type</label>
+                    <select name="type" class="select select-bordered w-full"
+                            hx-get="{% url 'index' %}" 
+                            hx-trigger="change" 
+                            hx-target="#house-listings"
+                            hx-include="[name='q'], [name='amenities']">
+                        <option value="">All Types</option>
+                        <option value="AP" {% if selected_type == 'AP' %}selected{% endif %}>Apartment</option>
+                        <option value="VL" {% if selected_type == 'VL' %}selected{% endif %}>Villa</option>
+                        <option value="ST" {% if selected_type == 'ST' %}selected{% endif %}>Studio</option>
+                        <option value="TH" {% if selected_type == 'TH' %}selected{% endif %}>Townhouse</option>
+                        <option value="CN" {% if selected_type == 'CN' %}selected{% endif %}>Condominium</option>
+                    </select>
+                </div>
+                
+                <!-- Amenities -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Amenities</label>
+                    <div class="space-y-2">
+                        {% for amenity in all_amenities %}
+                        <label class="flex items-center">
+                            <input type="checkbox" name="amenities" value="{{ amenity.id }}" 
+                                   class="checkbox checkbox-sm mr-2"
+                                   {% if amenity.id in selected_amenities %}checked{% endif %}
+                                   hx-get="{% url 'index' %}" 
+                                   hx-trigger="change" 
+                                   hx-target="#house-listings"
+                                   hx-include="[name='q'], [name='type']">
+                            <span>{{ amenity.name }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary w-full" 
+                        hx-get="{% url 'index' %}" 
+                        hx-trigger="click" 
+                        hx-target="#house-listings"
+                        hx-include="[name='q'], [name='type'], [name='amenities']">
+                    Apply Filters
+                </button>
+            </div>
+        </div>
+        
+        <!-- House Listings -->
+        <div class="md:col-span-3">
+            <div id="house-listings" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% include 'listings/partials/house_list.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
